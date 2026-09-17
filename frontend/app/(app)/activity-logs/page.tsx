@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, QuickAddDraft } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
@@ -18,13 +19,35 @@ function formatDuration(totalMinutes: number): string {
   return `${h}j ${m}m`;
 }
 
+function toDatetimeLocalValue(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function downloadCsv(filename: string, rows: string[][]) {
+  const csv = rows
+    .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
+    .join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function ActivityLogsPage() {
-  const [selectedDate, setSelectedDate] = useState(() => dateToStr(new Date()));
+  const searchParams = useSearchParams();
+  const [selectedDate, setSelectedDate] = useState(() => searchParams.get('date') ?? dateToStr(new Date()));
   const [activities, setActivities] = useState<Activity[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showManualForm, setShowManualForm] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const [quickText, setQuickText] = useState('');
   const [quickLoading, setQuickLoading] = useState(false);
@@ -101,22 +124,35 @@ export default function ActivityLogsPage() {
   async function onManualSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
+    const payload = {
+      title: String(form.get('title') ?? ''),
+      categoryId: String(form.get('categoryId') ?? '') || undefined,
+      startTime: new Date(String(form.get('startTime'))).toISOString(),
+      endTime: new Date(String(form.get('endTime'))).toISOString(),
+    };
     try {
-      await apiFetch('/api/activities', {
-        method: 'POST',
-        body: JSON.stringify({
-          title: String(form.get('title') ?? ''),
-          categoryId: String(form.get('categoryId') ?? '') || undefined,
-          startTime: new Date(String(form.get('startTime'))).toISOString(),
-          endTime: new Date(String(form.get('endTime'))).toISOString(),
-        }),
-      });
+      if (editingActivity) {
+        await apiFetch(`/api/activities/${editingActivity.id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+      } else {
+        await apiFetch('/api/activities', { method: 'POST', body: JSON.stringify(payload) });
+      }
       setShowManualForm(false);
+      setEditingActivity(null);
       (e.target as HTMLFormElement).reset();
       await load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal menyimpan aktivitas.');
     }
+  }
+
+  function onStartEdit(a: Activity) {
+    setEditingActivity(a);
+    setShowManualForm(true);
+  }
+
+  function onCancelForm() {
+    setShowManualForm(false);
+    setEditingActivity(null);
   }
 
   async function onDelete(id: string) {
@@ -126,6 +162,29 @@ export default function ActivityLogsPage() {
       await load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal menghapus aktivitas.');
+    }
+  }
+
+  async function onExportCsv() {
+    setExporting(true);
+    try {
+      const all = await apiFetch<Activity[]>('/api/activities');
+      const rows: string[][] = [
+        ['Tanggal', 'Judul', 'Kategori', 'Mulai', 'Selesai', 'Durasi (menit)'],
+        ...all.map((a) => [
+          a.startTime.slice(0, 10),
+          a.title,
+          a.category?.name ?? '',
+          new Date(a.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          new Date(a.endTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          String(Math.round((new Date(a.endTime).getTime() - new Date(a.startTime).getTime()) / 60000)),
+        ]),
+      ];
+      downloadCsv(`continuum-activity-logs-${dateToStr(new Date())}.csv`, rows);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Gagal mengekspor data.');
+    } finally {
+      setExporting(false);
     }
   }
 
@@ -172,6 +231,15 @@ export default function ActivityLogsPage() {
               <button onClick={() => shiftDate(1)} className="rounded-full p-1 text-text-secondary hover:bg-surface-container" type="button">
                 <span className="material-symbols-outlined text-[18px]">chevron_right</span>
               </button>
+              <label className="relative flex items-center rounded-full p-1 text-text-secondary hover:bg-surface-container" title="Lompat ke tanggal (masa lalu atau jauh ke depan)">
+                <span className="material-symbols-outlined text-[18px]">calendar_today</span>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                />
+              </label>
             </div>
           </div>
         </div>
@@ -262,23 +330,57 @@ export default function ActivityLogsPage() {
             <span className="font-label-md text-label-md font-medium text-text-muted">Jumlah Log</span>
             <span className="material-symbols-outlined text-[22px] text-accent-lime">flash_on</span>
           </div>
-          <div className="mt-space-md flex items-end justify-between">
+          <div className="mt-space-md flex items-end justify-between gap-space-xs">
             <span className="font-headline-xl text-headline-xl font-bold">{activities.length}</span>
-            <button
-              onClick={() => setShowManualForm((s) => !s)}
-              className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-bold text-text-primary hover:bg-accent-lime-dim"
-              type="button"
-            >
-              {showManualForm ? 'Tutup' : '+ Catat manual'}
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-space-xs">
+              <button
+                onClick={onExportCsv}
+                disabled={exporting}
+                title="Ekspor semua aktivitas ke CSV"
+                className="flex items-center gap-1 rounded-full bg-sidebar-card px-space-sm py-1.5 font-label-sm text-label-sm font-semibold text-white hover:bg-border-dark-subtle disabled:opacity-50"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[16px]">download</span>
+                {exporting ? '...' : 'Ekspor CSV'}
+              </button>
+              <button
+                onClick={() => (showManualForm ? onCancelForm() : setShowManualForm(true))}
+                className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-bold text-text-primary hover:bg-accent-lime-dim"
+                type="button"
+              >
+                {showManualForm ? 'Tutup' : '+ Catat manual'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {showManualForm && (
-        <form onSubmit={onManualSubmit} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm">
-          <input name="title" required placeholder="Judul aktivitas" className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm" />
-          <select name="categoryId" className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm">
+        <form
+          key={editingActivity?.id ?? 'new'}
+          onSubmit={onManualSubmit}
+          className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-label-md text-label-md font-semibold text-text-primary">
+              {editingActivity ? 'Edit aktivitas' : 'Catat aktivitas manual'}
+            </span>
+            <button onClick={onCancelForm} type="button" className="text-text-muted hover:text-text-primary">
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+          <input
+            name="title"
+            required
+            defaultValue={editingActivity?.title ?? ''}
+            placeholder="Judul aktivitas"
+            className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm"
+          />
+          <select
+            name="categoryId"
+            defaultValue={editingActivity?.categoryId ?? ''}
+            className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm"
+          >
             <option value="">Tanpa kategori</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
@@ -287,11 +389,23 @@ export default function ActivityLogsPage() {
             ))}
           </select>
           <div className="flex gap-space-sm">
-            <input type="datetime-local" name="startTime" required className="w-1/2 rounded-xl border-0 bg-surface-container-low px-space-sm py-space-sm font-body-sm text-body-sm" />
-            <input type="datetime-local" name="endTime" required className="w-1/2 rounded-xl border-0 bg-surface-container-low px-space-sm py-space-sm font-body-sm text-body-sm" />
+            <input
+              type="datetime-local"
+              name="startTime"
+              required
+              defaultValue={editingActivity ? toDatetimeLocalValue(editingActivity.startTime) : undefined}
+              className="w-1/2 rounded-xl border-0 bg-surface-container-low px-space-sm py-space-sm font-body-sm text-body-sm"
+            />
+            <input
+              type="datetime-local"
+              name="endTime"
+              required
+              defaultValue={editingActivity ? toDatetimeLocalValue(editingActivity.endTime) : undefined}
+              className="w-1/2 rounded-xl border-0 bg-surface-container-low px-space-sm py-space-sm font-body-sm text-body-sm"
+            />
           </div>
           <button type="submit" className="w-full rounded-full bg-accent-lime py-space-sm font-label-md text-label-md font-bold text-text-primary">
-            Simpan aktivitas
+            {editingActivity ? 'Simpan perubahan' : 'Simpan aktivitas'}
           </button>
         </form>
       )}
@@ -307,7 +421,7 @@ export default function ActivityLogsPage() {
             <div className="flex flex-col gap-space-xs">
               {activities.map((a) => (
                 <div key={a.id} className="group flex items-center gap-space-sm">
-                  <div className="flex-1">
+                  <div className="min-w-0 flex-1">
                     <ActivityItem
                       title={a.title}
                       startTime={a.startTime}
@@ -316,13 +430,22 @@ export default function ActivityLogsPage() {
                       categoryColor={a.category?.color}
                     />
                   </div>
-                  <button
-                    onClick={() => onDelete(a.id)}
-                    title="Hapus"
-                    className="rounded-full p-2 text-text-muted opacity-0 transition-opacity hover:bg-error-container hover:text-error group-hover:opacity-100"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">delete</span>
-                  </button>
+                  <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    <button
+                      onClick={() => onStartEdit(a)}
+                      title="Edit"
+                      className="rounded-full p-2 text-text-muted hover:bg-surface-container-low hover:text-text-primary"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                    <button
+                      onClick={() => onDelete(a.id)}
+                      title="Hapus"
+                      className="rounded-full p-2 text-text-muted hover:bg-error-container hover:text-error"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
