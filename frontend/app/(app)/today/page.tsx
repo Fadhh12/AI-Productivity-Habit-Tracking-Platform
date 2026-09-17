@@ -6,6 +6,7 @@ import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, Goal, Habit, QuickAddDraft } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { HabitCard } from '@/components/HabitCard';
+import { Calendar } from '@/components/Calendar';
 
 const MAX_ACTIVE_HABITS = 5;
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -25,18 +26,6 @@ function last7Days(): string[] {
   return days;
 }
 
-function buildMonthGrid(): { day: number | null; isToday: boolean }[] {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const firstWeekday = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const cells: { day: number | null; isToday: boolean }[] = [];
-  for (let i = 0; i < firstWeekday; i++) cells.push({ day: null, isToday: false });
-  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, isToday: d === today.getDate() });
-  return cells;
-}
-
 export default function TodayPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [allActivities, setAllActivities] = useState<Activity[]>([]);
@@ -52,6 +41,12 @@ export default function TodayPage() {
   const [quickLoading, setQuickLoading] = useState(false);
   const [draft, setDraft] = useState<QuickAddDraft | null>(null);
   const [showHabitForm, setShowHabitForm] = useState(false);
+
+  const [selectedDate, setSelectedDate] = useState(todayDateString());
+  const [dayActivities, setDayActivities] = useState<Activity[]>([]);
+  const [dayLoading, setDayLoading] = useState(false);
+  const [showScheduleForm, setShowScheduleForm] = useState(false);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
 
   async function loadAll() {
     setLoading(true);
@@ -79,6 +74,45 @@ export default function TodayPage() {
   useEffect(() => {
     loadAll();
   }, []);
+
+  useEffect(() => {
+    setDayLoading(true);
+    apiFetch<Activity[]>(`/api/activities?date=${selectedDate}`)
+      .then(setDayActivities)
+      .catch(() => setDayActivities([]))
+      .finally(() => setDayLoading(false));
+  }, [selectedDate]);
+
+  async function onScheduleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setScheduleError(null);
+    const form = new FormData(e.currentTarget);
+    const title = String(form.get('title') ?? '');
+    const startTimeOfDay = String(form.get('startTime') ?? '');
+    const endTimeOfDay = String(form.get('endTime') ?? '');
+    const categoryId = String(form.get('categoryId') ?? '') || undefined;
+    try {
+      await apiFetch('/api/activities', {
+        method: 'POST',
+        body: JSON.stringify({
+          title,
+          categoryId,
+          startTime: new Date(`${selectedDate}T${startTimeOfDay}:00`).toISOString(),
+          endTime: new Date(`${selectedDate}T${endTimeOfDay}:00`).toISOString(),
+        }),
+      });
+      (e.target as HTMLFormElement).reset();
+      setShowScheduleForm(false);
+      const [refreshedDay, refreshedAll] = await Promise.all([
+        apiFetch<Activity[]>(`/api/activities?date=${selectedDate}`),
+        apiFetch<Activity[]>('/api/activities'),
+      ]);
+      setDayActivities(refreshedDay);
+      setAllActivities(refreshedAll);
+    } catch (err) {
+      setScheduleError(err instanceof ApiError ? err.message : 'Gagal menjadwalkan aktivitas.');
+    }
+  }
 
   async function onQuickAdd(e: FormEvent) {
     e.preventDefault();
@@ -173,8 +207,13 @@ export default function TodayPage() {
   }, [allActivities]);
 
   const maxHours = Math.max(1, ...weeklyHours.map((d) => d.hours));
-  const monthGrid = useMemo(buildMonthGrid, []);
-  const monthLabel = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  const markedDates = useMemo(() => new Set(allActivities.map((a) => a.startTime.slice(0, 10))), [allActivities]);
+  const selectedDateLabel = new Date(`${selectedDate}T00:00:00`).toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 
   if (loading) return <p className="text-text-muted">Memuat…</p>;
 
@@ -396,26 +435,68 @@ export default function TodayPage() {
         </div>
 
         <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="font-label-lg text-label-lg font-bold text-text-primary capitalize">{monthLabel}</span>
-          </div>
-          <div className="grid grid-cols-7 text-center font-label-sm text-caption font-semibold text-text-muted">
-            {['M', 'S', 'S', 'R', 'K', 'J', 'S'].map((d, i) => (
-              <span key={i}>{d}</span>
-            ))}
-          </div>
-          <div className="grid grid-cols-7 gap-y-2 text-center font-body-sm text-body-sm text-text-primary">
-            {monthGrid.map((cell, i) => (
-              <span key={i} className="flex items-center justify-center py-1">
-                {cell.day && cell.isToday ? (
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-lime font-bold text-text-primary shadow-sm">
-                    {cell.day}
-                  </span>
-                ) : (
-                  cell.day ?? ''
-                )}
+          <Calendar markedDates={markedDates} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+
+          <div className="flex flex-col gap-space-sm border-t border-border-subtle pt-space-sm">
+            <div className="flex items-center justify-between gap-space-sm">
+              <span className="min-w-0 truncate font-label-md text-label-md font-semibold text-text-primary" title={selectedDateLabel}>
+                {selectedDateLabel}
               </span>
-            ))}
+              <button
+                onClick={() => setShowScheduleForm((s) => !s)}
+                className="flex shrink-0 items-center gap-1 rounded-full bg-surface-container-low px-space-sm py-1 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[16px]">add</span>
+                Jadwalkan
+              </button>
+            </div>
+
+            {showScheduleForm && (
+              <form onSubmit={onScheduleSubmit} className="flex flex-col gap-space-xs rounded-xl bg-surface-container-low p-space-sm">
+                <input
+                  name="title"
+                  required
+                  placeholder="Judul aktivitas"
+                  className="w-full rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm"
+                />
+                <select name="categoryId" className="w-full rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm">
+                  <option value="">Tanpa kategori</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex gap-space-xs">
+                  <input type="time" name="startTime" required className="w-1/2 rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm" />
+                  <input type="time" name="endTime" required className="w-1/2 rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm" />
+                </div>
+                {scheduleError && <p className="font-caption text-caption text-error">{scheduleError}</p>}
+                <button type="submit" className="w-full rounded-full bg-accent-lime py-1.5 font-label-sm text-label-sm font-bold text-text-primary">
+                  Simpan jadwal
+                </button>
+              </form>
+            )}
+
+            {dayLoading ? (
+              <p className="font-caption text-caption text-text-muted">Memuat…</p>
+            ) : dayActivities.length === 0 ? (
+              <p className="font-caption text-caption text-text-muted">Belum ada jadwal di tanggal ini.</p>
+            ) : (
+              <div className="flex flex-col gap-1">
+                {dayActivities.map((a) => (
+                  <ActivityItem
+                    key={a.id}
+                    title={a.title}
+                    startTime={a.startTime}
+                    endTime={a.endTime}
+                    categoryName={a.category?.name}
+                    categoryColor={a.category?.color}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
