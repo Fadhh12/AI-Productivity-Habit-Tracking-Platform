@@ -1,7 +1,13 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 const NAV_ITEMS = [
   { href: '/today', label: 'Dashboard', icon: 'grid_view' },
@@ -14,6 +20,33 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installed, setInstalled] = useState(false);
+
+  useEffect(() => {
+    function onBeforeInstall(e: Event) {
+      e.preventDefault();
+      setInstallPrompt(e as BeforeInstallPromptEvent);
+    }
+    function onInstalled() {
+      setInstalled(true);
+      setInstallPrompt(null);
+    }
+    window.addEventListener('beforeinstallprompt', onBeforeInstall);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstall);
+      window.removeEventListener('appinstalled', onInstalled);
+    };
+  }, []);
+
+  async function onInstallClick() {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    if (choice.outcome === 'accepted') setInstalled(true);
+    setInstallPrompt(null);
+  }
 
   return (
     <aside className="fixed left-0 top-0 z-50 hidden h-full w-72 flex-col justify-between bg-sidebar-dark p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] lg:flex">
@@ -58,10 +91,12 @@ export function Sidebar() {
           </p>
         </div>
         <button
-          className="mt-space-xs w-full rounded-full bg-sidebar-dark py-space-xs text-center font-label-sm text-label-sm text-white transition-all hover:bg-accent-lime hover:text-text-primary"
+          onClick={onInstallClick}
+          disabled={!installPrompt || installed}
+          className="mt-space-xs w-full rounded-full bg-sidebar-dark py-space-xs text-center font-label-sm text-label-sm text-white transition-all hover:bg-accent-lime hover:text-text-primary disabled:cursor-default disabled:opacity-50 disabled:hover:bg-sidebar-dark disabled:hover:text-white"
           type="button"
         >
-          Install App
+          {installed ? 'Terpasang ✓' : installPrompt ? 'Install App' : 'Buka di browser mobile untuk install'}
         </button>
       </div>
     </aside>
