@@ -1,11 +1,13 @@
 import { BullModule } from '@nestjs/bullmq';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 /**
  * Root BullMQ connection setup, shared by any module that registers its own
- * queues (e.g. rollup) via BullModule.registerQueue(...).
+ * queues (e.g. rollup) via BullModule.registerQueue(...). Global so feature
+ * modules don't need to re-import it just to get the shared connection.
  */
+@Global()
 @Module({
   imports: [
     BullModule.forRootAsync({

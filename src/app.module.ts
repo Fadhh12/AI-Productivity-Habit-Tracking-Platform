@@ -7,12 +7,15 @@ import configuration from './config/configuration';
 import { validate } from './config/validation';
 import { PrismaModule } from './infra/db/prisma.module';
 import { RedisCacheModule } from './infra/cache/redis.module';
+import { QueueModule } from './infra/queue/queue.module';
 import { RequestIdMiddleware } from './shared/middleware/request-id.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ActivityModule } from './modules/activity/activity.module';
 import { HabitModule } from './modules/habit/habit.module';
 import { GoalModule } from './modules/goal/goal.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { RollupModule } from './modules/rollup/rollup.module';
 
 @Module({
   imports: [
@@ -34,11 +37,14 @@ import { GoalModule } from './modules/goal/goal.module';
     ScheduleModule.forRoot(),
     PrismaModule,
     RedisCacheModule,
+    QueueModule,
     AuthModule,
     CategoryModule,
     ActivityModule,
     HabitModule,
     GoalModule,
+    NotificationModule,
+    RollupModule,
   ],
   providers: [
     {
