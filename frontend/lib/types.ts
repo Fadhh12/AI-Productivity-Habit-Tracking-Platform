@@ -15,6 +15,14 @@ export interface Activity {
   category: Category | null;
 }
 
+export interface HabitCheckin {
+  id: string;
+  habitId: string;
+  checkinDate: string;
+  status: 'done' | 'missed' | 'skipped_forgiven';
+  note: string | null;
+}
+
 export interface Habit {
   id: string;
   name: string;
@@ -23,6 +31,15 @@ export interface Habit {
   skipCountWindow: number;
   active: boolean;
   goalId: string | null;
+  checkins?: HabitCheckin[];
+}
+
+export interface Notification {
+  id: string;
+  type: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
 }
 
 export interface Goal {

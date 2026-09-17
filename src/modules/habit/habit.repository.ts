@@ -2,6 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CheckinStatus } from '@prisma/client';
 import { PrismaService } from '../../infra/db/prisma.service';
 
+/** Start of the 7-day trailing window (today inclusive) used for the habit tracker's weekly check-in grid. */
+function sevenDaysAgo(): Date {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - 6);
+  d.setUTCHours(0, 0, 0, 0);
+  return d;
+}
+
 @Injectable()
 export class HabitRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -11,7 +19,16 @@ export class HabitRepository {
   }
 
   findAll(userId: string) {
-    return this.prisma.habit.findMany({ where: { userId }, orderBy: { createdAt: 'asc' } });
+    return this.prisma.habit.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        checkins: {
+          where: { checkinDate: { gte: sevenDaysAgo() } },
+          orderBy: { checkinDate: 'asc' },
+        },
+      },
+    });
   }
 
   findAllActive(userId?: string) {
@@ -19,7 +36,15 @@ export class HabitRepository {
   }
 
   findById(userId: string, id: string) {
-    return this.prisma.habit.findFirst({ where: { id, userId } });
+    return this.prisma.habit.findFirst({
+      where: { id, userId },
+      include: {
+        checkins: {
+          where: { checkinDate: { gte: sevenDaysAgo() } },
+          orderBy: { checkinDate: 'asc' },
+        },
+      },
+    });
   }
 
   findByIdWithUser(id: string) {
