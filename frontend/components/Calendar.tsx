@@ -3,7 +3,20 @@
 import { useMemo, useState } from 'react';
 
 const DAY_INITIALS = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
-const MONTH_LABEL_LOCALE = 'id-ID';
+const MONTH_NAMES = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+];
 
 interface CalendarProps {
   /** yyyy-mm-dd strings that should render a small activity indicator dot. */
@@ -49,69 +62,66 @@ export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarPr
     setViewYear(y);
   }
 
-  function shiftYear(delta: number) {
-    setViewYear((y) => y + delta);
-  }
-
   function jumpToToday() {
     setViewYear(today.getFullYear());
     setViewMonth(today.getMonth());
     onSelectDate(toDateStr(today.getFullYear(), today.getMonth(), today.getDate()));
   }
 
-  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(MONTH_LABEL_LOCALE, {
-    month: 'long',
-    year: 'numeric',
-  });
   const todayStr = toDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+  const yearOptions = useMemo(() => {
+    const base = today.getFullYear();
+    const years: number[] = [];
+    for (let y = base - 5; y <= base + 15; y++) years.push(y);
+    if (!years.includes(viewYear)) years.push(viewYear);
+    return years.sort((a, b) => a - b);
+  }, [today, viewYear]);
 
   return (
     <div className="flex flex-col gap-space-sm">
       <div className="flex items-center justify-between gap-space-xs">
-        <div className="flex items-center gap-0.5">
-          <button
-            onClick={() => shiftYear(-1)}
-            title="Tahun sebelumnya"
-            className="rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-[18px]">keyboard_double_arrow_left</span>
-          </button>
-          <button
-            onClick={() => shiftMonth(-1)}
-            title="Bulan sebelumnya"
-            className="rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-          </button>
-        </div>
         <button
-          onClick={jumpToToday}
-          className="font-label-lg text-label-lg font-bold capitalize text-text-primary hover:text-primary"
-          title="Kembali ke hari ini"
+          onClick={() => shiftMonth(-1)}
+          title="Bulan sebelumnya"
+          className="shrink-0 rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
           type="button"
         >
-          {monthLabel}
+          <span className="material-symbols-outlined text-[18px]">chevron_left</span>
         </button>
-        <div className="flex items-center gap-0.5">
-          <button
-            onClick={() => shiftMonth(1)}
-            title="Bulan berikutnya"
-            className="rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
-            type="button"
+
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-1">
+          <select
+            value={viewMonth}
+            onChange={(e) => setViewMonth(Number(e.target.value))}
+            className="min-w-0 rounded-lg border-0 bg-transparent py-1 pl-1.5 pr-0.5 font-label-lg text-label-lg font-bold text-text-primary hover:bg-surface-container-low focus:outline-none"
           >
-            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-          </button>
-          <button
-            onClick={() => shiftYear(1)}
-            title="Tahun berikutnya"
-            className="rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
-            type="button"
+            {MONTH_NAMES.map((name, i) => (
+              <option key={name} value={i}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={viewYear}
+            onChange={(e) => setViewYear(Number(e.target.value))}
+            className="min-w-0 rounded-lg border-0 bg-transparent py-1 pl-0.5 pr-1.5 font-label-lg text-label-lg font-bold text-text-primary hover:bg-surface-container-low focus:outline-none"
           >
-            <span className="material-symbols-outlined text-[18px]">keyboard_double_arrow_right</span>
-          </button>
+            {yearOptions.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <button
+          onClick={() => shiftMonth(1)}
+          title="Bulan berikutnya"
+          className="shrink-0 rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
+          type="button"
+        >
+          <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-7 text-center font-label-sm text-caption font-semibold text-text-muted">
@@ -150,6 +160,16 @@ export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarPr
             </button>
           );
         })}
+      </div>
+
+      <div className="flex items-center justify-end border-t border-border-subtle pt-space-xs">
+        <button
+          onClick={jumpToToday}
+          className="font-label-sm text-label-sm font-semibold text-tertiary hover:underline"
+          type="button"
+        >
+          Hari ini
+        </button>
       </div>
     </div>
   );
