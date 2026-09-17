@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { apiFetch, ApiError } from '@/lib/api';
+import { Activity, Category, Goal, Habit } from '@/lib/types';
 
 const COMMON_TIMEZONES = [
   'Asia/Jakarta',
@@ -21,6 +22,31 @@ export default function SettingsPage() {
   const [timezone, setTimezone] = useState(user?.timezone ?? 'UTC');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  async function onExportData() {
+    setExporting(true);
+    try {
+      const [activities, habits, goals, categories] = await Promise.all([
+        apiFetch<Activity[]>('/api/activities'),
+        apiFetch<Habit[]>('/api/habits'),
+        apiFetch<Goal[]>('/api/goals'),
+        apiFetch<Category[]>('/api/categories'),
+      ]);
+      const payload = { exportedAt: new Date().toISOString(), account: user?.email, activities, habits, goals, categories };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `continuum-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setMessage(err instanceof ApiError ? err.message : 'Gagal mengekspor data.');
+    } finally {
+      setExporting(false);
+    }
+  }
 
   async function onSave(e: FormEvent) {
     e.preventDefault();
@@ -110,6 +136,15 @@ export default function SettingsPage() {
           Semua aktivitas, habit, dan goal kamu tersimpan aman dan hanya dapat diakses oleh akunmu sendiri.
           Menghapus goal atau habit tidak pernah menghapus riwayat aktivitas yang sudah tercatat.
         </p>
+        <button
+          onClick={onExportData}
+          disabled={exporting}
+          className="flex w-fit items-center gap-1.5 rounded-full bg-surface-container-low px-space-md py-2 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-surface-container disabled:opacity-50"
+          type="button"
+        >
+          <span className="material-symbols-outlined text-[16px]">download</span>
+          {exporting ? 'Menyiapkan…' : 'Ekspor semua data (JSON)'}
+        </button>
       </section>
     </div>
   );
