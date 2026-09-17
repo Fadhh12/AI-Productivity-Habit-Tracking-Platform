@@ -63,69 +63,88 @@ export default function GoalDetailPage() {
     }
   }
 
-  if (loading) return <p className="text-gray-400">Memuat…</p>;
-  if (!goal) return <p className="text-sm text-red-600">{error ?? 'Goal tidak ditemukan.'}</p>;
+  if (loading) return <p className="text-text-muted">Memuat…</p>;
+  if (!goal) return <p className="text-sm text-error">{error ?? 'Goal tidak ditemukan.'}</p>;
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-xl font-bold text-gray-900">{goal.title}</h1>
-        <p className="text-sm text-gray-500">Goal tahunan · {goal.status}</p>
-      </header>
+    <div className="flex flex-col gap-space-lg">
+      <div className="flex flex-col gap-space-xs">
+        <span className="font-caption text-caption uppercase tracking-wider text-text-muted">Goal Tahunan</span>
+        <h1 className="font-headline-xl-mobile text-headline-xl-mobile text-text-primary tracking-tight lg:font-headline-xl lg:text-headline-xl">
+          {goal.title}
+        </h1>
+        <span className="w-fit rounded-full bg-accent-mint px-space-sm py-0.5 font-label-sm text-label-sm font-semibold text-accent-mint-text">
+          {goal.status}
+        </span>
+      </div>
 
-      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>}
 
-      <section>
-        <h2 className="mb-2 font-semibold text-gray-800">Habit langsung</h2>
-        {goal.habits.length === 0 ? (
-          <p className="text-sm text-gray-400">Belum ada habit langsung di goal ini.</p>
-        ) : (
-          <ul className="space-y-1 text-sm text-gray-700">
-            {goal.habits.map((h) => (
-              <li key={h.id}>• {h.name} (streak {h.currentStreak})</li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Habit Langsung</h2>
+          {goal.habits.length === 0 ? (
+            <p className="font-body-sm text-body-sm text-text-muted">Belum ada habit langsung di goal ini.</p>
+          ) : (
+            <ul className="flex flex-col gap-space-xs">
+              {goal.habits.map((h) => (
+                <li key={h.id} className="flex items-center justify-between rounded-xl bg-surface-container-low px-space-sm py-space-sm">
+                  <span className="font-label-md text-label-md text-text-primary">{h.name}</span>
+                  <span className="flex items-center gap-1 font-caption text-caption font-semibold text-accent-terracotta-text">
+                    <span className="material-symbols-outlined text-[14px]">local_fire_department</span>
+                    {h.currentStreak}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
-      <section>
-        <h2 className="mb-2 font-semibold text-gray-800">Goal bulanan turunan</h2>
-        {goal.childGoals.length === 0 ? (
-          <p className="text-sm text-gray-400">Belum ada breakdown bulanan.</p>
-        ) : (
-          <div className="space-y-2">
-            {goal.childGoals.map((cg) => (
-              <div key={cg.id} className="rounded-xl border border-gray-200 bg-white p-3">
-                <p className="font-medium text-gray-900">{cg.title}</p>
-                <ul className="mt-1 space-y-0.5 text-sm text-gray-600">
-                  {cg.habits.map((h) => (
-                    <li key={h.id}>• {h.name}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Goal Bulanan Turunan</h2>
+          {goal.childGoals.length === 0 ? (
+            <p className="font-body-sm text-body-sm text-text-muted">Belum ada breakdown bulanan.</p>
+          ) : (
+            <div className="flex flex-col gap-space-sm">
+              {goal.childGoals.map((cg) => (
+                <div key={cg.id} className="rounded-xl bg-surface-container-low p-space-sm">
+                  <p className="font-label-md text-label-md font-semibold text-text-primary">{cg.title}</p>
+                  <ul className="mt-1 flex flex-col gap-0.5 font-caption text-caption text-text-secondary">
+                    {cg.habits.map((h) => (
+                      <li key={h.id}>· {h.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
 
-      <section>
-        <button
-          onClick={onAskAi}
-          disabled={suggesting}
-          className="rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-        >
-          {suggesting ? 'Meminta saran…' : '✨ AI: sarankan breakdown'}
-        </button>
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-gradient-to-r from-surface-card via-tertiary-container/30 to-surface-card p-space-md">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 font-label-md text-label-md font-bold text-tertiary">
+            <span className="material-symbols-outlined text-[16px]">psychology</span>
+            Saran Breakdown AI
+          </span>
+          <button
+            onClick={onAskAi}
+            disabled={suggesting}
+            className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary disabled:opacity-50"
+          >
+            {suggesting ? 'Meminta saran…' : '✨ Minta saran'}
+          </button>
+        </div>
 
         {suggestion && (
-          <div className="mt-3 space-y-2 rounded-xl border border-brand-200 bg-brand-50 p-4">
-            <span className={suggestion.is_ai_generated ? 'badge-ai' : 'rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600'}>
+          <div className="flex flex-col gap-space-sm rounded-xl border border-accent-lavender bg-accent-lavender/20 p-space-md">
+            <span className={suggestion.is_ai_generated ? 'badge-ai' : 'w-fit rounded-full bg-surface-container px-2 py-0.5 text-xs text-text-secondary'}>
               {suggestion.is_ai_generated ? '✨ AI' : 'Template umum (AI belum tersedia)'}
             </span>
             {suggestion.monthlyGoals.map((mg, i) => (
               <div key={i}>
-                <p className="text-sm font-medium text-gray-800">{mg.title}</p>
-                <ul className="text-xs text-gray-600">
+                <p className="font-label-md text-label-md font-semibold text-text-primary">{mg.title}</p>
+                <ul className="font-caption text-caption text-text-secondary">
                   {mg.habits.map((h, j) => (
                     <li key={j}>· {h.name}</li>
                   ))}
@@ -136,7 +155,7 @@ export default function GoalDetailPage() {
         )}
       </section>
 
-      <button onClick={onDelete} className="text-sm text-red-600 underline">
+      <button onClick={onDelete} className="w-fit font-label-sm text-label-sm text-error underline">
         Hapus goal ini
       </button>
     </div>
