@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum GoalHorizon {
+  yearly
+  monthly
+}
+
+enum GoalStatus {
+  active
+  completed
+  archived
+}
+
+enum CheckinStatus {
+  done
+  missed
+  skipped_forgiven
+}
+
+enum AiInsightType {
+  digest
+  pattern
+  recommendation
+}
+
+enum AiInsightPeriod {
+  weekly
+  monthly
+  yearly
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  timezone     String   @default("UTC")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  categories     Category[]
+  goals          Goal[]
+  habits         Habit[]
+  activityLogs   ActivityLog[]
+  aiInsights     AiInsight[]
+  refreshTokens  RefreshToken[]
+  idempotencyKeys IdempotencyKey[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Category {
+  id     String  @id @default(uuid())
+  userId String  @map("user_id")
+  name   String
+  color  String  @default("#6B7280")
+  active Boolean @default(true)
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityLogs ActivityLog[]
+
+  @@index([userId])
+  @@map("categories")
+}
+
+model Goal {
+  id            String      @id @default(uuid())
+  userId        String      @map("user_id")
+  parentGoalId  String?     @map("parent_goal_id")
+  title         String
+  horizon       GoalHorizon
+  targetDate    DateTime?   @map("target_date") @db.Date
+  status        GoalStatus  @default(active)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentGoal Goal?   @relation("GoalHierarchy", fields: [parentGoalId], references: [id], onDelete: SetNull)
+  childGoals Goal[]  @relation("GoalHierarchy")
+  habits     Habit[]
+
+  @@index([userId])
+  @@index([parentGoalId])
+  @@map("goals")
+}
+
+model Habit {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  goalId           String?  @map("goal_id")
+  name             String
+  frequency        String
+  currentStreak    Int      @default(0) @map("current_streak")
+  skipCountWindow  Int      @default(0) @map("skip_count_window")
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal     Goal?           @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  checkins HabitCheckin[]
+
+  @@index([userId])
+  @@index([goalId])
+  @@map("habits")
+}
+
+model HabitCheckin {
+  id           String        @id @default(uuid())
+  habitId      String        @map("habit_id")
+  checkinDate  DateTime      @map("checkin_date") @db.Date
+  status       CheckinStatus
+  note         String?
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, checkinDate])
+  @@index([habitId])
+  @@map("habit_checkins")
+}
+
+model ActivityLog {
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  categoryId String?   @map("category_id")
+  title      String
+  startTime  DateTime  @map("start_time")
+  endTime    DateTime  @map("end_time")
+  note       String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([categoryId])
+  @@map("activity_logs")
+}
+
+model AiInsight {
+  id          String          @id @default(uuid())
+  userId      String          @map("user_id")
+  type        AiInsightType
+  period      AiInsightPeriod
+  content     Json
+  generatedAt DateTime        @default(now()) @map("generated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("ai_insights")
+}
+
+model IdempotencyKey {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  key          String
+  endpoint     String
+  responseBody Json     @map("response_body")
+  statusCode   Int      @map("status_code")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key, endpoint])
+  @@map("idempotency_keys")
+}
