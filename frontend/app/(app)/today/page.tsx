@@ -1,20 +1,48 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { apiFetch, ApiError } from '@/lib/api';
-import { Activity, Category, Habit, QuickAddDraft } from '@/lib/types';
+import { Activity, Category, Goal, Habit, QuickAddDraft } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { HabitCard } from '@/components/HabitCard';
+
+const MAX_ACTIVE_HABITS = 5;
+const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 function todayDateString(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+function last7Days(): string[] {
+  const days: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+  }
+  return days;
+}
+
+function buildMonthGrid(): { day: number | null; isToday: boolean }[] {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstWeekday = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells: { day: number | null; isToday: boolean }[] = [];
+  for (let i = 0; i < firstWeekday; i++) cells.push({ day: null, isToday: false });
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, isToday: d === today.getDate() });
+  return cells;
+}
+
 export default function TodayPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [allActivities, setAllActivities] = useState<Activity[]>([]);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [checkedInIds, setCheckedInIds] = useState<Set<string>>(new Set());
   const [checkingId, setCheckingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,21 +51,24 @@ export default function TodayPage() {
   const [quickText, setQuickText] = useState('');
   const [quickLoading, setQuickLoading] = useState(false);
   const [draft, setDraft] = useState<QuickAddDraft | null>(null);
-  const [showManualForm, setShowManualForm] = useState(false);
   const [showHabitForm, setShowHabitForm] = useState(false);
 
   async function loadAll() {
     setLoading(true);
     setError(null);
     try {
-      const [acts, hbs, cats] = await Promise.all([
+      const [acts, allActs, hbs, cats, gls] = await Promise.all([
         apiFetch<Activity[]>(`/api/activities?date=${todayDateString()}`),
+        apiFetch<Activity[]>('/api/activities'),
         apiFetch<Habit[]>('/api/habits'),
         apiFetch<Category[]>('/api/categories'),
+        apiFetch<Goal[]>('/api/goals'),
       ]);
       setActivities(acts);
+      setAllActivities(allActs);
       setHabits(hbs.filter((h) => h.active));
       setCategories(cats);
+      setGoals(gls.filter((g) => g.horizon === 'yearly'));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal memuat data hari ini.');
     } finally {
@@ -90,31 +121,6 @@ export default function TodayPage() {
     }
   }
 
-  async function onManualSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const title = String(form.get('title') ?? '');
-    const startTime = String(form.get('startTime') ?? '');
-    const endTime = String(form.get('endTime') ?? '');
-    const categoryId = String(form.get('categoryId') ?? '') || undefined;
-    try {
-      await apiFetch('/api/activities', {
-        method: 'POST',
-        body: JSON.stringify({
-          title,
-          categoryId,
-          startTime: new Date(startTime).toISOString(),
-          endTime: new Date(endTime).toISOString(),
-        }),
-      });
-      setShowManualForm(false);
-      (e.target as HTMLFormElement).reset();
-      await loadAll();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Gagal menyimpan aktivitas.');
-    }
-  }
-
   async function onHabitSubmit(e: FormEvent<HTMLFormElement>, force = false) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
@@ -155,187 +161,291 @@ export default function TodayPage() {
     }
   }
 
-  if (loading) return <p className="text-gray-400">Memuat…</p>;
+  const weeklyHours = useMemo(() => {
+    const days = last7Days();
+    return days.map((dateStr) => {
+      const minutes = allActivities
+        .filter((a) => a.startTime.slice(0, 10) === dateStr)
+        .reduce((sum, a) => sum + (new Date(a.endTime).getTime() - new Date(a.startTime).getTime()) / 60000, 0);
+      const d = new Date(dateStr);
+      return { dateStr, label: DAY_LABELS[d.getDay()], hours: minutes / 60 };
+    });
+  }, [allActivities]);
+
+  const maxHours = Math.max(1, ...weeklyHours.map((d) => d.hours));
+  const monthGrid = useMemo(buildMonthGrid, []);
+  const monthLabel = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+  if (loading) return <p className="text-text-muted">Memuat…</p>;
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="text-xl font-bold text-gray-900">Hari ini</h1>
-        <p className="text-sm text-gray-500">{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-      </header>
-
-      {error && (
-        <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}{' '}
-          <button className="underline" onClick={() => setError(null)}>
-            tutup
-          </button>
+    <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12">
+      {/* LEFT & CENTER */}
+      <div className="flex flex-col gap-space-lg xl:col-span-8">
+        <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
+          <div className="flex flex-col gap-space-xs">
+            <h1 className="font-headline-xl-mobile text-headline-xl-mobile text-text-primary tracking-tight lg:font-headline-xl lg:text-headline-xl">
+              Halo 👋
+            </h1>
+            <p className="font-body-md text-body-md text-text-secondary">
+              Hari ini ada <span className="font-semibold text-text-primary">{habits.length} habit aktif</span> dan{' '}
+              <span className="font-semibold text-text-primary">{activities.length} aktivitas</span> tercatat.
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-space-sm self-start rounded-full bg-surface-card px-space-md py-space-sm shadow-sm md:self-auto">
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-accent-mint-text" />
+            <span className="font-label-md text-label-md font-semibold text-text-primary">Kapasitas Habit:</span>
+            <span className="rounded-full bg-accent-mint px-space-sm py-0.5 font-label-md text-label-md font-bold text-accent-mint-text">
+              {habits.length} / {MAX_ACTIVE_HABITS}
+            </span>
+          </div>
         </div>
-      )}
 
-      <section>
-        <form onSubmit={onQuickAdd} className="flex gap-2">
+        {error && (
+          <div className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">
+            {error}{' '}
+            <button className="underline" onClick={() => setError(null)}>
+              tutup
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={onQuickAdd} className="flex items-center gap-space-sm rounded-full bg-surface-card p-1.5 pl-space-md shadow-sm">
+          <span className="material-symbols-outlined text-[20px] text-tertiary">auto_awesome</span>
           <input
             value={quickText}
             onChange={(e) => setQuickText(e.target.value)}
             placeholder='cth: "meeting sama dosen jam 2 siang 1 jam"'
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="flex-1 bg-transparent font-body-sm text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none"
           />
           <button
             type="submit"
             disabled={quickLoading}
-            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="flex items-center gap-1 rounded-full bg-sidebar-dark px-space-md py-space-xs font-label-sm text-label-sm font-semibold text-white transition-all hover:bg-accent-lime hover:text-text-primary disabled:opacity-50"
           >
-            {quickLoading ? '...' : '✨ AI'}
+            {quickLoading ? '...' : 'Catat AI'}
           </button>
         </form>
 
         {draft && (
-          <div className="mt-3 rounded-xl border border-brand-200 bg-brand-50 p-4">
-            <div className="mb-2 flex items-center gap-2">
-              {draft.is_ai_generated ? (
-                <span className="badge-ai">✨ AI</span>
-              ) : (
-                <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">
-                  Draft manual (AI belum tersedia)
-                </span>
-              )}
-            </div>
-            <p className="font-medium text-gray-900">{draft.title}</p>
-            <p className="text-xs text-gray-500">
+          <div className="rounded-2xl border border-accent-lavender bg-accent-lavender/30 p-space-md">
+            <span className={draft.is_ai_generated ? 'badge-ai' : 'rounded-full bg-surface-container px-2 py-0.5 text-xs text-text-secondary'}>
+              {draft.is_ai_generated ? '✨ AI' : 'Draft manual (AI belum tersedia)'}
+            </span>
+            <p className="mt-2 font-label-lg text-label-lg font-semibold text-text-primary">{draft.title}</p>
+            <p className="font-caption text-caption text-text-muted">
               {new Date(draft.start_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}–
               {new Date(draft.end_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
               {draft.category_guess && <span> · {draft.category_guess}</span>}
             </p>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-space-sm flex gap-space-sm">
               <button
                 onClick={confirmDraft}
-                className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+                className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime-dim"
               >
-                Konfirmasi & simpan
+                Konfirmasi &amp; simpan
               </button>
               <button
                 onClick={() => setDraft(null)}
-                className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-gray-600 ring-1 ring-gray-300"
+                className="rounded-full bg-surface-card px-space-md py-1.5 font-label-sm text-label-sm font-medium text-text-secondary ring-1 ring-border-subtle"
               >
                 Batal
               </button>
             </div>
           </div>
         )}
-      </section>
 
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-800">Habit hari ini</h2>
-          <button onClick={() => setShowHabitForm((s) => !s)} className="text-sm font-medium text-brand-600">
-            {showHabitForm ? 'Tutup' : '+ Tambah habit'}
-          </button>
-        </div>
-
-        {showHabitForm && (
-          <form onSubmit={onHabitSubmit} className="mb-3 space-y-2 rounded-xl border border-gray-200 bg-white p-3">
-            <input
-              name="name"
-              required
-              maxLength={80}
-              placeholder="Nama habit, cth: Baca 20 menit"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            />
-            <select name="frequency" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="daily">Setiap hari</option>
-              <option value="specific_days">Hari tertentu</option>
-              <option value="weekly_count">X kali per minggu</option>
-            </select>
-            <button type="submit" className="w-full rounded-lg bg-brand-600 py-2 text-sm font-medium text-white">
-              Simpan habit
-            </button>
-          </form>
-        )}
-
-        {habits.length === 0 ? (
-          <p className="text-sm text-gray-400">Belum ada habit aktif. Maksimal 5 habit aktif sekaligus (anti-burnout).</p>
-        ) : (
-          <div className="space-y-2">
-            {habits.map((h) => (
-              <HabitCard
-                key={h.id}
-                name={h.name}
-                currentStreak={h.currentStreak}
-                skipCountWindow={h.skipCountWindow}
-                checkedInToday={checkedInIds.has(h.id)}
-                checking={checkingId === h.id}
-                onCheckin={() => onCheckin(h.id)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-800">Aktivitas hari ini</h2>
-          <button
-            onClick={() => setShowManualForm((s) => !s)}
-            className="text-sm font-medium text-brand-600"
-          >
-            {showManualForm ? 'Tutup' : '+ Tambah manual'}
-          </button>
-        </div>
-
-        {showManualForm && (
-          <form onSubmit={onManualSubmit} className="mb-3 space-y-2 rounded-xl border border-gray-200 bg-white p-3">
-            <input
-              name="title"
-              required
-              placeholder="Judul aktivitas"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            />
-            <select name="categoryId" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="">Tanpa kategori</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <div className="flex gap-2">
-              <input
-                type="datetime-local"
-                name="startTime"
-                required
-                className="w-1/2 rounded-lg border border-gray-300 px-2 py-2 text-sm"
-              />
-              <input
-                type="datetime-local"
-                name="endTime"
-                required
-                className="w-1/2 rounded-lg border border-gray-300 px-2 py-2 text-sm"
-              />
+        <section className="flex flex-col gap-space-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-space-sm">
+              <h2 className="font-headline-sm text-headline-sm text-text-primary">Habit Aktif Hari Ini</h2>
+              <span className="rounded-full bg-accent-lavender px-space-sm py-0.5 font-label-sm text-label-sm font-semibold text-accent-lavender-text">
+                {habits.length} habit
+              </span>
             </div>
-            <button type="submit" className="w-full rounded-lg bg-brand-600 py-2 text-sm font-medium text-white">
-              Simpan aktivitas
-            </button>
-          </form>
-        )}
+            <Link href="/habit-tracker" className="font-label-sm text-label-sm font-semibold text-text-muted hover:text-text-primary">
+              Lihat semua
+            </Link>
+          </div>
 
-        {activities.length === 0 ? (
-          <p className="text-sm text-gray-400">Belum ada aktivitas tercatat hari ini.</p>
-        ) : (
-          <div className="space-y-2">
-            {activities.map((a) => (
-              <ActivityItem
-                key={a.id}
-                title={a.title}
-                startTime={a.startTime}
-                endTime={a.endTime}
-                categoryName={a.category?.name}
-                categoryColor={a.category?.color}
+          {habits.length === 0 ? (
+            <div className="rounded-2xl bg-surface-card p-space-md shadow-sm">
+              <p className="font-body-sm text-body-sm text-text-muted">
+                Belum ada habit aktif. Maksimal {MAX_ACTIVE_HABITS} habit aktif sekaligus (anti-burnout).
+              </p>
+              <button
+                onClick={() => setShowHabitForm((s) => !s)}
+                className="mt-space-sm font-label-sm text-label-sm font-semibold text-primary"
+              >
+                {showHabitForm ? 'Tutup' : '+ Tambah habit'}
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-space-md md:grid-cols-3">
+              {habits.slice(0, 3).map((h) => (
+                <HabitCard
+                  key={h.id}
+                  name={h.name}
+                  frequency={h.frequency}
+                  currentStreak={h.currentStreak}
+                  skipCountWindow={h.skipCountWindow}
+                  checkedInToday={checkedInIds.has(h.id)}
+                  checking={checkingId === h.id}
+                  onCheckin={() => onCheckin(h.id)}
+                />
+              ))}
+            </div>
+          )}
+
+          {showHabitForm && (
+            <form onSubmit={onHabitSubmit} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm">
+              <input
+                name="name"
+                required
+                maxLength={80}
+                placeholder="Nama habit, cth: Baca 20 menit"
+                className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm"
               />
+              <select name="frequency" className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm">
+                <option value="daily">Setiap hari</option>
+                <option value="specific_days">Hari tertentu</option>
+                <option value="weekly_count">X kali per minggu</option>
+              </select>
+              <button type="submit" className="w-full rounded-full bg-accent-lime py-space-sm font-label-md text-label-md font-bold text-text-primary">
+                Simpan habit
+              </button>
+            </form>
+          )}
+        </section>
+
+        <div className="grid grid-cols-1 gap-space-lg md:grid-cols-2">
+          <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg shadow-sm">
+            <div className="mb-space-sm flex items-center justify-between">
+              <div className="flex flex-col">
+                <h3 className="font-headline-sm text-headline-sm text-text-primary">Jam Aktivitas</h3>
+                <p className="font-caption text-caption text-text-muted">7 hari terakhir</p>
+              </div>
+            </div>
+            <div className="flex h-44 items-end justify-between px-space-xs pt-space-lg">
+              {weeklyHours.map((d) => {
+                const isToday = d.dateStr === todayDateString();
+                const heightPct = Math.max(4, (d.hours / maxHours) * 100);
+                return (
+                  <div key={d.dateStr} className="flex flex-1 flex-col items-center gap-space-xs">
+                    <div
+                      className={`w-2.5 rounded-t-full md:w-3 ${isToday ? 'bg-accent-lime shadow-[0_0_12px_rgba(204,255,0,0.5)]' : 'bg-sidebar-dark'}`}
+                      style={{ height: `${heightPct}%` }}
+                      title={`${d.hours.toFixed(1)} jam`}
+                    />
+                    <span className={`font-caption text-caption ${isToday ? 'font-bold text-text-primary' : 'text-text-muted'}`}>
+                      {d.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-space-sm rounded-lg bg-surface-card p-space-lg shadow-sm">
+            <div className="flex items-center justify-between">
+              <h3 className="font-headline-sm text-headline-sm text-text-primary">Jadwal Hari Ini</h3>
+              <span className="font-label-sm text-label-sm font-medium text-text-muted">
+                {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' })}
+              </span>
+            </div>
+            {activities.length === 0 ? (
+              <p className="font-body-sm text-body-sm text-text-muted">Belum ada aktivitas tercatat hari ini.</p>
+            ) : (
+              <div className="flex flex-col gap-space-xs">
+                {activities.slice(0, 4).map((a) => (
+                  <ActivityItem
+                    key={a.id}
+                    title={a.title}
+                    startTime={a.startTime}
+                    endTime={a.endTime}
+                    categoryName={a.category?.name}
+                    categoryColor={a.category?.color}
+                  />
+                ))}
+              </div>
+            )}
+            <Link href="/activity-logs" className="font-label-sm text-label-sm font-semibold text-tertiary hover:underline">
+              Lihat semua aktivitas →
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT RAIL */}
+      <div className="flex flex-col gap-space-lg xl:col-span-4">
+        <div className="flex flex-col gap-space-sm rounded-lg bg-sidebar-dark p-space-lg text-white shadow-md">
+          <div className="flex items-center gap-1 text-accent-lime">
+            <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+            <span className="font-label-sm text-label-sm font-bold uppercase tracking-wider">AI Digest</span>
+          </div>
+          <h3 className="font-headline-sm text-headline-sm font-bold text-white">Rangkuman AI bulan ini sudah siap.</h3>
+          <p className="font-body-sm text-body-sm text-text-muted">
+            Lihat pola konsistensi, distribusi kategori, dan saran ritme sehat dari AI Continuum.
+          </p>
+          <Link
+            href="/reports"
+            className="mt-space-xs inline-flex w-fit items-center gap-1 rounded-full bg-accent-lime px-space-lg py-space-xs font-label-md text-label-md font-bold text-text-primary hover:bg-accent-lime-dim"
+          >
+            Buka Digest
+          </Link>
+        </div>
+
+        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="font-label-lg text-label-lg font-bold text-text-primary capitalize">{monthLabel}</span>
+          </div>
+          <div className="grid grid-cols-7 text-center font-label-sm text-caption font-semibold text-text-muted">
+            {['M', 'S', 'S', 'R', 'K', 'J', 'S'].map((d, i) => (
+              <span key={i}>{d}</span>
             ))}
           </div>
-        )}
-      </section>
+          <div className="grid grid-cols-7 gap-y-2 text-center font-body-sm text-body-sm text-text-primary">
+            {monthGrid.map((cell, i) => (
+              <span key={i} className="flex items-center justify-center py-1">
+                {cell.day && cell.isToday ? (
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-lime font-bold text-text-primary shadow-sm">
+                    {cell.day}
+                  </span>
+                ) : (
+                  cell.day ?? ''
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <div className="flex items-center justify-between">
+            <h3 className="font-headline-sm text-headline-sm text-text-primary">Horizon Goals</h3>
+            <Link href="/goals" className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container text-text-primary hover:bg-accent-lime">
+              <span className="material-symbols-outlined text-[18px]">add</span>
+            </Link>
+          </div>
+          {goals.length === 0 ? (
+            <p className="font-body-sm text-body-sm text-text-muted">Belum ada goal tahunan.</p>
+          ) : (
+            <div className="flex flex-col gap-space-sm">
+              {goals.slice(0, 4).map((g) => (
+                <Link
+                  key={g.id}
+                  href={`/goals/${g.id}`}
+                  className="flex items-center justify-between rounded-xl bg-surface-container-low p-space-sm transition-colors hover:bg-surface-container"
+                >
+                  <span className="font-label-md text-label-md font-semibold text-text-primary">{g.title}</span>
+                  <span className="rounded-full bg-accent-lavender px-space-sm py-0.5 font-caption text-caption font-bold text-accent-lavender-text">
+                    {g.status}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
