@@ -1,0 +1,13 @@
+{
+  "name": "Continuum",
+  "short_name": "Continuum",
+  "description": "Bangun kebiasaan produktif tanpa takut gagal.",
+  "start_url": "/today",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#0f9d70",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,8 +1,12 @@
 # Continuum — AI Productivity & Habit Tracking Platform
 
-Backend API for Continuum: activity logging, habit streaks with a forgiveness
-rule, goal decomposition, automated rollups, and a Claude-powered AI layer —
-built as a modular monolith (NestJS + PostgreSQL + Redis + BullMQ).
+Continuum: activity logging, habit streaks with a forgiveness rule, goal
+decomposition, automated rollups, and a Claude-powered AI layer — built as a
+modular monolith (NestJS + PostgreSQL + Redis + BullMQ), with a mobile-first
+PWA frontend (Next.js) so it can be installed on a phone's home screen.
+
+This README covers the **backend API**. For the frontend, see
+[frontend/README.md](./frontend/README.md).
 
 Full product spec: [Continuum-Dokumentasi-Proyek.md](./Continuum-Dokumentasi-Proyek.md).
 
@@ -27,6 +31,7 @@ prisma/
 ├── schema.prisma   # database schema
 └── migrations/     # applied migrations
 docs/               # per-phase endpoint reference + verification notes
+frontend/           # Next.js PWA client (separate app, own package.json — see frontend/README.md)
 ```
 
 ## Installation
@@ -137,6 +142,7 @@ stack notes):
 | 3 — Rollup engine | [docs/phase-3-rollup-engine.md](./docs/phase-3-rollup-engine.md) |
 | 4 — AI orchestrator | [docs/phase-4-ai-orchestrator.md](./docs/phase-4-ai-orchestrator.md) |
 | 5 — Health, idempotency, edge cases | [docs/phase-5-testing-report.md](./docs/phase-5-testing-report.md) |
+| 6 — PWA frontend (mobile access) | [frontend/README.md](./frontend/README.md) |
 
 ## Status
 
@@ -145,3 +151,4 @@ stack notes):
 - [x] Rollup engine (scheduled aggregation jobs + manual refresh, retry + in-app notification on failure)
 - [x] AI orchestrator (quick-add NLP, digest, goal suggestions, circuit breaker, rate limiting)
 - [x] Hardening: `/health`, idempotent writes, edge-case verification, structured logging, final docs
+- [x] PWA frontend (Next.js, installable on a phone's home screen) — see [frontend/README.md](./frontend/README.md)
