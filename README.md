@@ -93,5 +93,5 @@ This backend is being built incrementally, module by module:
 - [x] Foundation: project structure, auth (register/login/refresh/logout), DB schema & migrations, middleware, CI
 - [x] Core modules: category, activity log, habit + streak engine, goal + decomposition — see [docs/phase-2-core-modules.md](./docs/phase-2-core-modules.md)
 - [x] Rollup engine (scheduled aggregation jobs + manual refresh) — see [docs/phase-3-rollup-engine.md](./docs/phase-3-rollup-engine.md)
-- [ ] AI orchestrator (quick-add NLP, digest, goal suggestions, circuit breaker)
+- [x] AI orchestrator (quick-add NLP, digest, goal suggestions, circuit breaker) — see [docs/phase-4-ai-orchestrator.md](./docs/phase-4-ai-orchestrator.md)
 - [ ] Hardening: health check, idempotency, edge-case tests, final docs

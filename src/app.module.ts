@@ -16,6 +16,7 @@ import { HabitModule } from './modules/habit/habit.module';
 import { GoalModule } from './modules/goal/goal.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { RollupModule } from './modules/rollup/rollup.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { RollupModule } from './modules/rollup/rollup.module';
     GoalModule,
     NotificationModule,
     RollupModule,
+    AiModule,
   ],
   providers: [
     {

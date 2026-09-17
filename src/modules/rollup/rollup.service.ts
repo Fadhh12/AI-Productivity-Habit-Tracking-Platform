@@ -41,6 +41,31 @@ export class RollupService {
     const [yearStr, monthStr] = month.split('-');
     const from = new Date(Date.UTC(Number(yearStr), Number(monthStr) - 1, 1));
     const to = new Date(Date.UTC(Number(yearStr), Number(monthStr), 1));
+    const summary = await this.aggregate(userId, month, from, to);
+    // No TTL: the cache IS the report. It's only ever replaced by a fresh
+    // computeAndCacheMonthly run (scheduled or manual refresh), never expired.
+    await this.redis.setJson(this.cacheKey(userId, month), summary);
+    return summary;
+  }
+
+  /** On-demand, uncached aggregation over the trailing 7 days — used by the AI digest for period=weekly, where a Redis-backed cache isn't warranted. */
+  async computeWeekly(userId: string): Promise<MonthlyRollupSummary> {
+    const to = new Date();
+    const from = new Date(to.getTime() - 7 * 86400000);
+    return this.aggregate(
+      userId,
+      `${from.toISOString().slice(0, 10)}_to_${to.toISOString().slice(0, 10)}`,
+      from,
+      to,
+    );
+  }
+
+  private async aggregate(
+    userId: string,
+    label: string,
+    from: Date,
+    to: Date,
+  ): Promise<MonthlyRollupSummary> {
     const fromDateStr = from.toISOString().slice(0, 10);
     const toDateStr = new Date(to.getTime() - 86400000).toISOString().slice(0, 10);
 
@@ -77,20 +102,15 @@ export class RollupService {
       checkinsByHabitId.set(checkin.habitId, list);
     }
 
-    const summary: MonthlyRollupSummary = {
+    return {
       userId,
-      month,
+      month: label,
       generatedAt: new Date().toISOString(),
       categoryDistributionMinutes,
       checkinStatusCounts,
       habitStreakTrend: RollupCalculator.habitStreakTrend(habitsForRollup),
       goalProgress: RollupCalculator.goalProgress(habitsForRollup, checkinsByHabitId),
     };
-
-    // No TTL: the cache IS the report. It's only ever replaced by a fresh
-    // computeAndCacheMonthly run (scheduled or manual refresh), never expired.
-    await this.redis.setJson(this.cacheKey(userId, month), summary);
-    return summary;
   }
 
   async getAllUserIds(): Promise<string[]> {

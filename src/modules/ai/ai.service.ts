@@ -1,0 +1,215 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from '../../infra/db/prisma.service';
+import { ClaudeClient } from './claude.client';
+import { CircuitBreakerService } from './circuit-breaker.service';
+import { AiRateLimiterService } from './ai-rate-limiter.service';
+import { RollupService } from '../rollup/rollup.service';
+import { HabitService } from '../habit/habit.service';
+
+export interface QuickAddDraft {
+  title: string;
+  category_guess: string | null;
+  start_time: string;
+  end_time: string;
+}
+
+export interface AiEnvelope {
+  ai_available: boolean;
+  fallback: boolean;
+  is_ai_generated: boolean;
+}
+
+@Injectable()
+export class AiService {
+  constructor(
+    private readonly claudeClient: ClaudeClient,
+    private readonly circuitBreaker: CircuitBreakerService,
+    private readonly rateLimiter: AiRateLimiterService,
+    private readonly rollupService: RollupService,
+    private readonly habitService: HabitService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  private async guardRateLimitAndCircuit(userId: string): Promise<{ circuitOpen: boolean }> {
+    const rate = await this.rateLimiter.checkAndIncrement(userId);
+    if (!rate.allowed) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.TOO_MANY_REQUESTS,
+          message: `Daily AI request limit reached (${rate.limit}/day). Try again tomorrow.`,
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+    return { circuitOpen: this.circuitBreaker.getState() === 'open' };
+  }
+
+  async quickAdd(userId: string, text: string): Promise<QuickAddDraft & AiEnvelope> {
+    const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
+    if (!circuitOpen) {
+      try {
+        const draft = await this.claudeClient.generateJson<QuickAddDraft>(
+          'You convert a short natural-language activity description into a structured draft activity log. ' +
+            'Infer a concise title, guess a category label (or null if unclear), and infer start_time/end_time as ISO 8601 UTC timestamps ' +
+            '(assume "today" and reasonable durations, e.g. 30-60 minutes, when not stated). ' +
+            'Reply with exactly: {"title": string, "category_guess": string|null, "start_time": ISO string, "end_time": ISO string}',
+          text,
+        );
+        this.circuitBreaker.recordSuccess();
+        return { ...draft, ai_available: true, fallback: false, is_ai_generated: true };
+      } catch {
+        this.circuitBreaker.recordFailure();
+      }
+    }
+
+    return {
+      ...this.naiveQuickAddFallback(text),
+      ai_available: false,
+      fallback: true,
+      is_ai_generated: false,
+    };
+  }
+
+  private naiveQuickAddFallback(text: string): QuickAddDraft {
+    const now = new Date();
+    const end = new Date(now.getTime() + 30 * 60000);
+    return {
+      title: text.slice(0, 120),
+      category_guess: null,
+      start_time: now.toISOString(),
+      end_time: end.toISOString(),
+    };
+  }
+
+  async digest(userId: string, period: 'weekly' | 'monthly') {
+    const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
+
+    const rollupData =
+      period === 'monthly'
+        ? ((await this.rollupService.getMonthlyFromCache(
+            userId,
+            new Date().toISOString().slice(0, 7),
+          )) ??
+          (await this.rollupService.computeAndCacheMonthly(
+            userId,
+            new Date().toISOString().slice(0, 7),
+          )))
+        : await this.rollupService.computeWeekly(userId);
+
+    if (!circuitOpen) {
+      try {
+        const generated = await this.claudeClient.generateJson<{
+          narrative: string;
+          highlights: string[];
+        }>(
+          "You write a short, encouraging narrative digest (2-4 sentences, in Indonesian) summarizing a user's " +
+            'productivity rollup data, plus 2-4 short highlight bullet points. Be specific about numbers given. ' +
+            'Reply with exactly: {"narrative": string, "highlights": string[]}',
+          JSON.stringify(rollupData),
+        );
+        this.circuitBreaker.recordSuccess();
+
+        await this.prisma.aiInsight.create({
+          data: {
+            userId,
+            type: 'digest',
+            period,
+            content: { ...generated, sourceData: rollupData } as object,
+          },
+        });
+
+        return {
+          period,
+          narrative: generated.narrative,
+          highlights: generated.highlights,
+          ai_available: true,
+          fallback: false,
+          is_ai_generated: true,
+        };
+      } catch {
+        this.circuitBreaker.recordFailure();
+      }
+    }
+
+    return {
+      period,
+      ...this.naiveDigestFallback(rollupData),
+      ai_available: false,
+      fallback: true,
+      is_ai_generated: false,
+    };
+  }
+
+  private naiveDigestFallback(rollupData: {
+    categoryDistributionMinutes: Record<string, number>;
+    checkinStatusCounts: Record<string, number>;
+  }) {
+    const topCategory = Object.entries(rollupData.categoryDistributionMinutes).sort(
+      (a, b) => b[1] - a[1],
+    )[0];
+    const narrative = topCategory
+      ? `Kategori tersibuk: ${topCategory[0]} (${Math.round(topCategory[1])} menit). Habit selesai: ${
+          rollupData.checkinStatusCounts.done ?? 0
+        }, terlewat: ${rollupData.checkinStatusCounts.missed ?? 0}.`
+      : 'Belum ada cukup data untuk membuat ringkasan periode ini.';
+    return {
+      narrative,
+      highlights: [
+        `Total kategori tercatat: ${Object.keys(rollupData.categoryDistributionMinutes).length}`,
+        `Checkin selesai: ${rollupData.checkinStatusCounts.done ?? 0}`,
+      ],
+    };
+  }
+
+  async goalSuggestion(userId: string, yearlyGoalTitle: string) {
+    const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
+    const existingHabits = await this.habitService.findAll(userId);
+    const historyContext = existingHabits.length
+      ? `User's existing habits: ${existingHabits.map((h) => h.name).join(', ')}.`
+      : 'User is new and has no habit history yet.';
+
+    if (!circuitOpen) {
+      try {
+        const generated = await this.claudeClient.generateJson<{
+          monthlyGoals: Array<{
+            title: string;
+            habits: Array<{ name: string; frequency: string }>;
+          }>;
+        }>(
+          'You break a yearly goal down into a realistic sequence of monthly goals, each with 1-3 daily/weekly habits ' +
+            '(frequency one of "daily", "specific_days", "weekly_count") that would help achieve it. Keep it achievable ' +
+            '(anti-burnout: max 5 habits total across all months). ' +
+            'Reply with exactly: {"monthlyGoals": [{"title": string, "habits": [{"name": string, "frequency": string}]}]}',
+          `Yearly goal: "${yearlyGoalTitle}". ${historyContext}`,
+        );
+        this.circuitBreaker.recordSuccess();
+        return { ...generated, ai_available: true, fallback: false, is_ai_generated: true };
+      } catch {
+        this.circuitBreaker.recordFailure();
+      }
+    }
+
+    return {
+      ...this.naiveGoalSuggestionFallback(yearlyGoalTitle),
+      ai_available: false,
+      fallback: true,
+      is_ai_generated: false,
+    };
+  }
+
+  private naiveGoalSuggestionFallback(yearlyGoalTitle: string) {
+    return {
+      monthlyGoals: [
+        {
+          title: `Bulan 1: mulai langkah kecil menuju "${yearlyGoalTitle}"`,
+          habits: [{ name: 'Sisihkan 20 menit setiap hari', frequency: 'daily' }],
+        },
+        {
+          title: `Bulan 2: tingkatkan konsistensi`,
+          habits: [{ name: 'Evaluasi progres mingguan', frequency: 'weekly_count' }],
+        },
+        { title: `Bulan 3: evaluasi dan sesuaikan target`, habits: [] },
+      ],
+    };
+  }
+}
