@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "text-primary": "#18181B",
+          "state-skipped-neutral": "#E4E4E7",
+          "surface-bright": "#fbf8fc",
+          "canvas-bg": "#F5F5F7",
+          "background": "#fbf8fc",
+          "on-tertiary-fixed": "#23005c",
+          "inverse-primary": "#abd600",
+          "on-surface": "#1b1b1e",
+          "on-surface-variant": "#444933",
+          "secondary-fixed-dim": "#c5c5d2",
+          "surface-variant": "#e4e1e6",
+          "accent-terracotta-text": "#C2410C",
+          "surface-container-lowest": "#ffffff",
+          "tertiary-container": "#f2e9ff",
+          "on-secondary-fixed-variant": "#454650",
+          "outline-variant": "#c4c9ac",
+          "surface": "#fbf8fc",
+          "border-subtle": "#F0F0F2",
+          "surface-card": "#FFFFFF",
+          "error-container": "#ffdad6",
+          "primary": "#506600",
+          "accent-mint-text": "#047857",
+          "on-error": "#ffffff",
+          "secondary": "#5c5e68",
+          "inverse-on-surface": "#f3f0f4",
+          "primary-container": "#ccff00",
+          "on-primary-container": "#5b7300",
+          "on-error-container": "#93000a",
+          "tertiary-fixed": "#e9ddff",
+          "on-primary-fixed": "#161e00",
+          "surface-container-low": "#f6f2f7",
+          "surface-container-high": "#eae7eb",
+          "text-muted": "#A1A1AA",
+          "on-secondary": "#ffffff",
+          "inverse-surface": "#303033",
+          "tertiary-fixed-dim": "#d0bcff",
+          "primary-fixed-dim": "#abd600",
+          "on-secondary-fixed": "#191b24",
+          "accent-lime-dim": "#D4F638",
+          "accent-lavender": "#EDE9FE",
+          "border-dark-subtle": "#2A2D3A",
+          "surface-dim": "#dcd9dd",
+          "secondary-fixed": "#e1e1ee",
+          "sidebar-card": "#21232D",
+          "accent-terracotta": "#FFEDD5",
+          "on-tertiary": "#ffffff",
+          "text-secondary": "#71717A",
+          "on-tertiary-fixed-variant": "#5516be",
+          "accent-lime": "#CCFF00",
+          "accent-lavender-text": "#6D28D9",
+          "on-primary": "#ffffff",
+          "sidebar-dark": "#16171D",
+          "error": "#ba1a1a",
+          "accent-mint": "#D1FAE5",
+          "outline": "#747a60",
+          "on-tertiary-container": "#7a49e4",
+          "surface-container-highest": "#e4e1e6",
+          "on-background": "#1b1b1e",
+          "primary-fixed": "#c3f400",
+          "surface-tint": "#506600",
+          "secondary-container": "#e1e1ee",
+          "surface-container": "#f0edf1",
+          "on-secondary-container": "#62646e",
+          "tertiary": "#6d3bd7",
+          "on-primary-fixed-variant": "#3c4d00"
+        },
+        "borderRadius": {
+          "DEFAULT": "1rem",
+          "lg": "2rem",
+          "xl": "3rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "margin": "2rem",
+          "space-xl": "2rem",
+          "space-sm": "0.5rem",
+          "gutter": "1.5rem",
+          "space-md": "1rem",
+          "margin-mobile": "1rem",
+          "gutter-mobile": "1rem",
+          "space-lg": "1.5rem"
+        },
+        "fontFamily": {
+          "headline-md": ["Plus Jakarta Sans"],
+          "body-md": ["Plus Jakarta Sans"],
+          "headline-xl": ["Plus Jakarta Sans"],
+          "body-lg": ["Plus Jakarta Sans"],
+          "label-lg": ["Plus Jakarta Sans"],
+          "label-sm": ["Plus Jakarta Sans"],
+          "label-md": ["Plus Jakarta Sans"],
+          "caption": ["Plus Jakarta Sans"],
+          "headline-sm": ["Plus Jakarta Sans"],
+          "headline-xl-mobile": ["Plus Jakarta Sans"],
+          "body-sm": ["Plus Jakarta Sans"],
+          "headline-lg": ["Plus Jakarta Sans"]
+        },
+        "fontSize": {
+          "headline-md": ["22px", {"lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+          "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+          "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+          "label-lg": ["14px", {"lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+          "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+          "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+          "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "headline-sm": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "600"}],
+          "headline-xl-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700"}],
+          "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+          "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700"}]
+        }
+      }
+    }
+  }</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-sidebar-dark z-50 flex flex-col justify-between p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-sm pt-space-xs"><img alt="Brand logo. - Primary color: #ccff00
+- Font: plusJakartaSans
+- Mode: light
+- Roundness: rounded-full
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1V19JsQOaUX4KUZqW-WRGpN6RyY37q21JtQT0XEYnavHE8jF7E7oh8VUgNZ3_M5g0CtRPwTVwcqRA1IWtLLBL3O9jEVx6ufVzujU4lt9pC7sYyi7a9592vboQMfy8OoXRRytDYH093Dheg9hSfMQiTXw3ApqeNE1x9h8cuBn1UmZXj5rtqKInHyAx6OiIVJ5M88b9bixA6Uibhu6DjSvJIoMoMMm0uHfP7Ui5bkWqwD0aRtow6HrZQKJw"/><span class="font-headline-md text-headline-md tracking-tight text-white">Continuum</span></div><nav class="flex flex-col gap-space-xs px-space-xs" data-active-classes="bg-accent-lime text-text-primary font-bold rounded-full shadow-sm"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-full text-text-muted hover:bg-sidebar-card hover:text-white transition-all" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-full text-text-muted hover:bg-sidebar-card hover:text-white transition-all" data-path="habit-tracker" href="#"><span class="material-symbols-outlined text-[20px]">check_circle</span><span class="font-label-lg text-label-lg">Habit Tracker</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-full text-text-muted hover:bg-sidebar-card hover:text-white transition-all" data-path="goals-and-horizon" href="#"><span class="material-symbols-outlined text-[20px]">flag</span><span class="font-label-lg text-label-lg">Goals &amp; Horizon</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-full text-text-muted hover:bg-sidebar-card hover:text-white transition-all" data-path="activity-logs" href="#"><span class="material-symbols-outlined text-[20px]">history_toggle_off</span><span class="font-label-lg text-label-lg">Activity Logs</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-full text-text-muted hover:bg-sidebar-card hover:text-white transition-all" data-path="ai-reports-and-digest" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="font-label-lg text-label-lg">AI Reports &amp; Digest</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-full text-text-muted hover:bg-sidebar-card hover:text-white transition-all" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-label-lg text-label-lg">Settings</span></a></nav></div><div class="p-space-md bg-sidebar-card rounded-lg flex flex-col gap-space-sm"><div class="flex items-center justify-between"><span class="px-space-sm py-0.5 rounded-full bg-accent-lime text-text-primary font-label-sm text-label-sm font-bold uppercase tracking-wider">NEW</span><span class="material-symbols-outlined text-text-muted text-[18px]">devices</span></div><div class="flex flex-col gap-space-xs"><p class="font-label-md text-label-md text-white font-semibold">Mobile &amp; PWA App</p><p class="font-body-sm text-body-sm text-text-muted">Experience the AI-native assistant on your daily device.</p></div><button class="w-full mt-space-xs py-space-xs bg-sidebar-dark text-white hover:bg-accent-lime hover:text-text-primary font-label-sm text-label-sm rounded-full transition-all text-center" type="button">Download App</button></div></aside><div class="pl-72 min-h-screen bg-canvas-bg"><header class="fixed top-0 left-72 right-0 h-20 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md flex-1 max-w-lg"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-space-md text-text-muted text-[20px]">search</span><input class="w-full pl-11 pr-space-md py-space-sm bg-surface-container-low rounded-full font-body-sm text-body-sm text-on-surface placeholder:text-text-muted focus:outline-none focus:bg-surface-card transition-all" placeholder="Tanya AI atau cari aktivitas..." type="text"/></div></div><div class="flex items-center gap-space-lg"><button class="relative p-space-sm rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-accent-terracotta-text rounded-full"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1UMFUl_RAfVldl62Xa-XnMMkLsZGkNV1btwZ-tvgZMA1s2zRyXNXeRuJf8jydN0aHifLlZGVwB93CstVZp0dYe1YWWL_oKMoKnCeXHt3MkdQrNvZbFEQC4CdfY7y0QiHXUc-QXmLks88Dp3W0n5R23cCrwD3L6Dqaxz2vKlvi-skJ2CQWgLh-2j56AB54UTAwIBjZMnk-EWiq6oX5RlCUhGVBjt0SAVEOnqtg-aynhkkCxwkcFshQF9Fr8"/><div class="flex flex-col"><span class="font-label-md text-label-md text-text-primary font-semibold">Alex Rivera</span><span class="font-label-sm text-label-sm text-accent-lavender-text font-medium">Pro Member</span></div></div></div></header><main class="relative pt-20 w-full px-space-xl pb-space-xl bg-canvas-bg"><div class="flex flex-col w-full">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-text-primary tracking-tight">AI Reports &amp; Rollup Digest</h1>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-accent-lavender text-accent-lavender-text font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+          v2.4 Engine
+        </span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary">Ringkasan analitik momentum tanpa rasa bersalah, diolah dari BullMQ &amp; Redis Rollup Engine.</p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="inline-flex items-center p-1 bg-surface-container-high rounded-full shadow-sm">
+<button class="px-4 py-1.5 rounded-full bg-accent-lime text-text-primary font-label-sm text-label-sm font-semibold shadow-sm transition-all" type="button">Mingguan (Weekly)</button>
+<button class="px-4 py-1.5 rounded-full text-text-secondary hover:text-text-primary font-label-sm text-label-sm font-medium transition-all" type="button">Bulanan (Monthly)</button>
+<button class="px-4 py-1.5 rounded-full text-text-secondary hover:text-text-primary font-label-sm text-label-sm font-medium transition-all" type="button">Tahunan (Yearly)</button>
+</div>
+<button class="inline-flex items-center gap-space-xs px-4 py-2 rounded-full bg-surface-card text-text-primary hover:bg-surface-container shadow-sm transition-all font-label-sm text-label-sm font-semibold" type="button">
+<span class="material-symbols-outlined text-[16px] text-text-secondary">sync</span>
+<span>Refresh Laporan</span>
+</button>
+</div>
+</div>
+<div class="relative overflow-hidden rounded-lg bg-sidebar-dark text-white p-space-lg shadow-md mb-space-lg">
+<div class="absolute -right-12 -bottom-16 w-80 h-80 rounded-full bg-accent-lime/10 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sidebar-card text-accent-lavender text-label-sm font-label-sm font-medium shadow-sm">
+<span class="material-symbols-outlined text-[15px] text-accent-lavender">auto_awesome</span>
+            Dihasilkan oleh Claude AI
+          </span>
+<span class="text-text-muted font-body-sm text-body-sm">•</span>
+<span class="text-text-muted font-label-sm text-label-sm">Siklus 18 – 24 Oktober 2024</span>
+<button class="text-text-muted hover:text-accent-lime font-label-sm text-label-sm underline decoration-dotted underline-offset-4 transition-colors" type="button">
+            Tidak akurat? Koreksi
+          </button>
+</div>
+<div class="flex flex-col gap-space-xs">
+<h2 class="font-headline-md text-headline-md text-white tracking-tight">AI Weekly Digest: Momentum Terjaga, Nol Burnout</h2>
+<p class="font-body-md text-body-md text-slate-300 leading-relaxed max-w-2xl">
+            Minggu ini kamu paling produktif di kategori <span class="text-accent-lime font-semibold">Tech &amp; Coding (14.5 jam)</span>. Konsistensi habit <span class="text-white font-medium">Membaca Buku</span> stabil di 100%, sedangkan <span class="text-white font-medium">Olahraga</span> mengambil 1x jatah toleransi (<em class="italic text-accent-terracotta">forgiven</em>) tanpa memotong streak kamu.
+          </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs">
+<button class="inline-flex items-center gap-space-xs px-5 py-2.5 rounded-full bg-accent-lime text-text-primary font-label-md text-label-md font-bold shadow hover:bg-accent-lime-dim hover:scale-[1.02] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Unduh Laporan Ringkas (PDF)</span>
+</button>
+<div class="flex items-center gap-2 text-text-muted font-body-sm text-body-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-accent-mint-text"></span>
+<span>Skor Keseimbangan Beban: <strong>88/100 (Optimal)</strong></span>
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 flex justify-center lg:justify-end">
+<div class="relative w-full max-w-md rounded-lg overflow-hidden bg-sidebar-card shadow-sm">
+<img alt="Flat 2D modern minimalist illustration banner of AI analytics, charts, graphs, data cards" class="w-full h-48 lg:h-52 object-cover object-center transform hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXvYZ5EvsHAhrzV04BT9TNdUK9zte22b3lGmDTywRoi5pR_bj0377ZC28CgSji4c9UU4WS8rjhJg9ekDxDsReccJfnS-L4LugpF4tj3n5__of4_B8Tqrqa9JGv2M1dZd5XFgdpLrhqiM16zFQtuTn-xxpR1DrfhZifmae_Nd0LZkc3WjtlhYwxaAryAphWimRi1s2U-CQ9aTD3ckkq1d1MIoLmEpdtCMl_-ACnY2E1U_xnMN3km7wi"/>
+<div class="absolute inset-0 bg-gradient-to-t from-sidebar-dark/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between px-3 py-1.5 rounded-full bg-sidebar-dark/90 backdrop-blur-md">
+<span class="font-label-sm text-label-sm text-accent-lime font-mono">bullmq:rollup:weekly-done</span>
+<span class="font-label-sm text-label-sm text-slate-300">Latency: 142ms</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg mb-space-lg">
+<div class="flex flex-col bg-surface-card rounded-lg p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-text-primary">
+<span class="material-symbols-outlined text-[18px]">bar_chart</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Distribusi Waktu</h3>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded-full bg-surface-container-low text-text-secondary">7 Hari Terakhir</span>
+</div>
+<div class="flex items-baseline justify-between mb-space-sm">
+<span class="font-headline-lg text-headline-lg text-text-primary">27.8 <span class="font-body-sm text-body-sm text-text-secondary font-normal">Total Jam Tercatat</span></span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-accent-mint-text font-semibold">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> +3.2 jam vs minggu lalu
+        </span>
+</div>
+<div class="h-44 w-full flex items-end justify-between gap-2 pt-space-md pb-space-xs px-2 bg-surface-container-low/50 rounded-md">
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<span class="font-caption text-caption text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">3.5h</span>
+<div class="w-full bg-text-primary rounded-t-full h-24 group-hover:bg-accent-lime transition-all"></div>
+<span class="font-label-sm text-label-sm text-text-secondary">Min</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<span class="font-caption text-caption text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">4.2h</span>
+<div class="w-full bg-text-primary rounded-t-full h-28 group-hover:bg-accent-lime transition-all"></div>
+<span class="font-label-sm text-label-sm text-text-secondary">Sen</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<span class="font-caption text-caption text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">2.1h</span>
+<div class="w-full bg-text-primary rounded-t-full h-14 group-hover:bg-accent-lime transition-all"></div>
+<span class="font-label-sm text-label-sm text-text-secondary">Sel</span>
+</div>
+<div class="relative flex flex-col items-center gap-2 flex-1">
+<div class="absolute -top-7 px-2 py-0.5 rounded bg-sidebar-dark text-white font-caption text-caption shadow-sm whitespace-nowrap">
+            6.5h Max
+          </div>
+<div class="w-full bg-accent-lime rounded-t-full h-36 shadow-sm"></div>
+<span class="font-label-sm text-label-sm text-text-primary font-bold">Rab</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<span class="font-caption text-caption text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">4.0h</span>
+<div class="w-full bg-text-primary rounded-t-full h-26 group-hover:bg-accent-lime transition-all"></div>
+<span class="font-label-sm text-label-sm text-text-secondary">Kam</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<span class="font-caption text-caption text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">5.1h</span>
+<div class="w-full bg-text-primary rounded-t-full h-32 group-hover:bg-accent-lime transition-all"></div>
+<span class="font-label-sm text-label-sm text-text-secondary">Jum</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<span class="font-caption text-caption text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">2.4h</span>
+<div class="w-full bg-text-primary rounded-t-full h-16 group-hover:bg-accent-lime transition-all"></div>
+<span class="font-label-sm text-label-sm text-text-secondary">Sab</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="text-text-secondary">Kategori Dominan</span>
+<span class="text-text-muted">Breakdown %</span>
+</div>
+<div class="flex h-2.5 w-full rounded-full overflow-hidden bg-surface-container-high gap-0.5">
+<div class="bg-accent-lime h-full w-[52%]"></div>
+<div class="bg-accent-lavender-text h-full w-[28%]"></div>
+<div class="bg-accent-terracotta-text h-full w-[20%]"></div>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-1 font-label-sm text-label-sm">
+<div class="flex flex-col">
+<span class="flex items-center gap-1.5 text-text-primary font-semibold">
+<span class="w-2 h-2 rounded-full bg-accent-lime"></span> Tech &amp; Code
+            </span>
+<span class="text-text-muted font-body-sm text-body-sm pl-3.5">52% (14.5h)</span>
+</div>
+<div class="flex flex-col">
+<span class="flex items-center gap-1.5 text-text-primary font-semibold">
+<span class="w-2 h-2 rounded-full bg-accent-lavender-text"></span> Kuliah &amp; Riset
+            </span>
+<span class="text-text-muted font-body-sm text-body-sm pl-3.5">28% (7.8h)</span>
+</div>
+<div class="flex flex-col">
+<span class="flex items-center gap-1.5 text-text-primary font-semibold">
+<span class="w-2 h-2 rounded-full bg-accent-terracotta-text"></span> Wellness
+            </span>
+<span class="text-text-muted font-body-sm text-body-sm pl-3.5">20% (5.5h)</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col bg-surface-card rounded-lg p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center text-accent-lavender-text">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Pattern Detection AI</h3>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-accent-lavender text-accent-lavender-text font-label-sm text-label-sm font-semibold">
+          ✨ Live Inferences
+        </span>
+</div>
+<div class="flex flex-col gap-space-sm flex-1 justify-between">
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm hover:bg-surface-container transition-colors">
+<div class="p-2 rounded-full bg-accent-lime text-text-primary mt-0.5 shrink-0">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-text-primary font-semibold">Pola Energi Tinggi</span>
+<p class="font-body-sm text-body-sm text-text-secondary leading-snug mt-0.5">
+              Fokus coding kamu paling optimal pada jam <strong class="text-text-primary">08:30 – 11:00 WIB</strong>. Rekomendasikan lock focus mode di jam ini.
+            </p>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm hover:bg-surface-container transition-colors">
+<div class="p-2 rounded-full bg-accent-lavender text-accent-lavender-text mt-0.5 shrink-0">
+<span class="material-symbols-outlined text-[16px]">bedtime</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-text-primary font-semibold">Deteksi Korelasi Habit</span>
+<p class="font-body-sm text-body-sm text-text-secondary leading-snug mt-0.5">
+              Habit membaca buku 15 menit sebelum tidur meningkatkan estimasi kualitas istirahat kamu sebesar <strong class="text-accent-mint-text">+18%</strong>.
+            </p>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm hover:bg-surface-container transition-colors">
+<div class="p-2 rounded-full bg-accent-mint text-accent-mint-text mt-0.5 shrink-0">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-text-primary font-semibold">Beban Kognitif Sehat</span>
+<p class="font-body-sm text-body-sm text-text-secondary leading-snug mt-0.5">
+              Beban minggu ini berada pada rentang hijau sehat (<strong class="text-text-primary">62%</strong>). Tidak terdeteksi tanda-tanda kecemasan atau risiko burnout.
+            </p>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-text-secondary">
+<span>Confidence Model: 94.2%</span>
+<button class="text-accent-lavender-text hover:underline font-semibold flex items-center gap-1" type="button">
+          Detail Inferences <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col bg-surface-card rounded-lg p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-accent-terracotta flex items-center justify-center text-accent-terracotta-text">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Consistency &amp; Forgiveness</h3>
+</div>
+<span class="font-label-sm text-label-sm text-text-muted">Anti-Guilt System</span>
+</div>
+<div class="flex flex-col gap-space-md">
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-text-primary font-semibold">Perisai Toleransi (Forgiveness Shield)</span>
+<span class="font-label-sm text-label-sm font-bold text-accent-terracotta-text">1 / 2 Terpakai</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-2 rounded-full bg-accent-terracotta-text"></div>
+<div class="flex-1 h-2 rounded-full bg-state-skipped-neutral"></div>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary">
+            Digunakan pada: <strong class="text-text-primary">Kamis (Olahraga Pagi)</strong>. Streak tetap utuh berkat sistem restorasi momentum.
+          </p>
+</div>
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Status Habit Mingguan</span>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-accent-mint-text text-[18px]">check_circle</span>
+<span class="font-label-md text-label-md text-text-primary">Membaca 20 Menit</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-accent-mint text-accent-mint-text font-label-sm text-label-sm font-semibold">7/7 Hari</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-accent-mint-text text-[18px]">check_circle</span>
+<span class="font-label-md text-label-md text-text-primary">Deep Work 90 Menit</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-accent-mint text-accent-mint-text font-label-sm text-label-sm font-semibold">5/5 Hari</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-accent-terracotta-text text-[18px]">pause_circle</span>
+<span class="font-label-md text-label-md text-text-primary">Workout &amp; Stretching</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-accent-terracotta text-accent-terracotta-text font-label-sm text-label-sm font-semibold">Forgiven (3/4)</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-tertiary-container/60 flex items-start gap-2">
+<span class="material-symbols-outlined text-accent-lavender-text text-[18px] shrink-0 mt-0.5">tips_and_updates</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-accent-lavender-text">Saran Penyesuaian AI</span>
+<p class="font-body-sm text-body-sm text-on-tertiary-fixed-variant leading-snug">
+              Geser waktu olahraga ke sore (16:30) di hari Kamis untuk menghindari benturan jadwal kuliah.
+            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-md bg-surface-card rounded-lg shadow-sm">
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-mint-text opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-accent-mint-text"></span>
+</span>
+<span class="font-label-sm text-label-sm text-text-primary font-semibold">Rollup Cache &amp; Observability Status:</span>
+<span class="font-label-sm text-label-sm text-accent-mint-text font-bold">HEALTHY</span>
+</div>
+<div class="h-4 w-px bg-surface-container-high hidden md:block"></div>
+<div class="flex items-center gap-space-xs text-text-secondary font-label-sm text-label-sm font-mono">
+<span class="material-symbols-outlined text-[16px] text-text-muted">schedule</span>
+<span>Sinkronisasi Terakhir: <strong>Hari ini, 00:05 WIB</strong></span>
+</div>
+<div class="h-4 w-px bg-surface-container-high hidden md:block"></div>
+<div class="flex items-center gap-space-xs text-text-secondary font-label-sm text-label-sm font-mono">
+<span class="material-symbols-outlined text-[16px] text-text-muted">dns</span>
+<span>BullMQ Jobs: <strong>48 processed / 0 failed</strong></span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-caption text-caption text-text-muted">Redis Memory: 14.2MB</span>
+<button class="px-3 py-1 rounded-full bg-surface-container-low hover:bg-surface-container-high text-text-primary font-label-sm text-label-sm font-medium transition-colors" type="button">
+        Log Detail
+      </button>
+</div>
+</div>
+</div></main></div></body></html>
