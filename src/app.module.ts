@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import configuration from './config/configuration';
@@ -8,6 +9,10 @@ import { PrismaModule } from './infra/db/prisma.module';
 import { RedisCacheModule } from './infra/cache/redis.module';
 import { RequestIdMiddleware } from './shared/middleware/request-id.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { CategoryModule } from './modules/category/category.module';
+import { ActivityModule } from './modules/activity/activity.module';
+import { HabitModule } from './modules/habit/habit.module';
+import { GoalModule } from './modules/goal/goal.module';
 
 @Module({
   imports: [
@@ -26,9 +31,14 @@ import { AuthModule } from './modules/auth/auth.module';
         ],
       }),
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
     RedisCacheModule,
     AuthModule,
+    CategoryModule,
+    ActivityModule,
+    HabitModule,
+    GoalModule,
   ],
   providers: [
     {
