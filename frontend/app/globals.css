@@ -7,10 +7,19 @@
 }
 
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-surface text-on-surface antialiased;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 
 /* Non-punitive visual language: missed/skipped habit days use neutral gray, never red/strikethrough. */
 .badge-ai {
-  @apply inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700;
+  @apply inline-flex items-center gap-1 rounded-full bg-accent-lavender px-2 py-0.5 text-xs font-medium text-accent-lavender-text;
 }
