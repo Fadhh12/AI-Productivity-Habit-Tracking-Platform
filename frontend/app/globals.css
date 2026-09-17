@@ -11,7 +11,16 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* Fixed to a 1em box so a slow/blocked font load (e.g. Google Fonts unreachable)
+   shows an empty glyph instead of the literal ligature text blowing out the layout. */
 .material-symbols-outlined {
+  display: inline-block;
+  overflow: hidden;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  white-space: nowrap;
+  word-break: keep-all;
   font-variation-settings:
     'FILL' 0,
     'wght' 400,
