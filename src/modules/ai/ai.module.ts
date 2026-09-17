@@ -21,6 +21,6 @@ import { HabitModule } from '../habit/habit.module';
       inject: [ConfigService],
     },
   ],
-  exports: [AiService],
+  exports: [AiService, CircuitBreakerService],
 })
 export class AiModule {}

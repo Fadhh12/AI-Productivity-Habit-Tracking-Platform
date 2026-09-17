@@ -17,6 +17,8 @@ import { GoalModule } from './modules/goal/goal.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { RollupModule } from './modules/rollup/rollup.module';
 import { AiModule } from './modules/ai/ai.module';
+import { UserModule } from './modules/user/user.module';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { AiModule } from './modules/ai/ai.module';
     NotificationModule,
     RollupModule,
     AiModule,
+    UserModule,
+    HealthModule,
   ],
   providers: [
     {

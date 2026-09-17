@@ -23,9 +23,20 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     this.client.disconnect();
   }
 
-  async isHealthy(): Promise<boolean> {
+  /**
+   * ioredis queues commands while disconnected and waits for a reconnect
+   * rather than failing fast, so a plain `ping()` can hang indefinitely
+   * while Redis is unreachable. A health check must never hang — race it
+   * against a short timeout so an outage reports "down" promptly instead.
+   */
+  async isHealthy(timeoutMs = 2000): Promise<boolean> {
     try {
-      const pong = await this.client.ping();
+      const pong = await Promise.race([
+        this.client.ping(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Redis health check timed out')), timeoutMs),
+        ),
+      ]);
       return pong === 'PONG';
     } catch {
       return false;

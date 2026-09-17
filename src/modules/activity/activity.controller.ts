@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -15,11 +16,15 @@ import { ActivityService } from './activity.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { QueryActivityDto } from './dto/query-activity.dto';
+import { IdempotencyService } from '../../shared/idempotency/idempotency.service';
 
 @Controller('api/activities')
 @UseGuards(JwtAuthGuard)
 export class ActivityController {
-  constructor(private readonly activityService: ActivityService) {}
+  constructor(
+    private readonly activityService: ActivityService,
+    private readonly idempotencyService: IdempotencyService,
+  ) {}
 
   @Get()
   findAll(@CurrentUser() user: CurrentUserPayload, @Query() query: QueryActivityDto) {
@@ -32,8 +37,14 @@ export class ActivityController {
   }
 
   @Post()
-  create(@CurrentUser() user: CurrentUserPayload, @Body() dto: CreateActivityDto) {
-    return this.activityService.create(user.id, dto);
+  create(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() dto: CreateActivityDto,
+    @Headers('idempotency-key') idempotencyKey?: string,
+  ) {
+    return this.idempotencyService.run(user.id, idempotencyKey, 'POST /api/activities', () =>
+      this.activityService.create(user.id, dto),
+    );
   }
 
   @Patch(':id')
