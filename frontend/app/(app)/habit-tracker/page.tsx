@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Habit } from '@/lib/types';
+import { STREAK_MILESTONES, nextMilestone, unlockedMilestone } from '@/lib/achievements';
 
 const MAX_ACTIVE_HABITS = 5;
 const DAY_LABELS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
@@ -190,6 +191,42 @@ export default function HabitTrackerPage() {
         </div>
       </div>
 
+      {activeHabits.length > 0 && (
+        <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-space-sm">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-lime text-text-primary">
+                <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+              </div>
+              <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Pencapaian Streak</h2>
+            </div>
+            <span className="font-label-md text-label-md font-semibold text-text-secondary">
+              {STREAK_MILESTONES.filter((m) => activeHabits.some((h) => h.currentStreak >= m.days)).length} dari{' '}
+              {STREAK_MILESTONES.length} terbuka
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-space-sm">
+            {STREAK_MILESTONES.map((m) => {
+              const holder = activeHabits.find((h) => h.currentStreak >= m.days);
+              const isUnlocked = Boolean(holder);
+              return (
+                <div
+                  key={m.days}
+                  title={isUnlocked ? `${m.label} — dicapai oleh "${holder!.name}"` : `${m.label} — capai streak ${m.days} hari`}
+                  className={`flex items-center gap-1.5 rounded-full px-space-sm py-1.5 font-label-sm text-label-sm font-semibold ${
+                    isUnlocked ? 'bg-accent-lime text-text-primary' : 'bg-surface-container-low text-text-muted'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">{isUnlocked ? m.icon : 'lock'}</span>
+                  {m.label}
+                  <span className="font-caption text-[10px] opacity-70">{m.days}d</span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {activeHabits.length === 0 ? (
         <p className="rounded-2xl bg-surface-card p-space-lg text-center font-body-sm text-body-sm text-text-muted shadow-sm">
           Belum ada habit aktif. Mulai dari satu habit kecil yang realistis.
@@ -261,6 +298,38 @@ export default function HabitTrackerPage() {
                   )}
                   {h.skipCountWindow > 0 && <span>· {h.skipCountWindow} rest minggu ini</span>}
                 </div>
+
+                {(() => {
+                  const goal = nextMilestone(h.currentStreak);
+                  const badge = unlockedMilestone(h.currentStreak);
+                  if (!goal) {
+                    return (
+                      <div className="flex items-center gap-1.5 font-caption text-caption font-semibold text-accent-mint-text">
+                        <span className="material-symbols-outlined text-[14px]">{badge?.icon ?? 'stars'}</span>
+                        Semua pencapaian streak terbuka
+                      </div>
+                    );
+                  }
+                  const prevDays = badge?.days ?? 0;
+                  const span = goal.days - prevDays;
+                  const progressed = h.currentStreak - prevDays;
+                  const pctToGoal = Math.max(4, Math.round((progressed / span) * 100));
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center justify-between font-caption text-caption text-text-muted">
+                        <span>
+                          Menuju <span className="font-semibold text-text-secondary">{goal.label}</span>
+                        </span>
+                        <span className="font-semibold text-text-secondary">
+                          {h.currentStreak}/{goal.days}d
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-container">
+                        <div className="h-full rounded-full bg-accent-lime" style={{ width: `${pctToGoal}%` }} />
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div className="flex items-center gap-space-sm pt-space-xs">
                   <button

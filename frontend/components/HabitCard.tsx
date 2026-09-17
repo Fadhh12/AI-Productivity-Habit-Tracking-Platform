@@ -1,5 +1,7 @@
 'use client';
 
+import { unlockedMilestone } from '@/lib/achievements';
+
 const ICON_STYLES = [
   { bg: 'bg-accent-lavender', text: 'text-accent-lavender-text', icon: 'auto_stories' },
   { bg: 'bg-accent-mint', text: 'text-accent-mint-text', icon: 'terminal' },
@@ -33,6 +35,7 @@ export function HabitCard({
   checking,
 }: HabitCardProps) {
   const style = ICON_STYLES[name.length % ICON_STYLES.length];
+  const badge = unlockedMilestone(currentStreak);
 
   return (
     <div className="flex items-center justify-between gap-space-md rounded-2xl bg-surface-card p-space-md shadow-sm transition-all hover:shadow-md">
@@ -41,7 +44,18 @@ export function HabitCard({
           <span className="material-symbols-outlined text-[22px]">{style.icon}</span>
         </div>
         <div className="flex min-w-0 flex-col">
-          <p className="truncate font-label-lg text-label-lg font-bold text-text-primary">{name}</p>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <p className="truncate font-label-lg text-label-lg font-bold text-text-primary">{name}</p>
+            {badge && (
+              <span
+                title={`Pencapaian: ${badge.label}`}
+                className="flex shrink-0 items-center gap-0.5 rounded-full bg-accent-lime px-1.5 py-0.5 font-label-sm text-[10px] font-bold text-text-primary"
+              >
+                <span className="material-symbols-outlined text-[12px]">{badge.icon}</span>
+                {badge.days}
+              </span>
+            )}
+          </div>
           <span className="flex items-center gap-1 font-caption text-caption text-text-secondary">
             {frequency && FREQUENCY_LABEL[frequency] ? FREQUENCY_LABEL[frequency] : frequency}
             {currentStreak > 0 && (
