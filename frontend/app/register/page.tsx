@@ -27,26 +27,33 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-6 py-12">
-      <div className="mx-auto w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-brand-700">Continuum</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Daftar cepat — tanpa survei panjang. Zona waktu terdeteksi: <strong>{timezone}</strong>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-canvas-bg px-space-md py-12">
+      <div className="w-full max-w-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <div className="mb-space-lg flex items-center gap-space-sm">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
+            C
+          </div>
+          <span className="font-headline-md text-headline-md tracking-tight text-text-primary">Continuum</span>
+        </div>
+        <h1 className="font-headline-sm text-headline-sm font-bold text-text-primary">Buat akun baru</h1>
+        <p className="mt-1 font-body-sm text-body-sm text-text-secondary">
+          Daftar cepat — tanpa survei panjang. Zona waktu terdeteksi: <strong className="text-text-primary">{timezone}</strong>
         </p>
 
-        <form onSubmit={onSubmit} className="mt-8 space-y-4">
+        <form onSubmit={onSubmit} className="mt-space-lg flex flex-col gap-space-md">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="mb-1 block font-label-md text-label-md font-medium text-text-secondary">Email</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              autoComplete="email"
+              className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-sidebar-dark"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="mb-1 block font-label-md text-label-md font-medium text-text-secondary">Password</label>
             <input
               type="password"
               required
@@ -54,24 +61,25 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="min. 8 karakter, huruf + angka"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              autoComplete="new-password"
+              className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-sidebar-dark"
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="rounded-lg bg-error-container px-3 py-2 font-body-sm text-body-sm text-on-error-container">{error}</p>}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-lg bg-brand-600 py-2.5 font-medium text-white transition hover:bg-brand-700 disabled:opacity-50"
+            className="w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary transition-all hover:bg-accent-lime-dim disabled:opacity-50"
           >
             {submitting ? 'Memproses…' : 'Daftar'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-space-lg text-center font-body-sm text-body-sm text-text-secondary">
           Sudah punya akun?{' '}
-          <Link href="/login" className="font-medium text-brand-600 hover:underline">
+          <Link href="/login" className="font-semibold text-tertiary hover:underline">
             Masuk
           </Link>
         </p>
