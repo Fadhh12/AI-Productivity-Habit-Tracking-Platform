@@ -7,6 +7,7 @@ import { Activity, Category, Goal, Habit, QuickAddDraft } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { HabitCard } from '@/components/HabitCard';
 import { Calendar } from '@/components/Calendar';
+import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
 
 const MAX_ACTIVE_HABITS = 5;
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -47,6 +48,7 @@ export default function TodayPage() {
   const [dayLoading, setDayLoading] = useState(false);
   const [showScheduleForm, setShowScheduleForm] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
+  const [scheduleRepeat, setScheduleRepeat] = useState<RepeatRule>('none');
 
   async function loadAll() {
     setLoading(true);
@@ -91,18 +93,38 @@ export default function TodayPage() {
     const startTimeOfDay = String(form.get('startTime') ?? '');
     const endTimeOfDay = String(form.get('endTime') ?? '');
     const categoryId = String(form.get('categoryId') ?? '') || undefined;
+    const repeat = String(form.get('repeat') ?? 'none') as RepeatRule;
+    const untilDate = String(form.get('untilDate') ?? '') || undefined;
+
+    const occurrenceDates = generateOccurrenceDates(selectedDate, repeat, untilDate);
+
     try {
-      await apiFetch('/api/activities', {
-        method: 'POST',
-        body: JSON.stringify({
-          title,
-          categoryId,
-          startTime: new Date(`${selectedDate}T${startTimeOfDay}:00`).toISOString(),
-          endTime: new Date(`${selectedDate}T${endTimeOfDay}:00`).toISOString(),
-        }),
-      });
+      let failCount = 0;
+      for (const dateStr of occurrenceDates) {
+        try {
+          await apiFetch('/api/activities', {
+            method: 'POST',
+            body: JSON.stringify({
+              title,
+              categoryId,
+              startTime: new Date(`${dateStr}T${startTimeOfDay}:00`).toISOString(),
+              endTime: new Date(`${dateStr}T${endTimeOfDay}:00`).toISOString(),
+            }),
+          });
+        } catch {
+          failCount += 1;
+        }
+      }
       (e.target as HTMLFormElement).reset();
+      setScheduleRepeat('none');
       setShowScheduleForm(false);
+      if (occurrenceDates.length > 1) {
+        setScheduleError(
+          failCount > 0
+            ? `${occurrenceDates.length - failCount} dari ${occurrenceDates.length} jadwal berulang berhasil disimpan.`
+            : null,
+        );
+      }
       const [refreshedDay, refreshedAll] = await Promise.all([
         apiFetch<Activity[]>(`/api/activities?date=${selectedDate}`),
         apiFetch<Activity[]>('/api/activities'),
@@ -471,6 +493,29 @@ export default function TodayPage() {
                 <div className="flex gap-space-xs">
                   <input type="time" name="startTime" required className="w-1/2 rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm" />
                   <input type="time" name="endTime" required className="w-1/2 rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm" />
+                </div>
+                <div className="flex gap-space-xs">
+                  <select
+                    name="repeat"
+                    value={scheduleRepeat}
+                    onChange={(e) => setScheduleRepeat(e.target.value as RepeatRule)}
+                    className="w-1/2 rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm"
+                  >
+                    <option value="none">Sekali saja</option>
+                    <option value="daily">Ulangi setiap hari</option>
+                    <option value="weekdays">Ulangi hari kerja (Sen–Jum)</option>
+                    <option value="weekly">Ulangi tiap minggu (hari sama)</option>
+                  </select>
+                  {scheduleRepeat !== 'none' && (
+                    <input
+                      type="date"
+                      name="untilDate"
+                      required
+                      min={selectedDate}
+                      title="Ulangi sampai tanggal"
+                      className="w-1/2 rounded-lg border-0 bg-surface-card px-space-sm py-1.5 font-body-sm text-body-sm"
+                    />
+                  )}
                 </div>
                 {scheduleError && <p className="font-caption text-caption text-error">{scheduleError}</p>}
                 <button type="submit" className="w-full rounded-full bg-accent-lime py-1.5 font-label-sm text-label-sm font-bold text-text-primary">

@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, QuickAddDraft } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
+import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
 
 const PALETTE = ['#CCFF00', '#6D3BD7', '#EDE9FE', '#FFEDD5', '#D1FAE5', '#A1A1AA'];
 
@@ -48,6 +49,7 @@ export default function ActivityLogsPage() {
   const [showManualForm, setShowManualForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [manualRepeat, setManualRepeat] = useState<RepeatRule>('none');
 
   const [quickText, setQuickText] = useState('');
   const [quickLoading, setQuickLoading] = useState(false);
@@ -124,20 +126,56 @@ export default function ActivityLogsPage() {
   async function onManualSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const payload = {
-      title: String(form.get('title') ?? ''),
-      categoryId: String(form.get('categoryId') ?? '') || undefined,
-      startTime: new Date(String(form.get('startTime'))).toISOString(),
-      endTime: new Date(String(form.get('endTime'))).toISOString(),
-    };
+    const title = String(form.get('title') ?? '');
+    const categoryId = String(form.get('categoryId') ?? '') || undefined;
+    const startRaw = String(form.get('startTime'));
+    const endRaw = String(form.get('endTime'));
+
     try {
       if (editingActivity) {
-        await apiFetch(`/api/activities/${editingActivity.id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+        await apiFetch(`/api/activities/${editingActivity.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            title,
+            categoryId,
+            startTime: new Date(startRaw).toISOString(),
+            endTime: new Date(endRaw).toISOString(),
+          }),
+        });
       } else {
-        await apiFetch('/api/activities', { method: 'POST', body: JSON.stringify(payload) });
+        const [startDate, startTimeOfDay] = startRaw.split('T');
+        const endTimeOfDay = endRaw.split('T')[1];
+        const repeat = String(form.get('repeat') ?? 'none') as RepeatRule;
+        const untilDate = String(form.get('untilDate') ?? '') || undefined;
+        const occurrenceDates = generateOccurrenceDates(startDate, repeat, untilDate);
+
+        let failCount = 0;
+        for (const dateStr of occurrenceDates) {
+          try {
+            await apiFetch('/api/activities', {
+              method: 'POST',
+              body: JSON.stringify({
+                title,
+                categoryId,
+                startTime: new Date(`${dateStr}T${startTimeOfDay}:00`).toISOString(),
+                endTime: new Date(`${dateStr}T${endTimeOfDay}:00`).toISOString(),
+              }),
+            });
+          } catch {
+            failCount += 1;
+          }
+        }
+        if (occurrenceDates.length > 1) {
+          setError(
+            failCount > 0
+              ? `${occurrenceDates.length - failCount} dari ${occurrenceDates.length} jadwal berulang berhasil disimpan.`
+              : null,
+          );
+        }
       }
       setShowManualForm(false);
       setEditingActivity(null);
+      setManualRepeat('none');
       (e.target as HTMLFormElement).reset();
       await load();
     } catch (err) {
@@ -153,6 +191,7 @@ export default function ActivityLogsPage() {
   function onCancelForm() {
     setShowManualForm(false);
     setEditingActivity(null);
+    setManualRepeat('none');
   }
 
   async function onDelete(id: string) {
@@ -404,6 +443,30 @@ export default function ActivityLogsPage() {
               className="w-1/2 rounded-xl border-0 bg-surface-container-low px-space-sm py-space-sm font-body-sm text-body-sm"
             />
           </div>
+          {!editingActivity && (
+            <div className="flex gap-space-sm">
+              <select
+                name="repeat"
+                value={manualRepeat}
+                onChange={(e) => setManualRepeat(e.target.value as RepeatRule)}
+                className="w-1/2 rounded-xl border-0 bg-surface-container-low px-space-sm py-space-sm font-body-sm text-body-sm"
+              >
+                <option value="none">Sekali saja</option>
+                <option value="daily">Ulangi setiap hari</option>
+                <option value="weekdays">Ulangi hari kerja (Sen–Jum)</option>
+                <option value="weekly">Ulangi tiap minggu (hari sama)</option>
+              </select>
+              {manualRepeat !== 'none' && (
+                <input
+                  type="date"
+                  name="untilDate"
+                  required
+                  title="Ulangi sampai tanggal"
+                  className="w-1/2 rounded-xl border-0 bg-surface-container-low px-space-sm py-space-sm font-body-sm text-body-sm"
+                />
+              )}
+            </div>
+          )}
           <button type="submit" className="w-full rounded-full bg-accent-lime py-space-sm font-label-md text-label-md font-bold text-text-primary">
             {editingActivity ? 'Simpan perubahan' : 'Simpan aktivitas'}
           </button>
