@@ -9,8 +9,13 @@ export class NotificationService {
     return this.repository.findAll(userId);
   }
 
-  notify(userId: string, type: string, message: string) {
-    return this.repository.create(userId, type, message);
+  notify(userId: string, type: string, message: string, refId?: string) {
+    return this.repository.create(userId, type, message, refId);
+  }
+
+  /** Used by schedulers to avoid sending the same reminder twice for the same habit-day or activity. */
+  async alreadySent(userId: string, type: string, refId: string): Promise<boolean> {
+    return (await this.repository.findByTypeAndRef(userId, type, refId)) !== null;
   }
 
   async markRead(userId: string, id: string) {

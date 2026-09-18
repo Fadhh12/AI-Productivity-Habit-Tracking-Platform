@@ -61,11 +61,14 @@ model Notification {
   type      String
   message   String
   read      Boolean  @default(false)
+  /// Opaque dedupe key for scheduler-generated notifications (e.g. "<habitId>:<localDate>" or an activity id) — lets a cron job check "have I already sent this one" without re-parsing message text.
+  refId     String?  @map("ref_id")
   createdAt DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([type, refId])
   @@map("notifications")
 }
 

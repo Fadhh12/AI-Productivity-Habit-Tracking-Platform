@@ -13,8 +13,12 @@ export class NotificationRepository {
     });
   }
 
-  create(userId: string, type: string, message: string) {
-    return this.prisma.notification.create({ data: { userId, type, message } });
+  create(userId: string, type: string, message: string, refId?: string) {
+    return this.prisma.notification.create({ data: { userId, type, message, refId } });
+  }
+
+  findByTypeAndRef(userId: string, type: string, refId: string) {
+    return this.prisma.notification.findFirst({ where: { userId, type, refId } });
   }
 
   markRead(userId: string, id: string) {
