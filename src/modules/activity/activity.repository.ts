@@ -29,6 +29,13 @@ export class ActivityRepository {
     });
   }
 
+  /** Cross-user lookup for the reminder scheduler: every activity starting within [from, to). */
+  findStartingBetween(from: Date, to: Date) {
+    return this.prisma.activityLog.findMany({
+      where: { startTime: { gte: from, lt: to } },
+    });
+  }
+
   findById(userId: string, id: string) {
     return this.prisma.activityLog.findFirst({
       where: { id, userId },
