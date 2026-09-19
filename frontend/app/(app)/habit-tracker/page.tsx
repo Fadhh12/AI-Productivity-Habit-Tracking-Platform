@@ -265,9 +265,9 @@ export default function HabitTrackerPage() {
             return (
               <div key={h.id} className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-md shadow-sm">
                 <div className="flex items-start justify-between gap-space-sm">
-                  <div className="flex flex-col">
-                    <h3 className="font-headline-sm text-headline-sm font-bold text-text-primary">{h.name}</h3>
-                    <span className="font-caption text-caption text-text-secondary">
+                  <div className="flex min-w-0 flex-col">
+                    <h3 className="truncate font-headline-sm text-headline-sm font-bold text-text-primary">{h.name}</h3>
+                    <span className="truncate font-caption text-caption text-text-secondary">
                       {FREQUENCY_LABEL[h.frequency] ?? h.frequency}
                     </span>
                   </div>
@@ -312,14 +312,14 @@ export default function HabitTrackerPage() {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-1.5 font-caption text-caption text-text-secondary">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-caption text-caption text-text-secondary">
                   {h.currentStreak > 0 && (
-                    <span className="flex items-center gap-0.5 font-semibold text-accent-terracotta-text">
+                    <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap font-semibold text-accent-terracotta-text">
                       <span className="material-symbols-outlined text-[14px]">local_fire_department</span>
                       {h.currentStreak} streak
                     </span>
                   )}
-                  {h.skipCountWindow > 0 && <span>· {h.skipCountWindow} rest minggu ini</span>}
+                  {h.skipCountWindow > 0 && <span className="whitespace-nowrap">{h.skipCountWindow} rest minggu ini</span>}
                 </div>
 
                 {(() => {

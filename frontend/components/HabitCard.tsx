@@ -38,13 +38,13 @@ export function HabitCard({
   const badge = unlockedMilestone(currentStreak);
 
   return (
-    <div className="flex items-center justify-between gap-space-md rounded-2xl bg-surface-card p-space-md shadow-sm transition-all hover:shadow-md">
-      <div className="flex min-w-0 items-center gap-space-md">
-        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${style.bg} ${style.text}`}>
-          <span className="material-symbols-outlined text-[22px]">{style.icon}</span>
+    <div className="flex items-start justify-between gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm transition-all hover:shadow-md sm:gap-space-md">
+      <div className="flex min-w-0 flex-1 items-start gap-space-sm sm:gap-space-md">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-11 sm:w-11 ${style.bg} ${style.text}`}>
+          <span className="material-symbols-outlined text-[20px] sm:text-[22px]">{style.icon}</span>
         </div>
-        <div className="flex min-w-0 flex-col">
-          <div className="flex min-w-0 items-center gap-1.5">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
             <p className="truncate font-label-lg text-label-lg font-bold text-text-primary">{name}</p>
             {badge && (
               <span
@@ -56,16 +56,20 @@ export function HabitCard({
               </span>
             )}
           </div>
-          <span className="flex items-center gap-1 font-caption text-caption text-text-secondary">
-            {frequency && FREQUENCY_LABEL[frequency] ? FREQUENCY_LABEL[frequency] : frequency}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-caption text-caption text-text-secondary">
+            {frequency && (
+              <span className="whitespace-nowrap">{FREQUENCY_LABEL[frequency] ?? frequency}</span>
+            )}
             {currentStreak > 0 && (
-              <span className="ml-1 flex items-center gap-0.5 font-semibold text-accent-terracotta-text">
+              <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap font-semibold text-accent-terracotta-text">
                 <span className="material-symbols-outlined text-[14px]">local_fire_department</span>
                 {currentStreak} streak
               </span>
             )}
-            {skipCountWindow > 0 && <span className="ml-1 text-text-muted">· {skipCountWindow} rest hari ini</span>}
-          </span>
+            {skipCountWindow > 0 && (
+              <span className="whitespace-nowrap text-text-muted">{skipCountWindow} rest hari ini</span>
+            )}
+          </div>
         </div>
       </div>
       <button
