@@ -8,3 +8,6 @@ coverage/
 .vscode/
 .idea/
 .claude/
+
+# Google OAuth client downloads
+client_secret*.json
