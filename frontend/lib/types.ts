@@ -75,6 +75,13 @@ export interface DailyReflection {
   is_ai_generated: boolean;
 }
 
+export interface PatternDetection {
+  patterns: string[];
+  ai_available: boolean;
+  fallback: boolean;
+  is_ai_generated: boolean;
+}
+
 export interface MonthlyReport {
   available: boolean;
   message?: string;

@@ -52,6 +52,11 @@ export class RollupService {
   async computeWeekly(userId: string): Promise<MonthlyRollupSummary> {
     const to = new Date();
     const from = new Date(to.getTime() - 7 * 86400000);
+    return this.computeForRange(userId, from, to);
+  }
+
+  /** On-demand, uncached aggregation over an arbitrary date range — used by pattern detection to diff week-over-week category time. */
+  async computeForRange(userId: string, from: Date, to: Date): Promise<MonthlyRollupSummary> {
     return this.aggregate(
       userId,
       `${from.toISOString().slice(0, 10)}_to_${to.toISOString().slice(0, 10)}`,

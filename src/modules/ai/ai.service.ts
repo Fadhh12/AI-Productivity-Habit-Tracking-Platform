@@ -29,6 +29,15 @@ export interface AiEnvelope {
   is_ai_generated: boolean;
 }
 
+interface PatternStats {
+  hasEnoughData: boolean;
+  weekdayCompletion: Array<{ day: string; rate: number; total: number }>;
+  mostMissedHabit: { name: string; count: number } | null;
+  categoryShift: { name: string; deltaPct: number } | null;
+}
+
+const WEEKDAY_LABELS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
 @Injectable()
 export class AiService {
   constructor(
@@ -324,5 +333,127 @@ export class AiService {
       data: { responseText },
     });
     return this.toReflectionResponse(updated);
+  }
+
+  private async buildPatternStats(userId: string): Promise<PatternStats> {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 86400000);
+
+    const checkins = await this.prisma.habitCheckin.findMany({
+      where: { habit: { userId }, checkinDate: { gte: thirtyDaysAgo } },
+      select: { checkinDate: true, status: true, habit: { select: { name: true } } },
+    });
+
+    const byWeekday = new Map<number, { done: number; total: number }>();
+    const missedByHabit = new Map<string, number>();
+
+    for (const c of checkins) {
+      const day = c.checkinDate.getUTCDay();
+      const entry = byWeekday.get(day) ?? { done: 0, total: 0 };
+      entry.total += 1;
+      if (c.status === 'done') entry.done += 1;
+      byWeekday.set(day, entry);
+
+      if (c.status !== 'done') {
+        missedByHabit.set(c.habit.name, (missedByHabit.get(c.habit.name) ?? 0) + 1);
+      }
+    }
+
+    const weekdayCompletion = Array.from(byWeekday.entries())
+      .map(([day, { done, total }]) => ({ day: WEEKDAY_LABELS[day], rate: Math.round((done / total) * 100), total }))
+      .filter((w) => w.total >= 2)
+      .sort((a, b) => a.rate - b.rate);
+
+    let mostMissedHabit: { name: string; count: number } | null = null;
+    for (const [name, count] of missedByHabit) {
+      if (!mostMissedHabit || count > mostMissedHabit.count) mostMissedHabit = { name, count };
+    }
+
+    const thisWeekFrom = new Date(now.getTime() - 7 * 86400000);
+    const lastWeekFrom = new Date(thisWeekFrom.getTime() - 7 * 86400000);
+    const [thisWeek, lastWeek] = await Promise.all([
+      this.rollupService.computeForRange(userId, thisWeekFrom, now),
+      this.rollupService.computeForRange(userId, lastWeekFrom, thisWeekFrom),
+    ]);
+
+    let categoryShift: { name: string; deltaPct: number } | null = null;
+    for (const [name, minutes] of Object.entries(thisWeek.categoryDistributionMinutes)) {
+      const prevMinutes = lastWeek.categoryDistributionMinutes[name] ?? 0;
+      if (prevMinutes < 15) continue;
+      const deltaPct = Math.round(((minutes - prevMinutes) / prevMinutes) * 100);
+      if (!categoryShift || Math.abs(deltaPct) > Math.abs(categoryShift.deltaPct)) {
+        categoryShift = { name, deltaPct };
+      }
+    }
+
+    return {
+      hasEnoughData: checkins.length >= 5,
+      weekdayCompletion,
+      mostMissedHabit,
+      categoryShift,
+    };
+  }
+
+  private naivePatternFallback(stats: PatternStats): string[] {
+    const patterns: string[] = [];
+
+    if (stats.weekdayCompletion.length > 0 && stats.weekdayCompletion[0].rate < 70) {
+      const lowest = stats.weekdayCompletion[0];
+      patterns.push(`Konsistensi habit paling rendah di hari ${lowest.day} (${lowest.rate}% selesai).`);
+    }
+    if (stats.mostMissedHabit && stats.mostMissedHabit.count >= 3) {
+      patterns.push(
+        `Habit "${stats.mostMissedHabit.name}" paling sering terlewat (${stats.mostMissedHabit.count}x dalam 30 hari terakhir).`,
+      );
+    }
+    if (stats.categoryShift && Math.abs(stats.categoryShift.deltaPct) >= 20) {
+      const arah = stats.categoryShift.deltaPct > 0 ? 'naik' : 'turun';
+      patterns.push(
+        `Waktu untuk kategori "${stats.categoryShift.name}" ${arah} ${Math.abs(stats.categoryShift.deltaPct)}% dibanding minggu lalu.`,
+      );
+    }
+    if (patterns.length === 0) {
+      patterns.push('Belum cukup data untuk mendeteksi pola yang jelas. Terus catat aktivitas & habit untuk insight yang lebih akurat.');
+    }
+    return patterns;
+  }
+
+  /** Detects behavioral correlations from the last 30 days of habit check-ins and weekly category time (e.g. a weekday with a low completion rate, or a habit that's missed unusually often). */
+  async patternDetection(userId: string) {
+    const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
+    const stats = await this.buildPatternStats(userId);
+
+    if (!circuitOpen && stats.hasEnoughData) {
+      try {
+        const generated = await this.claudeClient.generateJson<{ patterns: string[] }>(
+          'You are a productivity coach. Given these stats about a user\'s habit completion by weekday and their ' +
+            "week-over-week category time usage, identify 1-3 concrete, specific behavioral patterns or correlations " +
+            '(in Indonesian, one short sentence each, citing the numbers/days/percentages given). Only state ' +
+            'observations grounded in the data - no generic advice. Reply with exactly: {"patterns": string[]}',
+          JSON.stringify(stats),
+        );
+        this.circuitBreaker.recordSuccess();
+
+        await this.prisma.aiInsight.create({
+          data: {
+            userId,
+            type: 'pattern',
+            period: 'monthly',
+            content: { patterns: generated.patterns, sourceStats: stats } as object,
+          },
+        });
+
+        return { patterns: generated.patterns, ai_available: true, fallback: false, is_ai_generated: true };
+      } catch {
+        this.circuitBreaker.recordFailure();
+      }
+    }
+
+    return {
+      patterns: this.naivePatternFallback(stats),
+      ai_available: false,
+      fallback: true,
+      is_ai_generated: false,
+    };
   }
 }

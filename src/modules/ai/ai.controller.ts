@@ -36,4 +36,9 @@ export class AiController {
   saveReflection(@CurrentUser() user: CurrentUserPayload, @Body() dto: SaveReflectionDto) {
     return this.aiService.saveReflectionResponse(user.id, dto.responseText ?? null);
   }
+
+  @Get('pattern-detection')
+  patternDetection(@CurrentUser() user: CurrentUserPayload) {
+    return this.aiService.patternDetection(user.id);
+  }
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { apiFetch, ApiError } from '@/lib/api';
-import { MonthlyReport } from '@/lib/types';
+import { MonthlyReport, PatternDetection } from '@/lib/types';
 import { SkeletonBlock } from '@/components/Skeleton';
 
 function ReportsSkeleton() {
@@ -74,6 +74,8 @@ function currentMonth(): string {
 export default function ReportsPage() {
   const [report, setReport] = useState<MonthlyReport | null>(null);
   const [digest, setDigest] = useState<Digest | null>(null);
+  const [patterns, setPatterns] = useState<PatternDetection | null>(null);
+  const [patternsLoading, setPatternsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,9 +99,21 @@ export default function ReportsPage() {
     }
   }
 
+  async function loadPatterns() {
+    setPatternsLoading(true);
+    try {
+      setPatterns(await apiFetch<PatternDetection>('/api/ai/pattern-detection'));
+    } catch {
+      // Pattern card fails independently — the raw report above still renders normally.
+    } finally {
+      setPatternsLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadReport();
     loadDigest();
+    loadPatterns();
   }, []);
 
   async function onRefresh() {
@@ -246,6 +260,44 @@ export default function ReportsPage() {
                   );
                 })}
               </div>
+            )}
+          </section>
+
+          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-12">
+            <div className="flex items-center justify-between">
+              <h3 className="font-headline-sm text-headline-sm font-bold text-text-primary">Pola &amp; Insight AI</h3>
+              {patterns && (
+                <span
+                  className={
+                    patterns.is_ai_generated
+                      ? 'badge-ai'
+                      : 'w-fit rounded-full bg-surface-container px-2 py-0.5 text-xs text-text-secondary'
+                  }
+                >
+                  {patterns.is_ai_generated ? '✨ AI' : 'Analisis dasar (AI belum tersedia)'}
+                </span>
+              )}
+            </div>
+            {patternsLoading ? (
+              <div className="flex flex-col gap-space-xs">
+                {[0, 1].map((i) => (
+                  <SkeletonBlock key={i} className="h-10 rounded-xl" />
+                ))}
+              </div>
+            ) : patterns && patterns.patterns.length > 0 ? (
+              <ul className="flex flex-col gap-space-xs">
+                {patterns.patterns.map((p, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-space-sm rounded-xl bg-surface-container-low p-space-sm font-body-sm text-body-sm text-text-primary"
+                  >
+                    <span className="material-symbols-outlined mt-0.5 shrink-0 text-[16px] text-tertiary">insights</span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="font-body-sm text-body-sm text-text-muted">Belum ada pola yang terdeteksi.</p>
             )}
           </section>
         </div>
