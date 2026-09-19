@@ -154,9 +154,10 @@ export function TopHeader() {
           <button
             className="relative rounded-full bg-surface-container-low p-space-sm text-on-surface transition-colors hover:bg-surface-container-high"
             onClick={() => setNotifOpen((v) => !v)}
+            aria-label="Notifikasi"
             type="button"
           >
-            <span className="material-symbols-outlined text-[22px]">notifications</span>
+            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">notifications</span>
             {unreadCount > 0 && (
               <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-accent-terracotta-text" />
             )}

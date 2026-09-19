@@ -263,17 +263,28 @@ export default function ActivityLogsPage() {
           <div className="flex items-center gap-space-sm">
             <h1 className="font-headline-lg text-headline-lg tracking-tight text-text-primary">Log Aktivitas</h1>
             <div className="flex items-center gap-1 rounded-full bg-surface-card px-space-sm py-1 shadow-sm">
-              <button onClick={() => shiftDate(-1)} className="rounded-full p-1 text-text-secondary hover:bg-surface-container" type="button">
-                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              <button
+                onClick={() => shiftDate(-1)}
+                aria-label="Hari sebelumnya"
+                className="rounded-full p-1 text-text-secondary hover:bg-surface-container"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span>
               </button>
               <span className="px-space-xs font-label-md text-label-md font-semibold text-text-primary">{dateLabel}</span>
-              <button onClick={() => shiftDate(1)} className="rounded-full p-1 text-text-secondary hover:bg-surface-container" type="button">
-                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+              <button
+                onClick={() => shiftDate(1)}
+                aria-label="Hari berikutnya"
+                className="rounded-full p-1 text-text-secondary hover:bg-surface-container"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span>
               </button>
               <label className="relative flex items-center rounded-full p-1 text-text-secondary hover:bg-surface-container" title="Lompat ke tanggal (masa lalu atau jauh ke depan)">
-                <span className="material-symbols-outlined text-[18px]">calendar_today</span>
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">calendar_today</span>
                 <input
                   type="date"
+                  aria-label="Lompat ke tanggal"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
@@ -404,8 +415,13 @@ export default function ActivityLogsPage() {
             <span className="font-label-md text-label-md font-semibold text-text-primary">
               {editingActivity ? 'Edit aktivitas' : 'Catat aktivitas manual'}
             </span>
-            <button onClick={onCancelForm} type="button" className="text-text-muted hover:text-text-primary">
-              <span className="material-symbols-outlined text-[18px]">close</span>
+            <button
+              onClick={onCancelForm}
+              type="button"
+              aria-label="Tutup formulir"
+              className="text-text-muted hover:text-text-primary"
+            >
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
             </button>
           </div>
           <input
@@ -497,16 +513,18 @@ export default function ActivityLogsPage() {
                     <button
                       onClick={() => onStartEdit(a)}
                       title="Edit"
+                      aria-label="Edit"
                       className="rounded-full p-2 text-text-muted hover:bg-surface-container-low hover:text-text-primary"
                     >
-                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                      <span className="material-symbols-outlined text-[18px]" aria-hidden="true">edit</span>
                     </button>
                     <button
                       onClick={() => onDelete(a.id)}
                       title="Hapus"
+                      aria-label="Hapus"
                       className="rounded-full p-2 text-text-muted hover:bg-error-container hover:text-error"
                     >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                      <span className="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
                     </button>
                   </div>
                 </div>

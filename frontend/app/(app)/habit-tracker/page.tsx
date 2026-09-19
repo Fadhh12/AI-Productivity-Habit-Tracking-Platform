@@ -346,16 +346,18 @@ export default function HabitTrackerPage() {
                   <button
                     onClick={() => onToggleActive(h)}
                     title="Arsipkan habit"
+                    aria-label="Arsipkan habit"
                     className="rounded-full bg-surface-container-low p-2 text-text-secondary hover:bg-surface-container"
                   >
-                    <span className="material-symbols-outlined text-[18px]">archive</span>
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">archive</span>
                   </button>
                   <button
                     onClick={() => onDelete(h.id)}
                     title="Hapus habit"
+                    aria-label="Hapus habit"
                     className="rounded-full bg-surface-container-low p-2 text-error hover:bg-error-container"
                   >
-                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
                   </button>
                 </div>
               </div>

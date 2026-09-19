@@ -72,13 +72,14 @@ export function HabitCard({
         onClick={onCheckin}
         disabled={checkedInToday || checking}
         title={checkedInToday ? 'Selesai hari ini' : 'Tandai selesai'}
+        aria-label={checkedInToday ? 'Selesai hari ini' : 'Tandai selesai'}
         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-sm transition-transform ${
           checkedInToday
             ? 'bg-accent-mint text-accent-mint-text'
             : 'bg-accent-lime text-text-primary hover:scale-105 disabled:opacity-50'
         }`}
       >
-        <span className="material-symbols-outlined text-[20px] font-bold">
+        <span className="material-symbols-outlined text-[20px] font-bold" aria-hidden="true">
           {checking ? 'progress_activity' : checkedInToday ? 'done_all' : 'check'}
         </span>
       </button>

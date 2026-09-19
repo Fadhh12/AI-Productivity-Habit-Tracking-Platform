@@ -556,8 +556,12 @@ export default function TodayPage() {
         <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="font-headline-sm text-headline-sm text-text-primary">Horizon Goals</h3>
-            <Link href="/goals" className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container text-text-primary hover:bg-accent-lime">
-              <span className="material-symbols-outlined text-[18px]">add</span>
+            <Link
+              href="/goals"
+              aria-label="Tambah goal baru"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container text-text-primary hover:bg-accent-lime"
+            >
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
             </Link>
           </div>
           {goals.length === 0 ? (

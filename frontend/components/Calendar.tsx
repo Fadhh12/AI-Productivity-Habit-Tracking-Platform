@@ -83,10 +83,11 @@ export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarPr
         <button
           onClick={() => shiftMonth(-1)}
           title="Bulan sebelumnya"
+          aria-label="Bulan sebelumnya"
           className="shrink-0 rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
           type="button"
         >
-          <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span>
         </button>
 
         <div className="flex min-w-0 flex-1 items-center justify-center gap-1">
@@ -117,10 +118,11 @@ export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarPr
         <button
           onClick={() => shiftMonth(1)}
           title="Bulan berikutnya"
+          aria-label="Bulan berikutnya"
           className="shrink-0 rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
           type="button"
         >
-          <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span>
         </button>
       </div>
 
