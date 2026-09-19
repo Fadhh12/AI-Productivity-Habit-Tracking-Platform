@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { apiFetch, ApiError } from '@/lib/api';
 import { GoalBreakdown } from '@/lib/types';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { useConfirm } from '@/lib/confirm';
 
 function GoalDetailSkeleton() {
   return (
@@ -48,6 +49,7 @@ interface AiGoalSuggestion {
 }
 
 export default function GoalDetailPage() {
+  const confirm = useConfirm();
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [goal, setGoal] = useState<GoalBreakdown | null>(null);
@@ -72,7 +74,13 @@ export default function GoalDetailPage() {
   }, [id]);
 
   async function onDelete() {
-    if (!confirm('Hapus goal ini? Habit terkait tidak akan terhapus, hanya diputus tautannya.')) return;
+    if (
+      !(await confirm('Hapus goal ini? Habit terkait tidak akan terhapus, hanya diputus tautannya.', {
+        destructive: true,
+        confirmLabel: 'Hapus',
+      }))
+    )
+      return;
     try {
       await apiFetch(`/api/goals/${id}`, { method: 'DELETE' });
       router.push('/goals');

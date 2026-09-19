@@ -5,6 +5,7 @@ import { apiFetch, ApiError } from '@/lib/api';
 import { Habit } from '@/lib/types';
 import { STREAK_MILESTONES, nextMilestone, unlockedMilestone } from '@/lib/achievements';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { useConfirm } from '@/lib/confirm';
 
 const MAX_ACTIVE_HABITS = 5;
 const DAY_LABELS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
@@ -69,6 +70,7 @@ function weekProgress(habit: Habit, weekDates: string[]) {
 }
 
 export default function HabitTrackerPage() {
+  const confirm = useConfirm();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +111,7 @@ export default function HabitTrackerPage() {
         { method: 'PATCH', body: JSON.stringify({ active: !habit.active }) },
       );
       if (result.requiresConfirmation) {
-        if (!confirm(`${result.message}\n\nLanjutkan?`)) return;
+        if (!(await confirm(`${result.message}\n\nLanjutkan?`))) return;
         await apiFetch(`/api/habits/${habit.id}`, {
           method: 'PATCH',
           body: JSON.stringify({ active: !habit.active, force: true }),
@@ -122,7 +124,8 @@ export default function HabitTrackerPage() {
   }
 
   async function onDelete(habitId: string) {
-    if (!confirm('Hapus habit ini beserta riwayat check-in-nya?')) return;
+    if (!(await confirm('Hapus habit ini beserta riwayat check-in-nya?', { destructive: true, confirmLabel: 'Hapus' })))
+      return;
     try {
       await apiFetch(`/api/habits/${habitId}`, { method: 'DELETE' });
       await load();
@@ -142,7 +145,7 @@ export default function HabitTrackerPage() {
         body: JSON.stringify({ name, frequency, force }),
       });
       if (result.requiresConfirmation) {
-        if (confirm(`${result.message}\n\nTambahkan juga?`)) await onCreate(e, true);
+        if (await confirm(`${result.message}\n\nTambahkan juga?`)) await onCreate(e, true);
         return;
       }
       setShowForm(false);

@@ -7,6 +7,7 @@ import { Activity, Category, QuickAddDraft } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { useConfirm } from '@/lib/confirm';
 
 const PALETTE = ['#CCFF00', '#6D3BD7', '#EDE9FE', '#FFEDD5', '#D1FAE5', '#A1A1AA'];
 
@@ -51,6 +52,7 @@ function downloadCsv(filename: string, rows: string[][]) {
 }
 
 export default function ActivityLogsPage() {
+  const confirm = useConfirm();
   const searchParams = useSearchParams();
   const [selectedDate, setSelectedDate] = useState(() => searchParams.get('date') ?? dateToStr(new Date()));
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -206,7 +208,7 @@ export default function ActivityLogsPage() {
   }
 
   async function onDelete(id: string) {
-    if (!confirm('Hapus log aktivitas ini?')) return;
+    if (!(await confirm('Hapus log aktivitas ini?', { destructive: true, confirmLabel: 'Hapus' }))) return;
     try {
       await apiFetch(`/api/activities/${id}`, { method: 'DELETE' });
       await load();

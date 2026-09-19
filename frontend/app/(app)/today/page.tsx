@@ -9,6 +9,7 @@ import { HabitCard } from '@/components/HabitCard';
 import { Calendar } from '@/components/Calendar';
 import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { useConfirm } from '@/lib/confirm';
 
 const MAX_ACTIVE_HABITS = 5;
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -79,6 +80,7 @@ function last7Days(): string[] {
 }
 
 export default function TodayPage() {
+  const confirm = useConfirm();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [allActivities, setAllActivities] = useState<Activity[]>([]);
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -247,7 +249,7 @@ export default function TodayPage() {
         { method: 'POST', body: JSON.stringify({ name, frequency, force }) },
       );
       if (result.requiresConfirmation) {
-        if (confirm(`${result.message}\n\nTambahkan juga?`)) {
+        if (await confirm(`${result.message}\n\nTambahkan juga?`)) {
           await onHabitSubmit(e, true);
         }
         return;
