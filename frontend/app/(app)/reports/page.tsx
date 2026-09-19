@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { apiFetch, ApiError } from '@/lib/api';
+import { apiFetch, apiDownload, ApiError } from '@/lib/api';
 import { MonthlyReport, PatternDetection } from '@/lib/types';
 import { SkeletonBlock } from '@/components/Skeleton';
 
@@ -78,6 +78,7 @@ export default function ReportsPage() {
   const [patternsLoading, setPatternsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [exporting, setExporting] = useState<'csv' | 'pdf' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function loadReport() {
@@ -128,6 +129,20 @@ export default function ReportsPage() {
     }
   }
 
+  async function onExport(format: 'csv' | 'pdf') {
+    setExporting(format);
+    try {
+      await apiDownload(
+        `/api/reports/monthly/export?month=${currentMonth()}&format=${format}`,
+        `continuum-report-${currentMonth()}.${format}`,
+      );
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Gagal export laporan.');
+    } finally {
+      setExporting(null);
+    }
+  }
+
   if (loading) return <ReportsSkeleton />;
 
   const monthLabel = new Date(`${currentMonth()}-01`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
@@ -141,15 +156,41 @@ export default function ReportsPage() {
           <h1 className="font-headline-lg text-headline-lg tracking-tight text-text-primary">AI Reports &amp; Rollup Digest</h1>
           <p className="font-body-md text-body-md text-text-secondary">Ringkasan {monthLabel}</p>
         </div>
-        <button
-          onClick={onRefresh}
-          disabled={refreshing}
-          className="flex w-fit items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-sm hover:bg-surface-container-low disabled:opacity-50"
-          type="button"
-        >
-          <span className="material-symbols-outlined text-[18px]">refresh</span>
-          {refreshing ? 'Memproses…' : 'Refresh laporan'}
-        </button>
+        <div className="flex w-fit items-center gap-space-sm">
+          <button
+            onClick={() => onExport('csv')}
+            disabled={exporting !== null || !report?.available}
+            className="flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-sm hover:bg-surface-container-low disabled:opacity-50"
+            type="button"
+            title="Export laporan sebagai CSV"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {exporting === 'csv' ? 'progress_activity' : 'table_view'}
+            </span>
+            CSV
+          </button>
+          <button
+            onClick={() => onExport('pdf')}
+            disabled={exporting !== null || !report?.available}
+            className="flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-sm hover:bg-surface-container-low disabled:opacity-50"
+            type="button"
+            title="Export laporan sebagai PDF"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {exporting === 'pdf' ? 'progress_activity' : 'picture_as_pdf'}
+            </span>
+            PDF
+          </button>
+          <button
+            onClick={onRefresh}
+            disabled={refreshing}
+            className="flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-sm hover:bg-surface-container-low disabled:opacity-50"
+            type="button"
+          >
+            <span className="material-symbols-outlined text-[18px]">refresh</span>
+            {refreshing ? 'Memproses…' : 'Refresh laporan'}
+          </button>
+        </div>
       </div>
 
       {error && <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>}

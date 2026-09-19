@@ -41,6 +41,38 @@ async function refreshAccessToken(): Promise<string | null> {
   return data.accessToken as string;
 }
 
+/** Downloads a binary/file response (export endpoints) and saves it via the browser, reusing the same auth + refresh flow as apiFetch. */
+export async function apiDownload(path: string, filename: string): Promise<void> {
+  const { accessToken } = getTokens();
+  const headers = new Headers();
+  if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
+
+  let res = await fetch(`${API_URL}${path}`, { headers });
+
+  if (res.status === 401) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      headers.set('Authorization', `Bearer ${newToken}`);
+      res = await fetch(`${API_URL}${path}`, { headers });
+    }
+  }
+
+  if (!res.ok) {
+    const body = (res.headers.get('content-type') ?? '').includes('application/json') ? await res.json() : await res.text();
+    throw new ApiError(res.status, body);
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit & { skipAuth?: boolean; idempotencyKey?: string } = {},

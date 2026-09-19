@@ -5,17 +5,22 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Queue } from 'bullmq';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserPayload } from '../auth/decorators/current-user.decorator';
 import { RollupService } from './rollup.service';
 import { QueryMonthlyReportDto } from './dto/query-monthly-report.dto';
 import { RefreshReportDto } from './dto/refresh-report.dto';
+import { ExportReportDto } from './dto/export-report.dto';
 import { RollupJobData } from './rollup.processor';
+import { buildReportCsv, buildReportPdf } from './report-export.util';
 
 /** 3 retries after the initial attempt, exponential backoff starting at 2s (2s, 4s, 8s). */
 const JOB_OPTS = {
@@ -48,6 +53,34 @@ export class RollupController {
       };
     }
     return { available: true, data: cached };
+  }
+
+  @Get('monthly/export')
+  async exportMonthly(
+    @CurrentUser() user: CurrentUserPayload,
+    @Query() query: ExportReportDto,
+    @Res() res: Response,
+  ) {
+    const summary = await this.rollupService.getMonthlyFromCache(user.id, query.month);
+    if (!summary) {
+      throw new NotFoundException(
+        'Laporan bulan ini belum tersedia. Trigger POST /api/reports/refresh dulu.',
+      );
+    }
+
+    const filenameBase = `continuum-report-${query.month}`;
+    if (query.format === 'csv') {
+      const csv = buildReportCsv(summary);
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filenameBase}.csv"`);
+      res.send(csv);
+      return;
+    }
+
+    const pdf = await buildReportPdf(summary);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filenameBase}.pdf"`);
+    res.send(pdf);
   }
 
   @Post('refresh')

@@ -143,6 +143,7 @@ stack notes):
 | 4 — AI orchestrator | [docs/phase-4-ai-orchestrator.md](./docs/phase-4-ai-orchestrator.md) |
 | 5 — Health, idempotency, edge cases | [docs/phase-5-testing-report.md](./docs/phase-5-testing-report.md) |
 | 6 — PWA frontend (mobile access) | [frontend/README.md](./frontend/README.md) |
+| 8 — Monthly report export (CSV/PDF) | [docs/phase-8-report-export.md](./docs/phase-8-report-export.md) |
 
 ## Status
 
