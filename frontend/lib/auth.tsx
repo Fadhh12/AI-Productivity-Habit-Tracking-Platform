@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
       setTokens(data.accessToken, data.refreshToken);
       setUser(data.user);
-      router.push('/today');
+      router.push('/onboarding');
     },
     [router],
   );
