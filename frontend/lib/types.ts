@@ -94,3 +94,21 @@ export interface MonthlyReport {
     goalProgress: Array<{ goalId: string; goalTitle: string; doneCount: number; habitCount: number }>;
   };
 }
+
+export interface GamificationBadge {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+  target: number;
+  progress: number;
+  unlocked: boolean;
+}
+
+export interface GamificationSummary {
+  level: number;
+  xp: number;
+  xpIntoLevel: number;
+  xpForNextLevel: number;
+  badges: GamificationBadge[];
+}

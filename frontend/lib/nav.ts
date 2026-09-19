@@ -24,5 +24,6 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/goals', icon: 'flag', label: 'Goals & Horizon', shortLabel: 'Goals' },
   { href: '/activity-logs', icon: 'history_toggle_off', label: 'Activity Logs', shortLabel: 'Logs' },
   { href: '/reports', icon: 'auto_awesome', label: 'AI Reports & Digest', shortLabel: 'AI' },
+  { href: '/achievements', icon: 'emoji_events', label: 'Pencapaian', shortLabel: 'Badge' },
   { href: '/settings', icon: 'settings', label: 'Pengaturan' },
 ];

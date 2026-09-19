@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { BottomNav } from '@/components/BottomNav';
 import { Sidebar } from '@/components/Sidebar';
 import { TopHeader } from '@/components/TopHeader';
+import { BadgeUnlockToast } from '@/components/BadgeUnlockToast';
 
 export default function AppShellLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -27,6 +28,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
       <TopHeader />
       <main className="w-full px-space-md pb-24 pt-24 lg:px-space-xl lg:pb-space-xl">{children}</main>
       <BottomNav />
+      <BadgeUnlockToast />
     </div>
   );
 }

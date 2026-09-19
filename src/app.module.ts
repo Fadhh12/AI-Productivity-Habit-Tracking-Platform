@@ -20,6 +20,7 @@ import { AiModule } from './modules/ai/ai.module';
 import { UserModule } from './modules/user/user.module';
 import { HealthModule } from './modules/health/health.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { GamificationModule } from './modules/gamification/gamification.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
     UserModule,
     HealthModule,
     CalendarModule,
+    GamificationModule,
   ],
   providers: [
     {

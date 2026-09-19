@@ -145,6 +145,7 @@ stack notes):
 | 6 — PWA frontend (mobile access) | [frontend/README.md](./frontend/README.md) |
 | 8 — Monthly report export (CSV/PDF) | [docs/phase-8-report-export.md](./docs/phase-8-report-export.md) |
 | 9 — Google Calendar import | [docs/phase-9-google-calendar.md](./docs/phase-9-google-calendar.md) |
+| 10 — Gamification (badges, XP, levels) | [docs/phase-10-gamification.md](./docs/phase-10-gamification.md) |
 
 ## Status
 
