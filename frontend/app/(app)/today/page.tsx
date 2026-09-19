@@ -416,7 +416,7 @@ export default function TodayPage() {
           )}
         </section>
 
-        <div className="grid grid-cols-1 gap-space-lg md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-space-lg md:grid-cols-3">
           <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg shadow-sm">
             <div className="mb-space-sm flex items-center justify-between">
               <div className="flex flex-col">
@@ -444,7 +444,7 @@ export default function TodayPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-space-sm rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-col gap-space-sm self-start rounded-lg bg-surface-card p-space-lg shadow-sm">
             <div className="flex items-center justify-between">
               <h3 className="font-headline-sm text-headline-sm text-text-primary">Jadwal Hari Ini</h3>
               <span className="font-label-sm text-label-sm font-medium text-text-muted">
@@ -470,6 +470,51 @@ export default function TodayPage() {
             <Link href="/activity-logs" className="font-label-sm text-label-sm font-semibold text-tertiary hover:underline">
               Lihat semua aktivitas →
             </Link>
+          </div>
+
+          <div className="flex flex-col gap-space-sm self-start rounded-lg bg-surface-card p-space-lg shadow-sm">
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[18px] text-tertiary">self_improvement</span>
+              <h3 className="font-headline-sm text-headline-sm text-text-primary">Refleksi Hari Ini</h3>
+            </div>
+
+            {reflectionLoading ? (
+              <SkeletonBlock className="h-16 rounded-xl" />
+            ) : reflection ? (
+              <>
+                <span
+                  className={
+                    reflection.is_ai_generated
+                      ? 'badge-ai w-fit'
+                      : 'w-fit rounded-full bg-surface-container px-2 py-0.5 text-xs text-text-secondary'
+                  }
+                >
+                  {reflection.is_ai_generated ? '✨ AI' : 'Pertanyaan default (AI belum tersedia)'}
+                </span>
+                <p className="font-body-sm text-body-sm font-medium text-text-primary">{reflection.prompt}</p>
+                <textarea
+                  value={reflectionText}
+                  onChange={(e) => setReflectionText(e.target.value)}
+                  maxLength={500}
+                  rows={3}
+                  placeholder="Tulis 1 kalimat refleksi kamu…"
+                  className="w-full resize-none rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-sidebar-dark"
+                />
+                <div className="flex items-center justify-between gap-space-sm">
+                  <span className="font-caption text-caption text-text-muted">{reflectionText.length}/500</span>
+                  <button
+                    onClick={onSaveReflection}
+                    disabled={reflectionSaving}
+                    className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
+                  >
+                    {reflectionSaving ? 'Menyimpan…' : reflectionSaved ? '✓ Tersimpan' : 'Simpan'}
+                  </button>
+                </div>
+                {reflectionError && <p className="font-caption text-caption text-error">{reflectionError}</p>}
+              </>
+            ) : (
+              <p className="font-body-sm text-body-sm text-text-muted">{reflectionError ?? 'Belum ada refleksi hari ini.'}</p>
+            )}
           </div>
         </div>
       </div>
@@ -610,51 +655,6 @@ export default function TodayPage() {
                 </Link>
               ))}
             </div>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-space-sm rounded-lg bg-surface-card p-space-lg shadow-sm">
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[18px] text-tertiary">self_improvement</span>
-            <h3 className="font-headline-sm text-headline-sm text-text-primary">Refleksi Hari Ini</h3>
-          </div>
-
-          {reflectionLoading ? (
-            <SkeletonBlock className="h-16 rounded-xl" />
-          ) : reflection ? (
-            <>
-              <span
-                className={
-                  reflection.is_ai_generated
-                    ? 'badge-ai w-fit'
-                    : 'w-fit rounded-full bg-surface-container px-2 py-0.5 text-xs text-text-secondary'
-                }
-              >
-                {reflection.is_ai_generated ? '✨ AI' : 'Pertanyaan default (AI belum tersedia)'}
-              </span>
-              <p className="font-body-sm text-body-sm font-medium text-text-primary">{reflection.prompt}</p>
-              <textarea
-                value={reflectionText}
-                onChange={(e) => setReflectionText(e.target.value)}
-                maxLength={500}
-                rows={3}
-                placeholder="Tulis 1 kalimat refleksi kamu…"
-                className="w-full resize-none rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-sidebar-dark"
-              />
-              <div className="flex items-center justify-between gap-space-sm">
-                <span className="font-caption text-caption text-text-muted">{reflectionText.length}/500</span>
-                <button
-                  onClick={onSaveReflection}
-                  disabled={reflectionSaving}
-                  className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
-                >
-                  {reflectionSaving ? 'Menyimpan…' : reflectionSaved ? '✓ Tersimpan' : 'Simpan'}
-                </button>
-              </div>
-              {reflectionError && <p className="font-caption text-caption text-error">{reflectionError}</p>}
-            </>
-          ) : (
-            <p className="font-body-sm text-body-sm text-text-muted">{reflectionError ?? 'Belum ada refleksi hari ini.'}</p>
           )}
         </div>
       </div>
