@@ -8,9 +8,60 @@ import { ActivityItem } from '@/components/ActivityItem';
 import { HabitCard } from '@/components/HabitCard';
 import { Calendar } from '@/components/Calendar';
 import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
+import { SkeletonBlock } from '@/components/Skeleton';
 
 const MAX_ACTIVE_HABITS = 5;
 const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+
+function TodaySkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12" role="status" aria-label="Memuat…">
+      {/* LEFT & CENTER */}
+      <div className="flex flex-col gap-space-lg xl:col-span-8">
+        <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
+          <div className="flex flex-col gap-space-xs">
+            <SkeletonBlock className="h-8 w-40" />
+            <SkeletonBlock className="h-4 w-64" />
+          </div>
+          <SkeletonBlock className="h-10 w-48 rounded-full" />
+        </div>
+
+        <SkeletonBlock className="h-14 w-full rounded-full" />
+
+        <section className="flex flex-col gap-space-sm">
+          <div className="flex items-center justify-between">
+            <SkeletonBlock className="h-6 w-40" />
+            <SkeletonBlock className="h-4 w-20" />
+          </div>
+          <div className="grid grid-cols-1 gap-space-md md:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <SkeletonBlock key={i} className="h-32 rounded-2xl" />
+            ))}
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 gap-space-lg md:grid-cols-2">
+          <SkeletonBlock className="h-64 rounded-lg" />
+          <SkeletonBlock className="h-64 rounded-lg" />
+        </div>
+      </div>
+
+      {/* RIGHT RAIL */}
+      <div className="flex flex-col gap-space-lg xl:col-span-4">
+        <SkeletonBlock className="h-40 rounded-lg" />
+        <SkeletonBlock className="h-80 rounded-lg" />
+        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <SkeletonBlock className="h-6 w-32" />
+          <div className="flex flex-col gap-space-sm">
+            {[0, 1, 2].map((i) => (
+              <SkeletonBlock key={i} className="h-11 rounded-xl" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function todayDateString(): string {
   const d = new Date();
@@ -245,7 +296,7 @@ export default function TodayPage() {
     year: 'numeric',
   });
 
-  if (loading) return <p className="text-text-muted">Memuat…</p>;
+  if (loading) return <TodaySkeleton />;
 
   return (
     <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12">

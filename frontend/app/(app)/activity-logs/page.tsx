@@ -6,8 +6,19 @@ import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, QuickAddDraft } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
+import { SkeletonBlock } from '@/components/Skeleton';
 
 const PALETTE = ['#CCFF00', '#6D3BD7', '#EDE9FE', '#FFEDD5', '#D1FAE5', '#A1A1AA'];
+
+function TimelineSkeleton() {
+  return (
+    <div className="flex flex-col gap-space-xs" role="status" aria-label="Memuat…">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <SkeletonBlock key={i} className="h-14 rounded-xl" />
+      ))}
+    </div>
+  );
+}
 
 function dateToStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -493,7 +504,7 @@ export default function ActivityLogsPage() {
         <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-8">
           <h2 className="font-headline-md text-headline-md font-bold tracking-tight text-text-primary">Timeline Kronologis</h2>
           {loading ? (
-            <p className="text-text-muted">Memuat…</p>
+            <TimelineSkeleton />
           ) : activities.length === 0 ? (
             <p className="font-body-sm text-body-sm text-text-muted">Belum ada aktivitas tercatat pada tanggal ini.</p>
           ) : (

@@ -4,9 +4,44 @@ import { FormEvent, useEffect, useState } from 'react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Habit } from '@/lib/types';
 import { STREAK_MILESTONES, nextMilestone, unlockedMilestone } from '@/lib/achievements';
+import { SkeletonBlock } from '@/components/Skeleton';
 
 const MAX_ACTIVE_HABITS = 5;
 const DAY_LABELS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+function HabitTrackerSkeleton() {
+  return (
+    <div className="flex flex-col gap-space-lg" role="status" aria-label="Memuat…">
+      <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
+        <div className="flex flex-col gap-space-xs">
+          <SkeletonBlock className="h-8 w-72" />
+          <SkeletonBlock className="h-4 w-96 max-w-full" />
+        </div>
+        <SkeletonBlock className="h-11 w-40 rounded-full" />
+      </div>
+
+      <SkeletonBlock className="h-32 rounded-2xl" />
+
+      <div className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <div className="flex items-center justify-between">
+          <SkeletonBlock className="h-6 w-48" />
+          <SkeletonBlock className="h-4 w-24" />
+        </div>
+        <div className="flex flex-wrap gap-space-sm">
+          {[0, 1, 2, 3].map((i) => (
+            <SkeletonBlock key={i} className="h-8 w-24 rounded-full" />
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-space-md lg:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <SkeletonBlock key={i} className="h-72 rounded-2xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const FREQUENCY_LABEL: Record<string, string> = {
   daily: 'Setiap hari',
@@ -118,7 +153,7 @@ export default function HabitTrackerPage() {
     }
   }
 
-  if (loading) return <p className="text-text-muted">Memuat…</p>;
+  if (loading) return <HabitTrackerSkeleton />;
 
   const activeHabits = habits.filter((h) => h.active);
   const archivedHabits = habits.filter((h) => !h.active);

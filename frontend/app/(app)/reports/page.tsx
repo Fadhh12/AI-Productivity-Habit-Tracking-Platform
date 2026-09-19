@@ -3,6 +3,58 @@
 import { useEffect, useState } from 'react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { MonthlyReport } from '@/lib/types';
+import { SkeletonBlock } from '@/components/Skeleton';
+
+function ReportsSkeleton() {
+  return (
+    <div className="flex flex-col gap-space-lg" role="status" aria-label="Memuat…">
+      <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
+        <div className="flex flex-col gap-space-xs">
+          <SkeletonBlock className="h-7 w-80 max-w-full" />
+          <SkeletonBlock className="h-4 w-40" />
+        </div>
+        <SkeletonBlock className="h-10 w-40 rounded-full" />
+      </div>
+
+      <SkeletonBlock className="h-40 rounded-2xl" />
+
+      <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12">
+        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-6">
+          <SkeletonBlock className="h-6 w-40" />
+          <SkeletonBlock className="h-3 w-full rounded-full" />
+          <div className="flex flex-col gap-space-xs">
+            {[0, 1, 2].map((i) => (
+              <SkeletonBlock key={i} className="h-10 rounded-xl" />
+            ))}
+          </div>
+        </section>
+
+        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-6">
+          <SkeletonBlock className="h-6 w-56" />
+          <div className="grid grid-cols-3 gap-space-sm">
+            {[0, 1, 2].map((i) => (
+              <SkeletonBlock key={i} className="h-20 rounded-xl" />
+            ))}
+          </div>
+          <div className="flex flex-col gap-space-xs pt-space-xs">
+            {[0, 1].map((i) => (
+              <SkeletonBlock key={i} className="h-10 rounded-xl" />
+            ))}
+          </div>
+        </section>
+
+        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-12">
+          <SkeletonBlock className="h-6 w-40" />
+          <div className="grid grid-cols-1 gap-space-sm md:grid-cols-2">
+            {[0, 1, 2, 3].map((i) => (
+              <SkeletonBlock key={i} className="h-20 rounded-xl" />
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
 
 interface Digest {
   period: string;
@@ -62,7 +114,7 @@ export default function ReportsPage() {
     }
   }
 
-  if (loading) return <p className="text-text-muted">Memuat…</p>;
+  if (loading) return <ReportsSkeleton />;
 
   const monthLabel = new Date(`${currentMonth()}-01`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
   const distributionEntries = report?.data ? Object.entries(report.data.categoryDistributionMinutes) : [];

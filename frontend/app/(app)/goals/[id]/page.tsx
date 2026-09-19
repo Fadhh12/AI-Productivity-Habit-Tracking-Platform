@@ -4,6 +4,41 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { apiFetch, ApiError } from '@/lib/api';
 import { GoalBreakdown } from '@/lib/types';
+import { SkeletonBlock } from '@/components/Skeleton';
+
+function GoalDetailSkeleton() {
+  return (
+    <div className="flex flex-col gap-space-lg" role="status" aria-label="Memuat…">
+      <div className="flex flex-col gap-space-xs">
+        <SkeletonBlock className="h-4 w-24" />
+        <SkeletonBlock className="h-8 w-72 max-w-full" />
+        <SkeletonBlock className="h-5 w-24 rounded-full" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <SkeletonBlock className="h-6 w-40" />
+          <div className="flex flex-col gap-space-xs">
+            {[0, 1, 2].map((i) => (
+              <SkeletonBlock key={i} className="h-10 rounded-xl" />
+            ))}
+          </div>
+        </section>
+
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <SkeletonBlock className="h-6 w-48" />
+          <div className="flex flex-col gap-space-sm">
+            {[0, 1].map((i) => (
+              <SkeletonBlock key={i} className="h-16 rounded-xl" />
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <SkeletonBlock className="h-24 rounded-2xl" />
+    </div>
+  );
+}
 
 interface AiGoalSuggestion {
   monthlyGoals: Array<{ title: string; habits: Array<{ name: string; frequency: string }> }>;
@@ -63,7 +98,7 @@ export default function GoalDetailPage() {
     }
   }
 
-  if (loading) return <p className="text-text-muted">Memuat…</p>;
+  if (loading) return <GoalDetailSkeleton />;
   if (!goal) return <p className="text-sm text-error">{error ?? 'Goal tidak ditemukan.'}</p>;
 
   return (

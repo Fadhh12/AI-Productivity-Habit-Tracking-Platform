@@ -4,12 +4,50 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Goal, GoalBreakdown } from '@/lib/types';
+import { SkeletonBlock } from '@/components/Skeleton';
 
 const ICON_STYLES = [
   { bg: 'bg-accent-lavender', text: 'text-accent-lavender-text', icon: 'flag' },
   { bg: 'bg-accent-mint', text: 'text-accent-mint-text', icon: 'rocket_launch' },
   { bg: 'bg-accent-terracotta', text: 'text-accent-terracotta-text', icon: 'bedtime' },
 ];
+
+function GoalsSkeleton() {
+  return (
+    <div className="flex flex-col gap-space-lg" role="status" aria-label="Memuat…">
+      <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
+        <div className="flex flex-col gap-space-xs">
+          <SkeletonBlock className="h-6 w-56 rounded-full" />
+          <SkeletonBlock className="mt-1 h-8 w-72 max-w-full" />
+          <SkeletonBlock className="h-4 w-80 max-w-full" />
+        </div>
+        <SkeletonBlock className="h-11 w-40 rounded-full" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
+        <section className="flex flex-col gap-space-md">
+          <div className="flex items-center justify-between px-space-xs">
+            <SkeletonBlock className="h-6 w-40" />
+            <SkeletonBlock className="h-5 w-16 rounded-full" />
+          </div>
+          {[0, 1, 2].map((i) => (
+            <SkeletonBlock key={i} className="h-24 rounded-2xl" />
+          ))}
+        </section>
+
+        <section className="flex flex-col gap-space-md">
+          <div className="flex items-center justify-between px-space-xs">
+            <SkeletonBlock className="h-6 w-40" />
+            <SkeletonBlock className="h-5 w-16 rounded-full" />
+          </div>
+          {[0, 1, 2].map((i) => (
+            <SkeletonBlock key={i} className="h-20 rounded-2xl" />
+          ))}
+        </section>
+      </div>
+    </div>
+  );
+}
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -64,7 +102,7 @@ export default function GoalsPage() {
     }
   }
 
-  if (loading) return <p className="text-text-muted">Memuat…</p>;
+  if (loading) return <GoalsSkeleton />;
 
   return (
     <div className="flex flex-col gap-space-lg">
