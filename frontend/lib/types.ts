@@ -66,6 +66,15 @@ export interface QuickAddDraft {
   is_ai_generated: boolean;
 }
 
+export interface DailyReflection {
+  date: string;
+  prompt: string;
+  responseText: string | null;
+  ai_available: boolean;
+  fallback: boolean;
+  is_ai_generated: boolean;
+}
+
 export interface MonthlyReport {
   available: boolean;
   message?: string;

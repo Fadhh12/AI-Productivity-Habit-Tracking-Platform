@@ -51,6 +51,7 @@ model User {
   refreshTokens  RefreshToken[]
   idempotencyKeys IdempotencyKey[]
   notifications  Notification[]
+  dailyReflections DailyReflection[]
 
   @@map("users")
 }
@@ -186,6 +187,24 @@ model AiInsight {
 
   @@index([userId])
   @@map("ai_insights")
+}
+
+/// One AI-generated reflection question per user per local day, plus the user's optional 1-sentence answer.
+model DailyReflection {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  /// User's local calendar day (YYYY-MM-DD), computed from their timezone — not a UTC timestamp.
+  localDate     String   @map("local_date")
+  prompt        String
+  responseText  String?  @map("response_text")
+  isAiGenerated Boolean  @default(false) @map("is_ai_generated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, localDate])
+  @@map("daily_reflections")
 }
 
 model IdempotencyKey {

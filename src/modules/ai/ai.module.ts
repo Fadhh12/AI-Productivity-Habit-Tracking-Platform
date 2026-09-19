@@ -7,9 +7,10 @@ import { CircuitBreakerService } from './circuit-breaker.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
 import { RollupModule } from '../rollup/rollup.module';
 import { HabitModule } from '../habit/habit.module';
+import { ActivityModule } from '../activity/activity.module';
 
 @Module({
-  imports: [ConfigModule, RollupModule, HabitModule],
+  imports: [ConfigModule, RollupModule, HabitModule, ActivityModule],
   controllers: [AiController],
   providers: [
     AiService,

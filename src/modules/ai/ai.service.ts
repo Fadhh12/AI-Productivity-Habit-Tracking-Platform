@@ -5,6 +5,16 @@ import { CircuitBreakerService } from './circuit-breaker.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
 import { RollupService } from '../rollup/rollup.service';
 import { HabitService } from '../habit/habit.service';
+import { ActivityService } from '../activity/activity.service';
+import { DateUtil } from '../../shared/utils/date.util';
+
+const REFLECTION_FALLBACK_QUESTIONS = [
+  'Momen apa hari ini yang paling berkesan buat kamu?',
+  'Apa satu hal kecil hari ini yang bikin kamu bangga?',
+  'Ada tantangan apa hari ini, dan gimana kamu menghadapinya?',
+  'Kalau boleh mengulang satu bagian hari ini, apa yang mau kamu ubah?',
+  'Apa yang bikin kamu bersyukur hari ini?',
+];
 
 export interface QuickAddDraft {
   title: string;
@@ -27,6 +37,7 @@ export class AiService {
     private readonly rateLimiter: AiRateLimiterService,
     private readonly rollupService: RollupService,
     private readonly habitService: HabitService,
+    private readonly activityService: ActivityService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -211,5 +222,107 @@ export class AiService {
         { title: `Bulan 3: evaluasi dan sesuaikan target`, habits: [] },
       ],
     };
+  }
+
+  private async todayLocalDate(userId: string): Promise<string> {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { timezone: true },
+    });
+    return DateUtil.localDateString(new Date(), user.timezone);
+  }
+
+  private toReflectionResponse(row: {
+    localDate: string;
+    prompt: string;
+    responseText: string | null;
+    isAiGenerated: boolean;
+  }) {
+    return {
+      date: row.localDate,
+      prompt: row.prompt,
+      responseText: row.responseText,
+      ai_available: row.isAiGenerated,
+      fallback: !row.isAiGenerated,
+      is_ai_generated: row.isAiGenerated,
+    };
+  }
+
+  private naiveReflectionFallback(localDate: string): string {
+    const idx =
+      localDate.split('-').reduce((sum, part) => sum + Number(part), 0) %
+      REFLECTION_FALLBACK_QUESTIONS.length;
+    return REFLECTION_FALLBACK_QUESTIONS[idx];
+  }
+
+  private async buildReflectionContext(userId: string, localDate: string): Promise<string> {
+    const [activities, habits] = await Promise.all([
+      this.activityService.findAll(userId, localDate),
+      this.habitService.findAll(userId),
+    ]);
+
+    const activityPart = activities.length
+      ? `Aktivitas hari ini: ${activities.map((a) => a.title).join(', ')}.`
+      : 'Belum ada aktivitas tercatat hari ini.';
+
+    const activeHabits = habits.filter((h) => h.active);
+    const doneToday = activeHabits.filter((h) =>
+      h.checkins.some((c) => c.status === 'done' && c.checkinDate.toISOString().slice(0, 10) === localDate),
+    ).length;
+    const habitPart = activeHabits.length
+      ? `Habit selesai hari ini: ${doneToday}/${activeHabits.length} (${activeHabits
+          .map((h) => h.name)
+          .join(', ')}).`
+      : 'User belum punya habit aktif.';
+
+    return `${activityPart} ${habitPart}`;
+  }
+
+  /** Returns today's reflection question (generating + persisting it once per local day), or the cached one if already generated. */
+  async getTodayReflection(userId: string) {
+    const localDate = await this.todayLocalDate(userId);
+
+    const existing = await this.prisma.dailyReflection.findUnique({
+      where: { userId_localDate: { userId, localDate } },
+    });
+    if (existing) return this.toReflectionResponse(existing);
+
+    const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
+
+    let prompt: string | undefined;
+    let isAiGenerated = false;
+    if (!circuitOpen) {
+      try {
+        const context = await this.buildReflectionContext(userId, localDate);
+        const generated = await this.claudeClient.generateJson<{ question: string }>(
+          'You write exactly ONE short, warm, specific reflection question in Indonesian (max 25 words) based on ' +
+            "what the user did today. Avoid generic templates like \"Bagaimana harimu?\" - reference something " +
+            'concrete from the context when possible. Reply with exactly: {"question": string}',
+          context,
+        );
+        prompt = generated.question;
+        isAiGenerated = true;
+        this.circuitBreaker.recordSuccess();
+      } catch {
+        this.circuitBreaker.recordFailure();
+      }
+    }
+    if (!prompt) prompt = this.naiveReflectionFallback(localDate);
+
+    const created = await this.prisma.dailyReflection.create({
+      data: { userId, localDate, prompt, isAiGenerated },
+    });
+    return this.toReflectionResponse(created);
+  }
+
+  /** Saves the user's 1-sentence answer to today's reflection, generating the prompt first if it doesn't exist yet. */
+  async saveReflectionResponse(userId: string, responseText: string | null) {
+    await this.getTodayReflection(userId);
+    const localDate = await this.todayLocalDate(userId);
+    const updated = await this.prisma.dailyReflection.update({
+      where: { userId_localDate: { userId, localDate } },
+      data: { responseText },
+    });
+    return this.toReflectionResponse(updated);
   }
 }

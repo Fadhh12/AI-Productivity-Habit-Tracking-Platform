@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserPayload } from '../auth/decorators/current-user.decorator';
 import { AiService } from './ai.service';
 import { QuickAddDto } from './dto/quick-add.dto';
 import { DigestQueryDto } from './dto/digest-query.dto';
 import { GoalSuggestionDto } from './dto/goal-suggestion.dto';
+import { SaveReflectionDto } from './dto/save-reflection.dto';
 
 @Controller('api/ai')
 @UseGuards(JwtAuthGuard)
@@ -24,5 +25,15 @@ export class AiController {
   @Post('goal-suggestion')
   goalSuggestion(@CurrentUser() user: CurrentUserPayload, @Body() dto: GoalSuggestionDto) {
     return this.aiService.goalSuggestion(user.id, dto.yearlyGoalTitle);
+  }
+
+  @Get('reflection/today')
+  getTodayReflection(@CurrentUser() user: CurrentUserPayload) {
+    return this.aiService.getTodayReflection(user.id);
+  }
+
+  @Patch('reflection/today')
+  saveReflection(@CurrentUser() user: CurrentUserPayload, @Body() dto: SaveReflectionDto) {
+    return this.aiService.saveReflectionResponse(user.id, dto.responseText ?? null);
   }
 }
