@@ -3,14 +3,16 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { apiFetch, ApiError } from '@/lib/api';
-import { Activity, Category, Goal, Habit, QuickAddDraft } from '@/lib/types';
+import { Activity, Category, Goal, Habit } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { HabitCard } from '@/components/HabitCard';
 import { Calendar } from '@/components/Calendar';
-import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
+import { RepeatRule } from '@/lib/recurrence';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
 import { DAY_LABELS_SUNDAY_FIRST, last7Days, todayDateString } from '@/lib/date';
+import { useQuickAdd } from '@/lib/quickAdd';
+import { createRecurringActivities } from '@/lib/activities';
 
 const MAX_ACTIVE_HABITS = 5;
 
@@ -76,9 +78,6 @@ export default function TodayPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [quickText, setQuickText] = useState('');
-  const [quickLoading, setQuickLoading] = useState(false);
-  const [draft, setDraft] = useState<QuickAddDraft | null>(null);
   const [showHabitForm, setShowHabitForm] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(todayDateString());
@@ -87,6 +86,12 @@ export default function TodayPage() {
   const [showScheduleForm, setShowScheduleForm] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleRepeat, setScheduleRepeat] = useState<RepeatRule>('none');
+
+  const { quickText, setQuickText, quickLoading, draft, setDraft, onQuickAdd, confirmDraft } = useQuickAdd({
+    categories,
+    onSaved: loadAll,
+    onError: setError,
+  });
 
   async function loadAll() {
     setLoading(true);
@@ -142,32 +147,22 @@ export default function TodayPage() {
     const repeat = String(form.get('repeat') ?? 'none') as RepeatRule;
     const untilDate = String(form.get('untilDate') ?? '') || undefined;
 
-    const occurrenceDates = generateOccurrenceDates(selectedDate, repeat, untilDate);
-
     try {
-      let failCount = 0;
-      for (const dateStr of occurrenceDates) {
-        try {
-          await apiFetch('/api/activities', {
-            method: 'POST',
-            body: JSON.stringify({
-              title,
-              categoryId,
-              startTime: new Date(`${dateStr}T${startTimeOfDay}:00`).toISOString(),
-              endTime: new Date(`${dateStr}T${endTimeOfDay}:00`).toISOString(),
-            }),
-          });
-        } catch {
-          failCount += 1;
-        }
-      }
+      const { occurrenceCount, failCount } = await createRecurringActivities(
+        selectedDate,
+        repeat,
+        untilDate,
+        startTimeOfDay,
+        endTimeOfDay,
+        { title, categoryId },
+      );
       (e.target as HTMLFormElement).reset();
       setScheduleRepeat('none');
       setShowScheduleForm(false);
-      if (occurrenceDates.length > 1) {
+      if (occurrenceCount > 1) {
         setScheduleError(
           failCount > 0
-            ? `${occurrenceDates.length - failCount} dari ${occurrenceDates.length} jadwal berulang berhasil disimpan.`
+            ? `${occurrenceCount - failCount} dari ${occurrenceCount} jadwal berulang berhasil disimpan.`
             : null,
         );
       }
@@ -179,47 +174,6 @@ export default function TodayPage() {
       setAllActivities(refreshedAll);
     } catch (err) {
       setScheduleError(err instanceof ApiError ? err.message : 'Gagal menjadwalkan aktivitas.');
-    }
-  }
-
-  async function onQuickAdd(e: FormEvent) {
-    e.preventDefault();
-    if (!quickText.trim()) return;
-    setQuickLoading(true);
-    setDraft(null);
-    try {
-      const result = await apiFetch<QuickAddDraft>('/api/ai/quick-add', {
-        method: 'POST',
-        body: JSON.stringify({ text: quickText }),
-      });
-      setDraft(result);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Gagal memproses teks.');
-    } finally {
-      setQuickLoading(false);
-    }
-  }
-
-  async function confirmDraft() {
-    if (!draft) return;
-    try {
-      const category = categories.find(
-        (c) => c.name.toLowerCase() === (draft.category_guess ?? '').toLowerCase(),
-      );
-      await apiFetch<{ data: Activity }>('/api/activities', {
-        method: 'POST',
-        body: JSON.stringify({
-          title: draft.title,
-          categoryId: category?.id,
-          startTime: draft.start_time,
-          endTime: draft.end_time,
-        }),
-      });
-      setDraft(null);
-      setQuickText('');
-      await loadAll();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Gagal menyimpan aktivitas.');
     }
   }
 

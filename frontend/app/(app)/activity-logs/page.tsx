@@ -3,12 +3,14 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { apiFetch, ApiError } from '@/lib/api';
-import { Activity, Category, QuickAddDraft } from '@/lib/types';
+import { Activity, Category } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
-import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
+import { RepeatRule } from '@/lib/recurrence';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
 import { dateToStr, toDatetimeLocalValue } from '@/lib/date';
+import { useQuickAdd } from '@/lib/quickAdd';
+import { createRecurringActivities } from '@/lib/activities';
 
 const PALETTE = ['#CCFF00', '#6D3BD7', '#EDE9FE', '#FFEDD5', '#D1FAE5', '#A1A1AA'];
 
@@ -55,9 +57,11 @@ export default function ActivityLogsPage() {
   const [exporting, setExporting] = useState(false);
   const [manualRepeat, setManualRepeat] = useState<RepeatRule>('none');
 
-  const [quickText, setQuickText] = useState('');
-  const [quickLoading, setQuickLoading] = useState(false);
-  const [draft, setDraft] = useState<QuickAddDraft | null>(null);
+  const { quickText, setQuickText, quickLoading, draft, setDraft, onQuickAdd, confirmDraft } = useQuickAdd({
+    categories,
+    onSaved: load,
+    onError: setError,
+  });
 
   async function load() {
     setLoading(true);
@@ -87,46 +91,6 @@ export default function ActivityLogsPage() {
     setSelectedDate(dateToStr(d));
   }
 
-  async function onQuickAdd(e: FormEvent) {
-    e.preventDefault();
-    if (!quickText.trim()) return;
-    setQuickLoading(true);
-    setDraft(null);
-    try {
-      setDraft(
-        await apiFetch<QuickAddDraft>('/api/ai/quick-add', {
-          method: 'POST',
-          body: JSON.stringify({ text: quickText }),
-        }),
-      );
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Gagal memproses teks.');
-    } finally {
-      setQuickLoading(false);
-    }
-  }
-
-  async function confirmDraft() {
-    if (!draft) return;
-    try {
-      const category = categories.find((c) => c.name.toLowerCase() === (draft.category_guess ?? '').toLowerCase());
-      await apiFetch('/api/activities', {
-        method: 'POST',
-        body: JSON.stringify({
-          title: draft.title,
-          categoryId: category?.id,
-          startTime: draft.start_time,
-          endTime: draft.end_time,
-        }),
-      });
-      setDraft(null);
-      setQuickText('');
-      await load();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Gagal menyimpan aktivitas.');
-    }
-  }
-
   async function onManualSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
@@ -151,28 +115,19 @@ export default function ActivityLogsPage() {
         const endTimeOfDay = endRaw.split('T')[1];
         const repeat = String(form.get('repeat') ?? 'none') as RepeatRule;
         const untilDate = String(form.get('untilDate') ?? '') || undefined;
-        const occurrenceDates = generateOccurrenceDates(startDate, repeat, untilDate);
 
-        let failCount = 0;
-        for (const dateStr of occurrenceDates) {
-          try {
-            await apiFetch('/api/activities', {
-              method: 'POST',
-              body: JSON.stringify({
-                title,
-                categoryId,
-                startTime: new Date(`${dateStr}T${startTimeOfDay}:00`).toISOString(),
-                endTime: new Date(`${dateStr}T${endTimeOfDay}:00`).toISOString(),
-              }),
-            });
-          } catch {
-            failCount += 1;
-          }
-        }
-        if (occurrenceDates.length > 1) {
+        const { occurrenceCount, failCount } = await createRecurringActivities(
+          startDate,
+          repeat,
+          untilDate,
+          startTimeOfDay,
+          endTimeOfDay,
+          { title, categoryId },
+        );
+        if (occurrenceCount > 1) {
           setError(
             failCount > 0
-              ? `${occurrenceDates.length - failCount} dari ${occurrenceDates.length} jadwal berulang berhasil disimpan.`
+              ? `${occurrenceCount - failCount} dari ${occurrenceCount} jadwal berulang berhasil disimpan.`
               : null,
           );
         }
