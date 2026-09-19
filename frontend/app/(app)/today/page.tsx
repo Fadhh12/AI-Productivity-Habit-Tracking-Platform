@@ -10,9 +10,9 @@ import { Calendar } from '@/components/Calendar';
 import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
+import { DAY_LABELS_SUNDAY_FIRST, last7Days, todayDateString } from '@/lib/date';
 
 const MAX_ACTIVE_HABITS = 5;
-const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 function TodaySkeleton() {
   return (
@@ -62,21 +62,6 @@ function TodaySkeleton() {
       </div>
     </div>
   );
-}
-
-function todayDateString(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function last7Days(): string[] {
-  const days: string[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
-  }
-  return days;
 }
 
 export default function TodayPage() {
@@ -285,7 +270,7 @@ export default function TodayPage() {
         .filter((a) => a.startTime.slice(0, 10) === dateStr)
         .reduce((sum, a) => sum + (new Date(a.endTime).getTime() - new Date(a.startTime).getTime()) / 60000, 0);
       const d = new Date(dateStr);
-      return { dateStr, label: DAY_LABELS[d.getDay()], hours: minutes / 60 };
+      return { dateStr, label: DAY_LABELS_SUNDAY_FIRST[d.getDay()], hours: minutes / 60 };
     });
   }, [allActivities]);
 

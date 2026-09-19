@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { dateToStr } from '@/lib/date';
 
 const DAY_INITIALS = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
 const MONTH_NAMES = [
@@ -25,12 +26,8 @@ interface CalendarProps {
   onSelectDate: (dateStr: string) => void;
 }
 
-function pad(n: number): string {
-  return String(n).padStart(2, '0');
-}
-
 function toDateStr(year: number, month: number, day: number): string {
-  return `${year}-${pad(month + 1)}-${pad(day)}`;
+  return dateToStr(new Date(year, month, day));
 }
 
 export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarProps) {

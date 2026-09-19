@@ -2,22 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-const TABS = [
-  { href: '/today', label: 'Dashboard', icon: 'grid_view' },
-  { href: '/habit-tracker', label: 'Habit', icon: 'check_circle' },
-  { href: '/goals', label: 'Goals', icon: 'flag' },
-  { href: '/activity-logs', label: 'Logs', icon: 'history_toggle_off' },
-  { href: '/reports', label: 'AI', icon: 'auto_awesome' },
-  { href: '/settings', label: 'Setelan', icon: 'settings' },
-];
+import { NAV_ITEMS } from '@/lib/nav';
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-10 flex border-t border-border-subtle bg-surface-card pb-[env(safe-area-inset-bottom)] lg:hidden">
-      {TABS.map((tab) => {
+      {NAV_ITEMS.map((tab) => {
         const active = pathname?.startsWith(tab.href);
         return (
           <Link
@@ -28,7 +20,7 @@ export function BottomNav() {
             }`}
           >
             <span className="material-symbols-outlined text-[20px] leading-none">{tab.icon}</span>
-            {tab.label}
+            {tab.shortLabel ?? tab.label}
           </Link>
         );
       })}

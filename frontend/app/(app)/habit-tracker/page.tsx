@@ -6,9 +6,9 @@ import { Habit } from '@/lib/types';
 import { STREAK_MILESTONES, nextMilestone, unlockedMilestone } from '@/lib/achievements';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
+import { DAY_LABELS_MONDAY_FIRST, last7DatesMonToSun, todayDateString } from '@/lib/date';
 
 const MAX_ACTIVE_HABITS = 5;
-const DAY_LABELS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
 
 function HabitTrackerSkeleton() {
   return (
@@ -49,20 +49,6 @@ const FREQUENCY_LABEL: Record<string, string> = {
   specific_days: 'Hari tertentu',
   weekly_count: 'Beberapa kali/minggu',
 };
-
-function last7DatesMonToSun(): string[] {
-  const today = new Date();
-  const isoWeekday = today.getDay() === 0 ? 7 : today.getDay();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (isoWeekday - 1));
-  const dates: string[] = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    dates.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
-  }
-  return dates;
-}
 
 function weekProgress(habit: Habit, weekDates: string[]) {
   const byDate = new Map((habit.checkins ?? []).map((c) => [c.checkinDate.slice(0, 10), c.status]));
@@ -161,8 +147,7 @@ export default function HabitTrackerPage() {
   const activeHabits = habits.filter((h) => h.active);
   const archivedHabits = habits.filter((h) => !h.active);
   const weekDates = last7DatesMonToSun();
-  const now = new Date();
-  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayStr = todayDateString();
 
   return (
     <div className="flex flex-col gap-space-lg">
@@ -310,7 +295,7 @@ export default function HabitTrackerPage() {
                   {week.map((w) => (
                     <div key={w.dateStr} className="flex flex-col items-center gap-1">
                       <span className="font-caption text-[10px] text-text-muted">
-                        {DAY_LABELS[weekDates.indexOf(w.dateStr)]}
+                        {DAY_LABELS_MONDAY_FIRST[weekDates.indexOf(w.dateStr)]}
                       </span>
                       <span
                         className={`flex h-6 w-6 items-center justify-center rounded-full text-[13px] ${

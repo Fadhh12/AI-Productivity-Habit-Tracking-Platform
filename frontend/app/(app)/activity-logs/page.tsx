@@ -8,6 +8,7 @@ import { ActivityItem } from '@/components/ActivityItem';
 import { RepeatRule, generateOccurrenceDates } from '@/lib/recurrence';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
+import { dateToStr, toDatetimeLocalValue } from '@/lib/date';
 
 const PALETTE = ['#CCFF00', '#6D3BD7', '#EDE9FE', '#FFEDD5', '#D1FAE5', '#A1A1AA'];
 
@@ -21,21 +22,11 @@ function TimelineSkeleton() {
   );
 }
 
-function dateToStr(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
 function formatDuration(totalMinutes: number): string {
   const h = Math.floor(totalMinutes / 60);
   const m = Math.round(totalMinutes % 60);
   if (h === 0) return `${m}m`;
   return `${h}j ${m}m`;
-}
-
-function toDatetimeLocalValue(iso: string): string {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function downloadCsv(filename: string, rows: string[][]) {

@@ -3,20 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { NAV_ITEMS } from '@/lib/nav';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
-
-const NAV_ITEMS = [
-  { href: '/today', label: 'Dashboard', icon: 'grid_view' },
-  { href: '/habit-tracker', label: 'Habit Tracker', icon: 'check_circle' },
-  { href: '/goals', label: 'Goals & Horizon', icon: 'flag' },
-  { href: '/activity-logs', label: 'Activity Logs', icon: 'history_toggle_off' },
-  { href: '/reports', label: 'AI Reports & Digest', icon: 'auto_awesome' },
-  { href: '/settings', label: 'Settings', icon: 'settings' },
-];
 
 export function Sidebar() {
   const pathname = usePathname();
