@@ -453,7 +453,7 @@ export default function TodayPage() {
                 const isToday = d.dateStr === todayDateString();
                 const heightPct = Math.max(4, (d.hours / maxHours) * 100);
                 return (
-                  <div key={d.dateStr} className="flex flex-1 flex-col items-center gap-space-xs">
+                  <div key={d.dateStr} className="flex h-full flex-1 flex-col items-center justify-end gap-space-xs">
                     <div
                       className={`w-2.5 rounded-t-full md:w-3 ${isToday ? 'bg-accent-lime shadow-[0_0_12px_rgba(204,255,0,0.5)]' : 'bg-sidebar-dark'}`}
                       style={{ height: `${heightPct}%` }}
