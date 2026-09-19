@@ -57,15 +57,3 @@ project runs the frontend on `3001` by default — see `package.json`). Set
   real design before shipping publicly. Some iOS versions prefer a PNG
   `apple-touch-icon`; add one if home-screen icon rendering looks off on
   iPhone.
-
-## Known limitation
-
-The habit checklist's "already checked in today" state is tracked
-client-side only (there's no dedicated "today's checkins" read endpoint on
-the backend yet). Reloading the page will show the check-in button as
-available again even if it was already done — tapping it is harmless
-(the backend's checkin endpoint is idempotent and returns the existing
-record instead of double-counting), but the button won't visually reflect
-"done" until you check in again in that session. A small backend addition
-(embedding today's checkin status in `GET /api/habits`) would close this
-gap cleanly.

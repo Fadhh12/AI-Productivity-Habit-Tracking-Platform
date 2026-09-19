@@ -66,6 +66,14 @@ export default function TodayPage() {
       setHabits(hbs.filter((h) => h.active));
       setCategories(cats);
       setGoals(gls.filter((g) => g.horizon === 'yearly'));
+
+      const todayStr = todayDateString();
+      const doneToday = hbs
+        .filter((h) =>
+          (h.checkins ?? []).some((c) => c.checkinDate.slice(0, 10) === todayStr && c.status === 'done'),
+        )
+        .map((h) => h.id);
+      setCheckedInIds(new Set(doneToday));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal memuat data hari ini.');
     } finally {
