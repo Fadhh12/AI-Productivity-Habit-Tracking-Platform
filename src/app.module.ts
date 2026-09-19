@@ -19,6 +19,7 @@ import { RollupModule } from './modules/rollup/rollup.module';
 import { AiModule } from './modules/ai/ai.module';
 import { UserModule } from './modules/user/user.module';
 import { HealthModule } from './modules/health/health.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { HealthModule } from './modules/health/health.module';
     AiModule,
     UserModule,
     HealthModule,
+    CalendarModule,
   ],
   providers: [
     {

@@ -26,6 +26,26 @@ class EnvironmentVariables {
   @IsOptional()
   @IsString()
   CLAUDE_API_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  FRONTEND_URL?: string;
+
+  @IsOptional()
+  @IsString()
+  GOOGLE_CLIENT_ID?: string;
+
+  @IsOptional()
+  @IsString()
+  GOOGLE_CLIENT_SECRET?: string;
+
+  @IsOptional()
+  @IsString()
+  GOOGLE_REDIRECT_URI?: string;
+
+  @IsOptional()
+  @IsString()
+  GOOGLE_TOKEN_ENCRYPTION_KEY?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

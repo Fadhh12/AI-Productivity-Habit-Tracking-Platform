@@ -30,4 +30,13 @@ export default () => ({
     ttlMs: parseInt(process.env.THROTTLE_TTL_MS ?? '60000', 10),
     limit: parseInt(process.env.THROTTLE_LIMIT ?? '120', 10),
   },
+
+  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001',
+
+  googleCalendar: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: process.env.GOOGLE_REDIRECT_URI,
+    tokenEncryptionKey: process.env.GOOGLE_TOKEN_ENCRYPTION_KEY ?? process.env.JWT_ACCESS_SECRET,
+  },
 });

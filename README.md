@@ -144,6 +144,7 @@ stack notes):
 | 5 — Health, idempotency, edge cases | [docs/phase-5-testing-report.md](./docs/phase-5-testing-report.md) |
 | 6 — PWA frontend (mobile access) | [frontend/README.md](./frontend/README.md) |
 | 8 — Monthly report export (CSV/PDF) | [docs/phase-8-report-export.md](./docs/phase-8-report-export.md) |
+| 9 — Google Calendar import | [docs/phase-9-google-calendar.md](./docs/phase-9-google-calendar.md) |
 
 ## Status
 

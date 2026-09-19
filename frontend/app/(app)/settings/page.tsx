@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, Goal, Habit } from '@/lib/types';
@@ -17,8 +17,75 @@ const COMMON_TIMEZONES = [
   'UTC',
 ];
 
+interface CalendarStatus {
+  available: boolean;
+  connected: boolean;
+  lastSyncedAt: string | null;
+}
+
 export default function SettingsPage() {
   const { user, logout, refreshUser } = useAuth();
+  const [calendar, setCalendar] = useState<CalendarStatus | null>(null);
+  const [calendarBusy, setCalendarBusy] = useState(false);
+  const [calendarMessage, setCalendarMessage] = useState<string | null>(null);
+
+  async function loadCalendarStatus() {
+    try {
+      setCalendar(await apiFetch<CalendarStatus>('/api/calendar/google/status'));
+    } catch {
+      // Card stays hidden-state; rest of settings unaffected.
+    }
+  }
+
+  useEffect(() => {
+    loadCalendarStatus();
+    const result = new URLSearchParams(window.location.search).get('calendar');
+    if (result === 'connected') setCalendarMessage('Google Calendar berhasil terhubung.');
+    if (result === 'error') setCalendarMessage('Gagal menghubungkan Google Calendar. Coba lagi.');
+  }, []);
+
+  async function onConnectCalendar() {
+    setCalendarBusy(true);
+    try {
+      const res = await apiFetch<{ available: boolean; url?: string }>('/api/calendar/google/auth-url');
+      if (res.available && res.url) {
+        window.location.href = res.url;
+        return;
+      }
+      setCalendarMessage('Integrasi Google Calendar belum dikonfigurasi di server.');
+    } catch (err) {
+      setCalendarMessage(err instanceof ApiError ? err.message : 'Gagal memulai koneksi.');
+    } finally {
+      setCalendarBusy(false);
+    }
+  }
+
+  async function onSyncCalendar() {
+    setCalendarBusy(true);
+    try {
+      const res = await apiFetch<{ imported: number; total: number }>('/api/calendar/google/sync', { method: 'POST' });
+      setCalendarMessage(`${res.imported} dari ${res.total} event diimpor sebagai aktivitas.`);
+      await loadCalendarStatus();
+    } catch (err) {
+      setCalendarMessage(err instanceof ApiError ? err.message : 'Gagal sinkronisasi.');
+    } finally {
+      setCalendarBusy(false);
+    }
+  }
+
+  async function onDisconnectCalendar() {
+    setCalendarBusy(true);
+    try {
+      await apiFetch('/api/calendar/google', { method: 'DELETE' });
+      setCalendarMessage('Google Calendar diputus. Aktivitas yang sudah diimpor tetap tersimpan.');
+      await loadCalendarStatus();
+    } catch (err) {
+      setCalendarMessage(err instanceof ApiError ? err.message : 'Gagal memutus koneksi.');
+    } finally {
+      setCalendarBusy(false);
+    }
+  }
+
   const [timezone, setTimezone] = useState(user?.timezone ?? 'UTC');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -115,6 +182,59 @@ export default function SettingsPage() {
           {message && <p className="font-body-sm text-body-sm text-text-secondary">{message}</p>}
         </form>
       </div>
+
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-text-primary">
+          <span className="material-symbols-outlined text-[18px]">event</span>
+          Integrasi Google Calendar
+        </div>
+        <p className="font-body-sm text-body-sm leading-relaxed text-text-secondary">
+          Impor event kalender jadi aktivitas otomatis (sinkron tiap jam, atau manual). Akses hanya baca — Continuum
+          tidak pernah mengubah kalendermu.
+        </p>
+        {calendar && !calendar.available && (
+          <p className="font-body-sm text-body-sm text-text-muted">Belum dikonfigurasi di server (butuh Google OAuth credentials).</p>
+        )}
+        {calendar?.available && (
+          <div className="flex flex-wrap items-center gap-space-sm">
+            {!calendar.connected ? (
+              <button
+                onClick={onConnectCalendar}
+                disabled={calendarBusy}
+                type="button"
+                className="w-fit rounded-full bg-accent-lime px-space-md py-2 font-label-md text-label-md font-bold text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
+              >
+                Hubungkan Google Calendar
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={onSyncCalendar}
+                  disabled={calendarBusy}
+                  type="button"
+                  className="w-fit rounded-full bg-accent-lime px-space-md py-2 font-label-md text-label-md font-bold text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
+                >
+                  {calendarBusy ? 'Memproses…' : 'Sync sekarang'}
+                </button>
+                <button
+                  onClick={onDisconnectCalendar}
+                  disabled={calendarBusy}
+                  type="button"
+                  className="w-fit rounded-full bg-surface-container-low px-space-md py-2 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-surface-container disabled:opacity-50"
+                >
+                  Putuskan
+                </button>
+                <span className="font-caption text-caption text-text-secondary">
+                  {calendar.lastSyncedAt
+                    ? `Terakhir sinkron ${new Date(calendar.lastSyncedAt).toLocaleString('id-ID')}`
+                    : 'Belum pernah sinkron'}
+                </span>
+              </>
+            )}
+          </div>
+        )}
+        {calendarMessage && <p className="font-body-sm text-body-sm text-text-secondary">{calendarMessage}</p>}
+      </section>
 
       <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-container-low p-space-lg">
         <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-accent-mint-text">
