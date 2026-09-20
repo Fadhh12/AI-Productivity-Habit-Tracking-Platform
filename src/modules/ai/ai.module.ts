@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AiController } from './ai.controller';
 import { AiService } from './ai.service';
 import { CoachService } from './coach.service';
-import { ClaudeClient } from './claude.client';
+import { LlmClient } from './llm.client';
 import { CircuitBreakerService } from './circuit-breaker.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
 import { RollupModule } from '../rollup/rollup.module';
@@ -16,7 +16,7 @@ import { ActivityModule } from '../activity/activity.module';
   providers: [
     AiService,
     CoachService,
-    ClaudeClient,
+    LlmClient,
     AiRateLimiterService,
     {
       provide: CircuitBreakerService,

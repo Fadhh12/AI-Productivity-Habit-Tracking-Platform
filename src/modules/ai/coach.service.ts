@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infra/db/prisma.service';
-import { ClaudeClient } from './claude.client';
+import { LlmClient } from './llm.client';
 import { CircuitBreakerService } from './circuit-breaker.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
 import { RollupService } from '../rollup/rollup.service';
@@ -17,7 +17,7 @@ import {
 @Injectable()
 export class CoachService {
   constructor(
-    private readonly claudeClient: ClaudeClient,
+    private readonly llmClient: LlmClient,
     private readonly circuitBreaker: CircuitBreakerService,
     private readonly rateLimiter: AiRateLimiterService,
     private readonly rollupService: RollupService,
@@ -41,7 +41,7 @@ export class CoachService {
 
     if (this.circuitBreaker.getState() !== 'open') {
       try {
-        const reply = await this.claudeClient.generateText(
+        const reply = await this.llmClient.generateText(
           buildCoachSystemPrompt(snapshot),
           buildCoachMessages(history, message),
         );

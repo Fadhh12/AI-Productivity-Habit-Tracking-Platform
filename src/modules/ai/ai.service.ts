@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infra/db/prisma.service';
-import { ClaudeClient } from './claude.client';
+import { LlmClient } from './llm.client';
 import { CircuitBreakerService } from './circuit-breaker.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
 import { RollupService } from '../rollup/rollup.service';
@@ -41,7 +41,7 @@ const WEEKDAY_LABELS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', '
 @Injectable()
 export class AiService {
   constructor(
-    private readonly claudeClient: ClaudeClient,
+    private readonly llmClient: LlmClient,
     private readonly circuitBreaker: CircuitBreakerService,
     private readonly rateLimiter: AiRateLimiterService,
     private readonly rollupService: RollupService,
@@ -68,7 +68,7 @@ export class AiService {
     const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
     if (!circuitOpen) {
       try {
-        const draft = await this.claudeClient.generateJson<QuickAddDraft>(
+        const draft = await this.llmClient.generateJson<QuickAddDraft>(
           'You convert a short natural-language activity description into a structured draft activity log. ' +
             'Infer a concise title, guess a category label (or null if unclear), and infer start_time/end_time as ISO 8601 UTC timestamps ' +
             '(assume "today" and reasonable durations, e.g. 30-60 minutes, when not stated). ' +
@@ -118,7 +118,7 @@ export class AiService {
 
     if (!circuitOpen) {
       try {
-        const generated = await this.claudeClient.generateJson<{
+        const generated = await this.llmClient.generateJson<{
           narrative: string;
           highlights: string[];
         }>(
@@ -190,7 +190,7 @@ export class AiService {
 
     if (!circuitOpen) {
       try {
-        const generated = await this.claudeClient.generateJson<{
+        const generated = await this.llmClient.generateJson<{
           monthlyGoals: Array<{
             title: string;
             habits: Array<{ name: string; frequency: string }>;
@@ -303,7 +303,7 @@ export class AiService {
     if (!circuitOpen) {
       try {
         const context = await this.buildReflectionContext(userId, localDate);
-        const generated = await this.claudeClient.generateJson<{ question: string }>(
+        const generated = await this.llmClient.generateJson<{ question: string }>(
           'You write exactly ONE short, warm, specific reflection question in Indonesian (max 25 words) based on ' +
             "what the user did today. Avoid generic templates like \"Bagaimana harimu?\" - reference something " +
             'concrete from the context when possible. Reply with exactly: {"question": string}',
@@ -425,7 +425,7 @@ export class AiService {
 
     if (!circuitOpen && stats.hasEnoughData) {
       try {
-        const generated = await this.claudeClient.generateJson<{ patterns: string[] }>(
+        const generated = await this.llmClient.generateJson<{ patterns: string[] }>(
           'You are a productivity coach. Given these stats about a user\'s habit completion by weekday and their ' +
             "week-over-week category time usage, identify 1-3 concrete, specific behavioral patterns or correlations " +
             '(in Indonesian, one short sentence each, citing the numbers/days/percentages given). Only state ' +

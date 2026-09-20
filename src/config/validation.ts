@@ -28,6 +28,22 @@ class EnvironmentVariables {
   CLAUDE_API_KEY?: string;
 
   @IsOptional()
+  @IsIn(['anthropic', 'openai'])
+  AI_PROVIDER?: string;
+
+  @IsOptional()
+  @IsString()
+  LLM_API_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  LLM_BASE_URL?: string;
+
+  @IsOptional()
+  @IsString()
+  LLM_MODEL?: string;
+
+  @IsOptional()
   @IsString()
   FRONTEND_URL?: string;
 

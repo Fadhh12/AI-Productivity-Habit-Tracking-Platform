@@ -79,7 +79,9 @@ See [.env.example](./.env.example) for the full list with defaults.
 | `REDIS_URL` | Redis connection string (cache + BullMQ job queue) |
 | `JWT_ACCESS_SECRET` / `JWT_ACCESS_EXPIRES_IN` | Access token signing secret + lifetime (default `15m`) |
 | `JWT_REFRESH_SECRET` / `JWT_REFRESH_EXPIRES_IN` | Refresh token signing secret + lifetime (default `7d`) |
-| `CLAUDE_API_KEY` | Anthropic API key — AI endpoints degrade to a structured fallback without it |
+| `AI_PROVIDER` | `anthropic` (default) or `openai` (any OpenAI-compatible endpoint, e.g. Gemini/Groq/Ollama free tiers) — see [docs/phase-12-free-ai-provider.md](./docs/phase-12-free-ai-provider.md) |
+| `LLM_API_KEY` / `LLM_BASE_URL` / `LLM_MODEL` | Used when `AI_PROVIDER=openai` |
+| `CLAUDE_API_KEY` | Anthropic API key (when `AI_PROVIDER=anthropic`) — AI endpoints degrade to a structured fallback without it |
 | `CLAUDE_MODEL` | Claude model id (default `claude-sonnet-5`) |
 | `AI_TIMEOUT_MS` | Per-request Claude timeout (default `8000`) |
 | `AI_DAILY_RATE_LIMIT` | Max AI requests per user per day (default `50`) |
@@ -147,6 +149,7 @@ stack notes):
 | 9 — Google Calendar import | [docs/phase-9-google-calendar.md](./docs/phase-9-google-calendar.md) |
 | 10 — Gamification (badges, XP, levels) | [docs/phase-10-gamification.md](./docs/phase-10-gamification.md) |
 | 11 — AI Coach chat | [docs/phase-11-ai-coach-chat.md](./docs/phase-11-ai-coach-chat.md) |
+| 12 — Free / pluggable AI provider | [docs/phase-12-free-ai-provider.md](./docs/phase-12-free-ai-provider.md) |
 
 ## Status
 

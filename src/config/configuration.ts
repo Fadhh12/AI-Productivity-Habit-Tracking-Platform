@@ -18,8 +18,14 @@ export default () => ({
   },
 
   ai: {
+    provider: process.env.AI_PROVIDER ?? 'anthropic',
     claudeApiKey: process.env.CLAUDE_API_KEY,
-    claudeModel: process.env.CLAUDE_MODEL ?? 'claude-sonnet-5',
+    llmApiKey: process.env.LLM_API_KEY,
+    llmBaseUrl: process.env.LLM_BASE_URL,
+    model:
+      process.env.AI_PROVIDER === 'openai'
+        ? process.env.LLM_MODEL
+        : (process.env.CLAUDE_MODEL ?? 'claude-sonnet-5'),
     timeoutMs: parseInt(process.env.AI_TIMEOUT_MS ?? '8000', 10),
     dailyRateLimit: parseInt(process.env.AI_DAILY_RATE_LIMIT ?? '50', 10),
     circuitBreakerThreshold: parseInt(process.env.AI_CIRCUIT_BREAKER_THRESHOLD ?? '5', 10),
