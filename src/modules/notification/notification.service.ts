@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationRepository } from './notification.repository';
+import { PushService } from '../push/push.service';
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly repository: NotificationRepository) {}
+  constructor(
+    private readonly repository: NotificationRepository,
+    private readonly pushService: PushService,
+  ) {}
 
   findAll(userId: string) {
     return this.repository.findAll(userId);
   }
 
-  notify(userId: string, type: string, message: string, refId?: string) {
-    return this.repository.create(userId, type, message, refId);
+  /** Creates the in-app notification, then (best effort, never blocking or failing it) mirrors it to the user's phones as a push. */
+  async notify(userId: string, type: string, message: string, refId?: string) {
+    const notification = await this.repository.create(userId, type, message, refId);
+    void this.pushService.sendToUser(userId, type, message).catch(() => undefined);
+    return notification;
   }
 
   /** Used by schedulers to avoid sending the same reminder twice for the same habit-day or activity. */

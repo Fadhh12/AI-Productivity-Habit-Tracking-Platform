@@ -152,6 +152,7 @@ stack notes):
 | 12 — Free / pluggable AI provider | [docs/phase-12-free-ai-provider.md](./docs/phase-12-free-ai-provider.md) |
 | 13 — Proactive AI insights | [docs/phase-13-proactive-insights.md](./docs/phase-13-proactive-insights.md) |
 | 14 — Offline PWA | [docs/phase-14-offline-pwa.md](./docs/phase-14-offline-pwa.md) |
+| 15 — Web Push notifications | [docs/phase-15-push-notifications.md](./docs/phase-15-push-notifications.md) |
 
 ## Status
 

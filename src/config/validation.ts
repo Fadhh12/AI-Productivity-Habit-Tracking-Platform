@@ -45,6 +45,18 @@ class EnvironmentVariables {
 
   @IsOptional()
   @IsString()
+  VAPID_PUBLIC_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  VAPID_PRIVATE_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  VAPID_SUBJECT?: string;
+
+  @IsOptional()
+  @IsString()
   FRONTEND_URL?: string;
 
   @IsOptional()

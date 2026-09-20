@@ -54,6 +54,7 @@ model User {
   notifications  Notification[]
   dailyReflections DailyReflection[]
   googleCalendarIntegration GoogleCalendarIntegration?
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -71,6 +72,22 @@ model GoogleCalendarIntegration {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("google_calendar_integrations")
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  /// Unique per browser/device install; the push service address we deliver to.
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 model Notification {

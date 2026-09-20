@@ -138,3 +138,49 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
   }
 });
+
+// ---- Web Push ----
+
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+
+  event.waitUntil(
+    (async () => {
+      // The in-app bell already covers someone who is looking at the app right now.
+      const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      if (data.tag !== 'test_push' && windows.some((client) => client.visibilityState === 'visible')) return;
+
+      await self.registration.showNotification(data.title || 'Continuum', {
+        body: data.body || '',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/icon-192.png',
+        tag: data.tag || 'continuum',
+        data: { url: data.url || '/today' },
+      });
+    })(),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || '/today';
+
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      for (const client of windows) {
+        if (new URL(client.url).origin === self.location.origin) {
+          await client.focus();
+          if ('navigate' in client) await client.navigate(target);
+          return;
+        }
+      }
+      await self.clients.openWindow(target);
+    })(),
+  );
+});

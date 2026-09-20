@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, Goal, Habit } from '@/lib/types';
+import { disablePush, enablePush, getPushState, PushState, sendTestPush } from '@/lib/push';
 
 const COMMON_TIMEZONES = [
   'Asia/Jakarta',
@@ -91,6 +92,37 @@ export default function SettingsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [insightsSaving, setInsightsSaving] = useState(false);
+  const [pushState, setPushState] = useState<PushState | null>(null);
+  const [pushBusy, setPushBusy] = useState(false);
+  const [pushMessage, setPushMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    getPushState().then(setPushState).catch(() => setPushState('unsupported'));
+  }, []);
+
+  async function onTogglePush() {
+    setPushBusy(true);
+    setPushMessage(null);
+    try {
+      setPushState(pushState === 'on' ? await disablePush() : await enablePush());
+    } catch (err) {
+      setPushMessage(err instanceof ApiError ? err.message : 'Gagal mengubah notifikasi push di perangkat ini.');
+    } finally {
+      setPushBusy(false);
+    }
+  }
+
+  async function onTestPush() {
+    setPushBusy(true);
+    try {
+      const delivered = await sendTestPush();
+      setPushMessage(delivered > 0 ? 'Tes dikirim. Notifikasi akan muncul sebentar lagi.' : 'Tidak ada perangkat terdaftar untuk menerima tes.');
+    } catch (err) {
+      setPushMessage(err instanceof ApiError ? err.message : 'Gagal mengirim tes.');
+    } finally {
+      setPushBusy(false);
+    }
+  }
   const insightsOn = user?.proactiveInsights ?? true;
 
   async function onToggleInsights() {
@@ -248,6 +280,60 @@ export default function SettingsPage() {
           </div>
         )}
         {calendarMessage && <p className="font-body-sm text-body-sm text-text-secondary">{calendarMessage}</p>}
+      </section>
+
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-text-primary">
+          <span className="material-symbols-outlined text-[18px]">phonelink_ring</span>
+          Notifikasi Push
+        </div>
+        <p className="font-body-sm text-body-sm leading-relaxed text-text-secondary">
+          Terima pengingat habit dan insight Coach di perangkat ini, bahkan saat aplikasi ditutup. Pengaturan ini berlaku
+          per perangkat.
+        </p>
+        {pushState === 'unsupported' && (
+          <p className="font-body-sm text-body-sm text-text-muted">Browser ini belum mendukung notifikasi push.</p>
+        )}
+        {pushState === 'needs-install' && (
+          <p className="font-body-sm text-body-sm text-text-muted">
+            Di iPhone/iPad, tambahkan Continuum ke Layar Utama dulu (Bagikan, lalu Tambah ke Layar Utama), lalu buka dari sana.
+          </p>
+        )}
+        {pushState === 'server-off' && (
+          <p className="font-body-sm text-body-sm text-text-muted">Belum dikonfigurasi di server (butuh kunci VAPID).</p>
+        )}
+        {pushState === 'denied' && (
+          <p className="font-body-sm text-body-sm text-text-muted">
+            Notifikasi diblokir untuk situs ini. Izinkan lewat pengaturan situs di browser, lalu muat ulang halaman.
+          </p>
+        )}
+        {(pushState === 'on' || pushState === 'off') && (
+          <div className="flex flex-wrap items-center gap-space-sm">
+            <button
+              onClick={onTogglePush}
+              disabled={pushBusy}
+              type="button"
+              role="switch"
+              aria-checked={pushState === 'on'}
+              className={`w-fit rounded-full px-space-md py-2 font-label-md text-label-md font-bold disabled:opacity-50 ${
+                pushState === 'on' ? 'bg-accent-lime text-text-primary' : 'bg-surface-container-low text-text-primary'
+              }`}
+            >
+              {pushState === 'on' ? 'Aktif di perangkat ini — klik untuk matikan' : 'Aktifkan di perangkat ini'}
+            </button>
+            {pushState === 'on' && (
+              <button
+                onClick={onTestPush}
+                disabled={pushBusy}
+                type="button"
+                className="w-fit rounded-full bg-surface-container-low px-space-md py-2 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-surface-container disabled:opacity-50"
+              >
+                Kirim tes
+              </button>
+            )}
+          </div>
+        )}
+        {pushMessage && <p className="font-body-sm text-body-sm text-text-secondary">{pushMessage}</p>}
       </section>
 
       <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">

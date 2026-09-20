@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useState, ReactNode 
 import { useRouter } from 'next/navigation';
 import { apiFetch, clearTokens, setTokens } from './api';
 import { clearOfflineData } from './offlineQueue';
+import { disablePush } from './push';
 
 export interface CurrentUser {
   id: string;
@@ -18,7 +19,7 @@ interface AuthContextValue {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, timezone: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -75,7 +76,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router],
   );
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // Stop this device receiving the account's push notifications (needs the token, so before clearing it); never let it block sign-out.
+    await Promise.race([disablePush().catch(() => undefined), new Promise((resolve) => setTimeout(resolve, 3000))]);
     clearTokens();
     clearOfflineData();
     setUser(null);

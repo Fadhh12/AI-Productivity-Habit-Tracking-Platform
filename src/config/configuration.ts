@@ -37,6 +37,12 @@ export default () => ({
     limit: parseInt(process.env.THROTTLE_LIMIT ?? '120', 10),
   },
 
+  push: {
+    publicKey: process.env.VAPID_PUBLIC_KEY,
+    privateKey: process.env.VAPID_PRIVATE_KEY,
+    subject: process.env.VAPID_SUBJECT ?? 'mailto:admin@example.com',
+  },
+
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001',
 
   googleCalendar: {
