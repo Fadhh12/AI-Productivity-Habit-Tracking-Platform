@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AiController } from './ai.controller';
 import { AiService } from './ai.service';
+import { CoachService } from './coach.service';
 import { ClaudeClient } from './claude.client';
 import { CircuitBreakerService } from './circuit-breaker.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
@@ -14,6 +15,7 @@ import { ActivityModule } from '../activity/activity.module';
   controllers: [AiController],
   providers: [
     AiService,
+    CoachService,
     ClaudeClient,
     AiRateLimiterService,
     {

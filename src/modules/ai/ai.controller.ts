@@ -2,6 +2,8 @@ import { Body, Controller, Get, Patch, Post, Query, UseGuards } from '@nestjs/co
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserPayload } from '../auth/decorators/current-user.decorator';
 import { AiService } from './ai.service';
+import { CoachService } from './coach.service';
+import { CoachChatDto } from './dto/coach-chat.dto';
 import { QuickAddDto } from './dto/quick-add.dto';
 import { DigestQueryDto } from './dto/digest-query.dto';
 import { GoalSuggestionDto } from './dto/goal-suggestion.dto';
@@ -10,7 +12,10 @@ import { SaveReflectionDto } from './dto/save-reflection.dto';
 @Controller('api/ai')
 @UseGuards(JwtAuthGuard)
 export class AiController {
-  constructor(private readonly aiService: AiService) {}
+  constructor(
+    private readonly aiService: AiService,
+    private readonly coachService: CoachService,
+  ) {}
 
   @Post('quick-add')
   quickAdd(@CurrentUser() user: CurrentUserPayload, @Body() dto: QuickAddDto) {
@@ -35,6 +40,11 @@ export class AiController {
   @Patch('reflection/today')
   saveReflection(@CurrentUser() user: CurrentUserPayload, @Body() dto: SaveReflectionDto) {
     return this.aiService.saveReflectionResponse(user.id, dto.responseText ?? null);
+  }
+
+  @Post('coach')
+  coach(@CurrentUser() user: CurrentUserPayload, @Body() dto: CoachChatDto) {
+    return this.coachService.chat(user.id, dto.message, dto.history);
   }
 
   @Get('pattern-detection')

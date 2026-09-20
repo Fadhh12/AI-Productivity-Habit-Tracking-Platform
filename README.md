@@ -146,6 +146,7 @@ stack notes):
 | 8 — Monthly report export (CSV/PDF) | [docs/phase-8-report-export.md](./docs/phase-8-report-export.md) |
 | 9 — Google Calendar import | [docs/phase-9-google-calendar.md](./docs/phase-9-google-calendar.md) |
 | 10 — Gamification (badges, XP, levels) | [docs/phase-10-gamification.md](./docs/phase-10-gamification.md) |
+| 11 — AI Coach chat | [docs/phase-11-ai-coach-chat.md](./docs/phase-11-ai-coach-chat.md) |
 
 ## Status
 

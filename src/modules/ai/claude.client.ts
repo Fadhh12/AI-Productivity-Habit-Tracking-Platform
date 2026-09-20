@@ -44,6 +44,27 @@ export class ClaudeClient {
     return JSON.parse(jsonText) as T;
   }
 
+  /** Free-form multi-turn reply (used by the coach chat). Throws on timeout or API error — callers own the fallback. */
+  async generateText(
+    systemPrompt: string,
+    messages: Array<{ role: 'user' | 'assistant'; content: string }>,
+  ): Promise<string> {
+    if (!this.client) {
+      throw new Error('CLAUDE_API_KEY is not configured');
+    }
+
+    const response = await this.client.messages.create(
+      { model: this.model, max_tokens: 600, system: systemPrompt, messages },
+      { timeout: this.timeoutMs },
+    );
+
+    const textBlock = response.content.find((block) => block.type === 'text');
+    if (!textBlock || textBlock.type !== 'text' || !textBlock.text.trim()) {
+      throw new Error('Claude response did not contain a text block');
+    }
+    return textBlock.text.trim();
+  }
+
   isConfigured(): boolean {
     return this.client !== null;
   }
