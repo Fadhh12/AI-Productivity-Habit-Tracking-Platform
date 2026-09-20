@@ -23,6 +23,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
 import { InsightModule } from './modules/insight/insight.module';
 import { PushModule } from './modules/push/push.module';
+import { ChallengeModule } from './modules/challenge/challenge.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { PushModule } from './modules/push/push.module';
     GamificationModule,
     InsightModule,
     PushModule,
+    ChallengeModule,
   ],
   providers: [
     {

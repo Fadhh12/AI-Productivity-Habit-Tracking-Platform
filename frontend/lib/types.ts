@@ -112,3 +112,19 @@ export interface GamificationSummary {
   xpForNextLevel: number;
   badges: GamificationBadge[];
 }
+
+export interface WeeklyChallenge {
+  id: string;
+  weekStart: string;
+  weekEnd: string;
+  title: string;
+  description: string;
+  metric: 'checkins' | 'activities' | 'active_days';
+  target: number;
+  progress: number;
+  percent: number;
+  status: 'active' | 'completed' | 'missed';
+  daysLeft: number;
+  completedAt: string | null;
+  is_ai_generated: boolean;
+}

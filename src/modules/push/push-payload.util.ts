@@ -24,6 +24,7 @@ export function buildPushPayload(type: string, message: string): PushPayload {
   if (kind === 'habit_reminder') return { title: 'Pengingat habit', body, url: '/habit-tracker', tag: 'habit_reminder' };
   if (kind === 'activity_reminder') return { title: 'Pengingat aktivitas', body, url: '/activity-logs', tag: 'activity_reminder' };
   if (kind === 'calendar_sync') return { title: 'Google Calendar', body, url: '/activity-logs', tag: kind };
+  if (kind === 'challenge_complete') return { title: 'Tantangan selesai!', body, url: '/today', tag: kind };
   if (kind === 'test_push') return { title: 'Notifikasi Continuum aktif', body, url: '/settings', tag: kind };
   return { title: 'Continuum', body, url: '/today', tag: kind };
 }

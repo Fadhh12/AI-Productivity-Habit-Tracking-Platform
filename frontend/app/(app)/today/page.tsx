@@ -10,6 +10,7 @@ import { HabitCard } from '@/components/HabitCard';
 import { Calendar } from '@/components/Calendar';
 import { RepeatRule } from '@/lib/recurrence';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { ChallengeCard } from '@/components/ChallengeCard';
 import { useConfirm } from '@/lib/confirm';
 import { DAY_LABELS_SUNDAY_FIRST, last7Days, todayDateString } from '@/lib/date';
 import { useQuickAdd } from '@/lib/quickAdd';
@@ -313,6 +314,8 @@ export default function TodayPage() {
             </button>
           </div>
         )}
+
+        <ChallengeCard refreshKey={checkedInIds.size + allActivities.length} />
 
         <form onSubmit={onQuickAdd} className="flex items-center gap-space-sm rounded-full bg-surface-card p-1.5 pl-space-md shadow-sm">
           <span className="material-symbols-outlined text-[20px] text-tertiary">auto_awesome</span>

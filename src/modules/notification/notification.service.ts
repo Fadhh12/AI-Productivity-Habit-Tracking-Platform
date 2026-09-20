@@ -30,6 +30,11 @@ export class NotificationService {
     return (await this.repository.findByTypesAndRef(userId, types, refId)) !== null;
   }
 
+  async markAllRead(userId: string) {
+    await this.repository.markAllRead(userId);
+    return { success: true };
+  }
+
   async markRead(userId: string, id: string) {
     await this.repository.markRead(userId, id);
     return { success: true };

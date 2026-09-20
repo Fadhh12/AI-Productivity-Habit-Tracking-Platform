@@ -2,17 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { apiFetch, ApiError } from '@/lib/api';
-import { GamificationSummary } from '@/lib/types';
+import { GamificationSummary, WeeklyChallenge } from '@/lib/types';
+import { ChallengeCard } from '@/components/ChallengeCard';
 import { SkeletonBlock } from '@/components/Skeleton';
 
 export default function AchievementsPage() {
   const [summary, setSummary] = useState<GamificationSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<WeeklyChallenge[]>([]);
 
   useEffect(() => {
     apiFetch<GamificationSummary>('/api/gamification/summary')
       .then(setSummary)
       .catch((err) => setError(err instanceof ApiError ? err.message : 'Gagal memuat pencapaian.'));
+    apiFetch<WeeklyChallenge[]>('/api/challenges/history')
+      .then(setHistory)
+      .catch(() => setHistory([]));
   }, []);
 
   if (error) return <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>;
@@ -58,6 +63,38 @@ export default function AchievementsPage() {
           </span>
         </div>
       </div>
+
+      <ChallengeCard />
+
+      {history.length > 0 && (
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
+          <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Riwayat Tantangan</h2>
+          <ul className="flex flex-col divide-y divide-border-subtle">
+            {history.map((c) => (
+              <li key={c.id} className="flex items-center gap-space-sm py-space-sm">
+                <span
+                  className={`material-symbols-outlined flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[20px] ${
+                    c.status === 'completed' ? 'bg-accent-lime text-text-primary' : 'bg-surface-container text-text-muted'
+                  }`}
+                  aria-hidden="true"
+                >
+                  {c.status === 'completed' ? 'check' : 'remove'}
+                </span>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate font-label-md text-label-md font-semibold text-text-primary">{c.title}</span>
+                  <span className="font-caption text-caption text-text-secondary">
+                    {new Date(`${c.weekStart}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} ·{' '}
+                    {c.progress}/{c.target}
+                  </span>
+                </div>
+                <span className="shrink-0 font-label-sm text-label-sm text-text-muted">
+                  {c.status === 'completed' ? 'Selesai' : 'Belum tercapai'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
         <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">

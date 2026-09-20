@@ -55,6 +55,7 @@ model User {
   dailyReflections DailyReflection[]
   googleCalendarIntegration GoogleCalendarIntegration?
   pushSubscriptions PushSubscription[]
+  weeklyChallenges WeeklyChallenge[]
 
   @@map("users")
 }
@@ -88,6 +89,27 @@ model PushSubscription {
 
   @@index([userId])
   @@map("push_subscriptions")
+}
+
+/// One AI-proposed challenge per user per local week (Monday start). Progress is never stored; it is recomputed from checkins/activities so it can't drift.
+model WeeklyChallenge {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  /// Monday (YYYY-MM-DD) of the user's local week.
+  weekStart     String    @map("week_start")
+  title         String
+  description   String
+  /// checkins | activities | active_days
+  metric        String
+  target        Int
+  isAiGenerated Boolean   @default(false) @map("is_ai_generated")
+  completedAt   DateTime? @map("completed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@map("weekly_challenges")
 }
 
 model Notification {

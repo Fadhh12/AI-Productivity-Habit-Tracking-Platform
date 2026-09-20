@@ -153,6 +153,7 @@ stack notes):
 | 13 — Proactive AI insights | [docs/phase-13-proactive-insights.md](./docs/phase-13-proactive-insights.md) |
 | 14 — Offline PWA | [docs/phase-14-offline-pwa.md](./docs/phase-14-offline-pwa.md) |
 | 15 — Web Push notifications | [docs/phase-15-push-notifications.md](./docs/phase-15-push-notifications.md) |
+| 16 — AI weekly challenge + notification center | [docs/phase-16-weekly-challenge.md](./docs/phase-16-weekly-challenge.md) |
 
 ## Status
 
