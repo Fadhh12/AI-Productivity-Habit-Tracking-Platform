@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NAV_ITEMS } from '@/lib/nav';
+import { usePlan } from '@/lib/plan';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -12,6 +13,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { isPlus, plan } = usePlan();
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
 
@@ -69,6 +71,21 @@ export function Sidebar() {
           })}
         </nav>
       </div>
+      <div className="flex flex-col gap-space-sm">
+      <Link
+        href="/plus"
+        className="flex items-center gap-space-sm rounded-lg bg-sidebar-card p-space-md text-white transition-colors hover:bg-border-dark-subtle"
+      >
+        <span className="material-symbols-outlined flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-lime text-[20px] text-text-primary" aria-hidden="true">
+          workspace_premium
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="font-label-md text-label-md font-semibold">Continuum Plus</span>
+          <span className="font-caption text-caption text-text-muted">
+            {!plan ? 'Memuat…' : isPlus ? 'Aktif' : 'Buka fitur AI penuh'}
+          </span>
+        </span>
+      </Link>
       <div className="flex flex-col gap-space-sm rounded-lg bg-sidebar-card p-space-md">
         <div className="flex items-center justify-between">
           <span className="rounded-full bg-accent-lime px-space-sm py-0.5 font-label-sm text-label-sm font-bold uppercase tracking-wider text-text-primary">
@@ -90,6 +107,7 @@ export function Sidebar() {
         >
           {installed ? 'Terpasang ✓' : installPrompt ? 'Install App' : 'Buka di browser mobile untuk install'}
         </button>
+      </div>
       </div>
     </aside>
   );

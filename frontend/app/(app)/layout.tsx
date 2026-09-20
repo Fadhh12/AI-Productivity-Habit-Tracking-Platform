@@ -8,6 +8,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { TopHeader } from '@/components/TopHeader';
 import { BadgeUnlockToast } from '@/components/BadgeUnlockToast';
 import { OfflineBanner } from '@/components/OfflineBanner';
+import { PlanProvider } from '@/lib/plan';
 
 export default function AppShellLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -24,6 +25,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
   }
 
   return (
+    <PlanProvider>
     <div className="min-h-screen bg-canvas-bg lg:pl-72">
       <Sidebar />
       <TopHeader />
@@ -32,5 +34,6 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
       <BadgeUnlockToast />
       <OfflineBanner />
     </div>
+    </PlanProvider>
   );
 }

@@ -1,7 +1,9 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { usePlan } from '@/lib/plan';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, Goal, Habit } from '@/lib/types';
 import { disablePush, enablePush, getPushState, PushState, sendTestPush } from '@/lib/push';
@@ -25,6 +27,7 @@ interface CalendarStatus {
 }
 
 export default function SettingsPage() {
+  const { isPlus } = usePlan();
   const { user, logout, refreshUser } = useAuth();
   const [calendar, setCalendar] = useState<CalendarStatus | null>(null);
   const [calendarBusy, setCalendarBusy] = useState(false);
@@ -184,6 +187,22 @@ export default function SettingsPage() {
         </h1>
         <p className="font-body-md text-body-md text-text-secondary">Kelola akun, zona waktu, dan preferensi AI kamu.</p>
       </div>
+
+      <Link
+        href="/plus"
+        className="flex items-center gap-space-md rounded-2xl bg-sidebar-dark p-space-md text-white shadow-sm"
+      >
+        <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-lime text-[24px] text-text-primary" aria-hidden="true">
+          workspace_premium
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="font-label-lg text-label-lg font-semibold">Continuum Plus</span>
+          <span className="font-body-sm text-body-sm text-secondary-fixed-dim">
+            {isPlus ? 'Plus aktif. Lihat detail paketmu.' : 'Buka AI tanpa batas ketat dan laporan PDF.'}
+          </span>
+        </span>
+        <span className="material-symbols-outlined text-[20px] text-text-muted" aria-hidden="true">chevron_right</span>
+      </Link>
 
       <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
         <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">

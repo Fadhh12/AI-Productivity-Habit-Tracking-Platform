@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { apiFetch, apiDownload, ApiError } from '@/lib/api';
+import { upgradeReason, UpgradeReason } from '@/lib/premium';
+import { UpgradeNotice } from '@/components/UpgradeNotice';
 import { MonthlyReport, PatternDetection } from '@/lib/types';
 import { SkeletonBlock } from '@/components/Skeleton';
 
@@ -80,6 +82,9 @@ export default function ReportsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [exporting, setExporting] = useState<'csv' | 'pdf' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [digestLocked, setDigestLocked] = useState<UpgradeReason | null>(null);
+  const [patternsLocked, setPatternsLocked] = useState<UpgradeReason | null>(null);
+  const [exportLocked, setExportLocked] = useState<UpgradeReason | null>(null);
 
   async function loadReport() {
     setLoading(true);
@@ -95,8 +100,9 @@ export default function ReportsPage() {
   async function loadDigest() {
     try {
       setDigest(await apiFetch<Digest>('/api/ai/digest?period=monthly'));
-    } catch {
+    } catch (err) {
       // Digest card fails independently — the raw report below still renders normally.
+      setDigestLocked(upgradeReason(err));
     }
   }
 
@@ -104,8 +110,9 @@ export default function ReportsPage() {
     setPatternsLoading(true);
     try {
       setPatterns(await apiFetch<PatternDetection>('/api/ai/pattern-detection'));
-    } catch {
+    } catch (err) {
       // Pattern card fails independently — the raw report above still renders normally.
+      setPatternsLocked(upgradeReason(err));
     } finally {
       setPatternsLoading(false);
     }
@@ -137,7 +144,9 @@ export default function ReportsPage() {
         `continuum-report-${currentMonth()}.${format}`,
       );
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Gagal export laporan.');
+      const locked = upgradeReason(err);
+      if (locked) setExportLocked(locked);
+      else setError(err instanceof ApiError ? err.message : 'Gagal export laporan.');
     } finally {
       setExporting(null);
     }
@@ -194,16 +203,22 @@ export default function ReportsPage() {
       </div>
 
       {error && <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>}
+      {exportLocked && <UpgradeNotice message={exportLocked.message} />}
 
       <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-xl">
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent-lime/10 blur-3xl" />
         <div className="relative z-10 flex flex-col gap-space-sm">
-          <span className={digest?.is_ai_generated ? 'badge-ai w-fit' : 'w-fit rounded-full bg-sidebar-card px-2 py-0.5 text-xs text-text-muted'}>
-            {digest?.is_ai_generated ? '✨ AI Digest' : 'Ringkasan (AI belum tersedia)'}
-          </span>
+          {digestLocked && <UpgradeNotice dark message={digestLocked.message} />}
+          {!digestLocked && (
+            <span className={digest?.is_ai_generated ? 'badge-ai w-fit' : 'w-fit rounded-full bg-sidebar-card px-2 py-0.5 text-xs text-text-muted'}>
+              {digest?.is_ai_generated ? '✨ AI Digest' : 'Ringkasan (AI belum tersedia)'}
+            </span>
+          )}
+          {!digestLocked && (
           <h2 className="font-headline-md text-headline-md tracking-tight text-white">
             {digest?.narrative ?? 'Ringkasan AI belum tersedia, coba muat ulang.'}
           </h2>
+          )}
           {digest && digest.highlights.length > 0 && (
             <ul className="mt-space-xs flex flex-col gap-1 font-body-sm text-body-sm text-secondary-fixed-dim">
               {digest.highlights.map((h, i) => (
@@ -319,7 +334,9 @@ export default function ReportsPage() {
                 </span>
               )}
             </div>
-            {patternsLoading ? (
+            {patternsLocked ? (
+              <UpgradeNotice message={patternsLocked.message} />
+            ) : patternsLoading ? (
               <div className="flex flex-col gap-space-xs">
                 {[0, 1].map((i) => (
                   <SkeletonBlock key={i} className="h-10 rounded-xl" />

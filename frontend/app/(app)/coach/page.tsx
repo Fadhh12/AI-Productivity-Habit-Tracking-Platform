@@ -2,6 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { apiFetch, ApiError } from '@/lib/api';
+import { upgradeReason, UpgradeReason } from '@/lib/premium';
+import { UpgradeNotice } from '@/components/UpgradeNotice';
+import { usePlan } from '@/lib/plan';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -28,6 +31,8 @@ export default function CoachPage() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [limitHit, setLimitHit] = useState<UpgradeReason | null>(null);
+  const { refresh: refreshPlan } = usePlan();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,8 +54,11 @@ export default function CoachPage() {
         body: JSON.stringify({ message, history }),
       });
       setMessages((prev) => [...prev, { role: 'assistant', content: res.reply, aiGenerated: res.is_ai_generated }]);
+      void refreshPlan();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Coach tidak bisa dihubungi. Coba lagi.');
+      const locked = upgradeReason(err);
+      if (locked) setLimitHit(locked);
+      else setError(err instanceof ApiError ? err.message : 'Coach tidak bisa dihubungi. Coba lagi.');
     } finally {
       setSending(false);
     }
@@ -115,6 +123,7 @@ export default function CoachPage() {
       </div>
 
       {error && <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>}
+      {limitHit && <UpgradeNotice message={limitHit.message} />}
 
       <form onSubmit={onSubmit} className="flex items-center gap-space-sm">
         <input

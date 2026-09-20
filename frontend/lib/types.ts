@@ -128,3 +128,11 @@ export interface WeeklyChallenge {
   completedAt: string | null;
   is_ai_generated: boolean;
 }
+
+export interface PlanSummary {
+  plan: 'free' | 'plus';
+  premiumUntil: string | null;
+  freeLimits: { coach: number; ai: number };
+  usage: { coach: { used: number; limit: number }; ai: { used: number; limit: number } };
+  features: Array<{ key: string; label: string }>;
+}
