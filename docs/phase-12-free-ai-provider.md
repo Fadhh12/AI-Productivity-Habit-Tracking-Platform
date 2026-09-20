@@ -55,5 +55,13 @@ and model name).
 
 ## Verification
 
-Typecheck passes; 4 new unit tests for JSON extraction. The live provider
-call has not been exercised yet — it needs a real key.
+- Typecheck passes; 4 new unit tests for JSON extraction.
+- Live against Google Gemini (AI Studio free key, model `gemini-flash-lite-latest`,
+  ~1.5s per call): coach chat and quick-add both return real AI replies
+  (`is_ai_generated: true`). The key's model list is available at
+  `GET .../v1beta/openai/models` if a model name stops working.
+- Two prompt fixes found during live testing: quick-add now receives the
+  current UTC time and the user's timezone (before, the model guessed a
+  2023 date and ignored the timezone; now "jam 2 siang" for an Asia/Jakarta
+  user becomes 07:00Z on the right day), and the coach is told to answer in
+  plain text because the chat UI does not render markdown.

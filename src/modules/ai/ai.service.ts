@@ -68,12 +68,19 @@ export class AiService {
     const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
     if (!circuitOpen) {
       try {
+        const { timezone } = await this.prisma.user.findUniqueOrThrow({
+          where: { id: userId },
+          select: { timezone: true },
+        });
         const draft = await this.llmClient.generateJson<QuickAddDraft>(
           'You convert a short natural-language activity description into a structured draft activity log. ' +
             'Infer a concise title, guess a category label (or null if unclear), and infer start_time/end_time as ISO 8601 UTC timestamps ' +
             '(assume "today" and reasonable durations, e.g. 30-60 minutes, when not stated). ' +
+            'Times the user mentions are in THEIR timezone; convert them to UTC. Use the provided current date/time as the reference for "today"/"tadi"/"besok". ' +
             'Reply with exactly: {"title": string, "category_guess": string|null, "start_time": ISO string, "end_time": ISO string}',
-          text,
+          `Current UTC time: ${new Date().toISOString()}
+User timezone: ${timezone}
+Activity text: ${text}`,
         );
         this.circuitBreaker.recordSuccess();
         return { ...draft, ai_available: true, fallback: false, is_ai_generated: true };
