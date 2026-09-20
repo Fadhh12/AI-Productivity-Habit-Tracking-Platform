@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { usePlan } from '@/lib/plan';
+import { Avatar } from '@/components/Avatar';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, Goal, Habit } from '@/lib/types';
 import { disablePush, enablePush, getPushState, PushState, sendTestPush } from '@/lib/push';
@@ -208,16 +209,17 @@ export default function SettingsPage() {
         <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
           <span className="font-headline-sm text-headline-sm text-text-primary">Profil &amp; Akun</span>
           <div className="flex items-center gap-space-md">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-tertiary-container font-headline-sm text-headline-sm font-bold text-on-tertiary-container">
-              {user?.email.slice(0, 1).toUpperCase()}
-            </div>
-            <div className="flex flex-col">
-              <span className="font-label-lg text-label-lg font-bold text-text-primary">{user?.email}</span>
+            <Avatar user={user} size="md" />
+            <div className="flex min-w-0 flex-col">
+              <span className="break-all font-label-lg text-label-lg font-bold text-text-primary">{user?.email}</span>
               <span className="font-caption text-caption text-text-secondary">
                 Member sejak {user ? new Date(user.createdAt).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : '-'}
               </span>
             </div>
           </div>
+          <Link href="/account" className="w-fit rounded-full bg-accent-lavender px-space-md py-2 font-label-sm text-label-sm font-semibold text-accent-lavender-text hover:opacity-80">
+            Kelola akun &amp; foto
+          </Link>
           <button onClick={logout} className="w-fit rounded-full bg-surface-container-low px-space-md py-2 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-surface-container">
             Keluar
           </button>

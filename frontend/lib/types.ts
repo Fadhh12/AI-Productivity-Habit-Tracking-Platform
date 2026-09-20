@@ -106,6 +106,11 @@ export interface GamificationBadge {
 }
 
 export interface GamificationSummary {
+  stats: {
+    doneCheckins: number;
+    activitiesLogged: number;
+    longestStreak: number;
+  };
   level: number;
   xp: number;
   xpIntoLevel: number;

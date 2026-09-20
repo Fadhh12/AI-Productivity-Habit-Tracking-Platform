@@ -11,6 +11,9 @@ export interface CurrentUser {
   email: string;
   timezone: string;
   proactiveInsights?: boolean;
+  displayName?: string | null;
+  /** Small data URL of the profile photo. */
+  avatar?: string | null;
   createdAt: string;
 }
 

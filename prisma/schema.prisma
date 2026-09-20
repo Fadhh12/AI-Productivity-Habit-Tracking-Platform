@@ -44,6 +44,9 @@ model User {
   proactiveInsights Boolean @default(true) @map("proactive_insights")
   /// Continuum Plus is active while this is in the future; null/past means the free plan.
   premiumUntil DateTime? @map("premium_until")
+  displayName String? @map("display_name")
+  /// Profile photo as a small (client-resized) data URL; kept in the row to avoid needing object storage.
+  avatar String?
   createdAt    DateTime @default(now()) @map("created_at")
 
   categories     Category[]

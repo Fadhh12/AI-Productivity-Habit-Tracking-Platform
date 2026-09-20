@@ -156,6 +156,7 @@ stack notes):
 | 16 — AI weekly challenge + notification center | [docs/phase-16-weekly-challenge.md](./docs/phase-16-weekly-challenge.md) |
 | 17 — Free vs Plus plan foundation | [docs/phase-17-plans-and-premium.md](./docs/phase-17-plans-and-premium.md) |
 | 18 — Plus screen and upgrade prompts | [docs/phase-18-plus-screen.md](./docs/phase-18-plus-screen.md) |
+| 19 — Account menu and profile photo | [docs/phase-19-account-and-profile.md](./docs/phase-19-account-and-profile.md) |
 
 ## Status
 

@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { apiFetch } from '@/lib/api';
 import { Activity, Goal, Habit } from '@/lib/types';
 import { NotificationBell } from '@/components/NotificationBell';
+import { AccountMenu } from '@/components/AccountMenu';
 
 interface SearchResult {
   key: string;
@@ -132,17 +133,7 @@ export function TopHeader() {
       </div>
       <div className="flex shrink-0 items-center gap-space-sm lg:gap-space-lg">
         <NotificationBell />
-        <div className="flex items-center gap-space-sm pl-space-sm">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-tertiary-container font-label-md text-label-md font-bold text-on-tertiary-container">
-            {displayName.slice(0, 1).toUpperCase()}
-          </div>
-          <div className="hidden flex-col sm:flex">
-            <span className="font-label-md text-label-md font-semibold text-text-primary">{displayName}</span>
-            <span className="font-label-sm text-label-sm font-medium text-accent-lavender-text">
-              Member sejak {memberSince}
-            </span>
-          </div>
-        </div>
+        <AccountMenu />
       </div>
     </header>
   );
