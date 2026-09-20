@@ -8,6 +8,7 @@ import { apiFetch, ApiError } from '@/lib/api';
 import { fileToAvatarDataUrl } from '@/lib/image';
 import { GamificationSummary } from '@/lib/types';
 import { Avatar, displayNameOf } from '@/components/Avatar';
+import { ShareCard } from '@/components/ShareCard';
 
 export default function AccountPage() {
   const { user, refreshUser, logout } = useAuth();
@@ -135,6 +136,8 @@ export default function AccountPage() {
           </div>
         ))}
       </section>
+
+      <ShareCard />
 
       <form onSubmit={onSaveName} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
         <label htmlFor="displayName" className="font-headline-sm text-headline-sm font-bold text-text-primary">

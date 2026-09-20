@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { apiFetch, ApiError } from '@/lib/api';
 import { GamificationSummary, WeeklyChallenge } from '@/lib/types';
 import { ChallengeCard } from '@/components/ChallengeCard';
+import { ShareCard } from '@/components/ShareCard';
 import { SkeletonBlock } from '@/components/Skeleton';
 
 export default function AchievementsPage() {
@@ -65,6 +66,8 @@ export default function AchievementsPage() {
       </div>
 
       <ChallengeCard />
+
+      <ShareCard />
 
       {history.length > 0 && (
         <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
