@@ -18,6 +18,11 @@ export class NotificationService {
     return (await this.repository.findByTypeAndRef(userId, type, refId)) !== null;
   }
 
+  /** Like alreadySent, but for notifications whose type varies (e.g. AI-phrased vs template) while the refId identifies the same event. */
+  async alreadySentAny(userId: string, types: string[], refId: string): Promise<boolean> {
+    return (await this.repository.findByTypesAndRef(userId, types, refId)) !== null;
+  }
+
   async markRead(userId: string, id: string) {
     await this.repository.markRead(userId, id);
     return { success: true };

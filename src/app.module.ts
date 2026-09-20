@@ -21,6 +21,7 @@ import { UserModule } from './modules/user/user.module';
 import { HealthModule } from './modules/health/health.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
+import { InsightModule } from './modules/insight/insight.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { GamificationModule } from './modules/gamification/gamification.module';
     HealthModule,
     CalendarModule,
     GamificationModule,
+    InsightModule,
   ],
   providers: [
     {

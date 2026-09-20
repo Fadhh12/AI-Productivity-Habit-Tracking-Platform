@@ -90,6 +90,20 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [insightsSaving, setInsightsSaving] = useState(false);
+  const insightsOn = user?.proactiveInsights ?? true;
+
+  async function onToggleInsights() {
+    setInsightsSaving(true);
+    try {
+      await apiFetch('/api/users/me', { method: 'PATCH', body: JSON.stringify({ proactiveInsights: !insightsOn }) });
+      await refreshUser();
+    } catch (err) {
+      setMessage(err instanceof ApiError ? err.message : 'Gagal menyimpan preferensi.');
+    } finally {
+      setInsightsSaving(false);
+    }
+  }
 
   async function onExportData() {
     setExporting(true);
@@ -234,6 +248,30 @@ export default function SettingsPage() {
           </div>
         )}
         {calendarMessage && <p className="font-body-sm text-body-sm text-text-secondary">{calendarMessage}</p>}
+      </section>
+
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-text-primary">
+          <span className="material-symbols-outlined text-[18px]">notifications_active</span>
+          Insight AI Proaktif
+        </div>
+        <p className="font-body-sm text-body-sm leading-relaxed text-text-secondary">
+          Coach mengirim notifikasi singkat saat ada hal yang layak disampaikan: rangkuman tiap Senin pagi, ajakan
+          kembali setelah beberapa hari jeda, dan pola mingguan yang ia temukan. Tidak pernah menyalahkan, dan
+          maksimal beberapa kali seminggu.
+        </p>
+        <button
+          onClick={onToggleInsights}
+          disabled={insightsSaving}
+          type="button"
+          role="switch"
+          aria-checked={insightsOn}
+          className={`w-fit rounded-full px-space-md py-2 font-label-md text-label-md font-bold disabled:opacity-50 ${
+            insightsOn ? 'bg-accent-lime text-text-primary' : 'bg-surface-container-low text-text-primary'
+          }`}
+        >
+          {insightsOn ? 'Aktif — klik untuk matikan' : 'Nonaktif — klik untuk aktifkan'}
+        </button>
       </section>
 
       <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-container-low p-space-lg">

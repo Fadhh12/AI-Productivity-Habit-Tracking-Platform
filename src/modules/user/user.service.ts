@@ -19,7 +19,7 @@ export class UserService {
   findMe(userId: string) {
     return this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
-      select: { id: true, email: true, timezone: true, createdAt: true },
+      select: { id: true, email: true, timezone: true, proactiveInsights: true, createdAt: true },
     });
   }
 
@@ -29,8 +29,8 @@ export class UserService {
     }
     return this.prisma.user.update({
       where: { id: userId },
-      data: { timezone: dto.timezone },
-      select: { id: true, email: true, timezone: true, createdAt: true },
+      data: { timezone: dto.timezone, proactiveInsights: dto.proactiveInsights },
+      select: { id: true, email: true, timezone: true, proactiveInsights: true, createdAt: true },
     });
   }
 }

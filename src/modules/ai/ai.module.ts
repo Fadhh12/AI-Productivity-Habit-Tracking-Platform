@@ -24,6 +24,6 @@ import { ActivityModule } from '../activity/activity.module';
       inject: [ConfigService],
     },
   ],
-  exports: [AiService, CircuitBreakerService],
+  exports: [AiService, CircuitBreakerService, LlmClient],
 })
 export class AiModule {}

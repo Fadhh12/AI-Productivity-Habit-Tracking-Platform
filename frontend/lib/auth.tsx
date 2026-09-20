@@ -8,6 +8,7 @@ export interface CurrentUser {
   id: string;
   email: string;
   timezone: string;
+  proactiveInsights?: boolean;
   createdAt: string;
 }
 

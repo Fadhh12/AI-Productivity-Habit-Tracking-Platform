@@ -179,6 +179,7 @@ export function TopHeader() {
                     }`}
                     type="button"
                   >
+                    {n.type.startsWith('ai_') && <span className="badge-ai mb-0.5 w-fit">✨ AI</span>}
                     <span className="font-body-sm text-body-sm text-text-primary">{n.message}</span>
                     <span className="font-caption text-caption text-text-muted">
                       {new Date(n.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}

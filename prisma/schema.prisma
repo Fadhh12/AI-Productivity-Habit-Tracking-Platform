@@ -41,6 +41,7 @@ model User {
   email        String   @unique
   passwordHash String   @map("password_hash")
   timezone     String   @default("UTC")
+  proactiveInsights Boolean @default(true) @map("proactive_insights")
   createdAt    DateTime @default(now()) @map("created_at")
 
   categories     Category[]

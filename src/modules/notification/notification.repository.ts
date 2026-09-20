@@ -21,6 +21,10 @@ export class NotificationRepository {
     return this.prisma.notification.findFirst({ where: { userId, type, refId } });
   }
 
+  findByTypesAndRef(userId: string, types: string[], refId: string) {
+    return this.prisma.notification.findFirst({ where: { userId, type: { in: types }, refId } });
+  }
+
   markRead(userId: string, id: string) {
     return this.prisma.notification.updateMany({
       where: { id, userId },

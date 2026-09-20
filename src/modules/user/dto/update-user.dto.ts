@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -6,4 +6,8 @@ export class UpdateUserDto {
   @MinLength(1)
   @MaxLength(100)
   timezone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  proactiveInsights?: boolean;
 }
