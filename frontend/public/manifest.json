@@ -1,13 +1,22 @@
 {
+  "id": "/today",
   "name": "Continuum",
   "short_name": "Continuum",
   "description": "Bangun kebiasaan produktif tanpa takut gagal.",
+  "lang": "id",
   "start_url": "/today",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f9fafb",
-  "theme_color": "#0f9d70",
+  "theme_color": "#16171D",
   "orientation": "portrait",
   "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Habit Tracker", "url": "/habit-tracker", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Coach AI", "url": "/coach", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

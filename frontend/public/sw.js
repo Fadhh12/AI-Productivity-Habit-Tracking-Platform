@@ -1,26 +1,140 @@
-const CACHE_NAME = 'continuum-shell-v1';
-const SHELL_ASSETS = ['/today', '/manifest.json', '/icons/icon.svg'];
+/* Continuum service worker: offline app shell + last-known data. */
+const VERSION = 'v2';
+const SHELL_CACHE = `continuum-shell-${VERSION}`;
+const STATIC_CACHE = `continuum-static-${VERSION}`;
+// RSC payloads share URLs with the HTML pages, so they live in their own cache to avoid overwriting each other.
+const RSC_CACHE = `continuum-rsc-${VERSION}`;
+// Keep in sync with API_CACHE_NAME in lib/offlineQueue.ts (the app deletes it on login/logout).
+const API_CACHE = 'continuum-api-v1';
+const KEEP = [SHELL_CACHE, STATIC_CACHE, RSC_CACHE, API_CACHE];
+
+const PRECACHE = ['/offline.html', '/manifest.json', '/icons/icon.svg'];
+const API_TIMEOUT_MS = 6000;
+// API paths that must never be replayed from cache.
+const API_SKIP = ['/api/auth/', '/api/ai/', '/api/calendar/google/auth-url', '/api/calendar/google/callback', '/monthly/export'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS)));
+  event.waitUntil(caches.open(SHELL_CACHE).then((cache) => cache.addAll(PRECACHE)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))),
-    ),
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((key) => !KEEP.includes(key)).map((key) => caches.delete(key)))),
   );
   self.clients.claim();
 });
 
-// Network-first for API calls (never serve stale data behind the user's back), cache-first for the app shell.
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-  if (url.pathname.startsWith('/api')) return;
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached ?? fetch(event.request)),
-  );
+// Network first, so data is never silently stale while online; the cached copy is only used when the network fails.
+async function networkFirstApi(request) {
+  const cache = await caches.open(API_CACHE);
+  try {
+    const response = await withTimeout(fetch(request), API_TIMEOUT_MS);
+    if (response.ok) cache.put(request.url, response.clone());
+    return response;
+  } catch {
+    const cached = await cache.match(request.url);
+    return cached ?? Response.error();
+  }
+}
+
+async function networkFirstPage(request) {
+  const cache = await caches.open(SHELL_CACHE);
+  try {
+    const response = await fetch(request);
+    // Redirected responses can't be served back to a navigation, so don't cache them.
+    if (response.ok && !response.redirected) cache.put(request, response.clone());
+    return response;
+  } catch {
+    return (
+      (await cache.match(request, { ignoreSearch: true, ignoreVary: true })) ??
+      (await cache.match('/offline.html')) ??
+      Response.error()
+    );
+  }
+}
+
+// Next.js fetches an RSC payload on client-side route changes; cache those too so switching screens works offline.
+async function networkFirstRsc(request) {
+  const cache = await caches.open(RSC_CACHE);
+  try {
+    const response = await fetch(request);
+    if (response.ok) cache.put(request, response.clone());
+    return response;
+  } catch {
+    return (await cache.match(request, { ignoreVary: true })) ?? Response.error();
+  }
+}
+
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok) cache.put(request, response.clone());
+  return response;
+}
+
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  const refresh = fetch(request)
+    .then((response) => {
+      if (response.ok || response.type === 'opaque') cache.put(request, response.clone());
+      return response;
+    })
+    .catch(() => undefined);
+  return cached ?? (await refresh) ?? Response.error();
+}
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+
+  if (url.pathname.startsWith('/api/')) {
+    if (API_SKIP.some((part) => url.pathname.includes(part))) return;
+    event.respondWith(networkFirstApi(request));
+    return;
+  }
+
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(staleWhileRevalidate(request, STATIC_CACHE));
+    return;
+  }
+
+  if (url.origin !== self.location.origin) return;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirstPage(request));
+    return;
+  }
+
+  if (url.searchParams.has('_rsc') || request.headers.get('RSC') === '1') {
+    event.respondWith(networkFirstRsc(request));
+    return;
+  }
+
+  if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/icons/') || url.pathname === '/manifest.json') {
+    event.respondWith(cacheFirst(request, STATIC_CACHE));
+  }
 });

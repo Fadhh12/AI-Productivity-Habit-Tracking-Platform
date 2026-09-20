@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch, clearTokens, setTokens } from './api';
+import { clearOfflineData } from './offlineQueue';
 
 export interface CurrentUser {
   id: string;
@@ -52,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         '/api/auth/login',
         { method: 'POST', body: JSON.stringify({ email, password }), skipAuth: true },
       );
+      await clearOfflineData();
       setTokens(data.accessToken, data.refreshToken);
       setUser(data.user);
       router.push('/today');
@@ -65,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         '/api/auth/register',
         { method: 'POST', body: JSON.stringify({ email, password, timezone }), skipAuth: true },
       );
+      await clearOfflineData();
       setTokens(data.accessToken, data.refreshToken);
       setUser(data.user);
       router.push('/onboarding');
@@ -74,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     clearTokens();
+    clearOfflineData();
     setUser(null);
     router.push('/login');
   }, [router]);

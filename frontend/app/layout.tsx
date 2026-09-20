@@ -41,11 +41,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </AuthProvider>
         <script
           dangerouslySetInnerHTML={{
-            __html: `
+            // The worker caches app files and would fight hot reloading, so it only runs in production builds;
+            // in development, remove any worker left over from an earlier production run.
+            __html:
+              process.env.NODE_ENV === 'production'
+                ? `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                   navigator.serviceWorker.register('/sw.js').catch(() => {});
                 });
+              }
+            `
+                : `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+                caches.keys().then((keys) => keys.filter((k) => k.startsWith('continuum-')).forEach((k) => caches.delete(k)));
               }
             `,
           }}

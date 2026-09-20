@@ -1,7 +1,8 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { apiFetch, ApiError } from '@/lib/api';
+import { apiFetch, apiFetchQueued, wasQueued, ApiError } from '@/lib/api';
+import { useQueueFlushed } from '@/lib/useQueueFlushed';
 import { Habit } from '@/lib/types';
 import { STREAK_MILESTONES, nextMilestone, unlockedMilestone } from '@/lib/achievements';
 import { SkeletonBlock } from '@/components/Skeleton';
@@ -61,7 +62,13 @@ export default function HabitTrackerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [checkingId, setCheckingId] = useState<string | null>(null);
+  const [queuedIds, setQueuedIds] = useState<Set<string>>(new Set());
   const [showForm, setShowForm] = useState(false);
+
+  useQueueFlushed(() => {
+    setQueuedIds(new Set());
+    load();
+  });
 
   async function load() {
     setLoading(true);
@@ -81,8 +88,12 @@ export default function HabitTrackerPage() {
   async function onCheckin(habitId: string) {
     setCheckingId(habitId);
     try {
-      await apiFetch(`/api/habits/${habitId}/checkin`, { method: 'POST', body: JSON.stringify({}) });
-      await load();
+      const result = await apiFetchQueued(`/api/habits/${habitId}/checkin`, { method: 'POST', body: JSON.stringify({}) }, 'checkin');
+      if (wasQueued(result)) {
+        setQueuedIds((prev) => new Set(prev).add(habitId));
+      } else {
+        await load();
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal check-in habit.');
     } finally {
@@ -260,7 +271,7 @@ export default function HabitTrackerPage() {
             const week = weekProgress(h, weekDates);
             const doneCount = week.filter((w) => w.status === 'done').length;
             const pct = Math.round((doneCount / 7) * 100);
-            const checkedInToday = week.find((w) => w.dateStr === todayStr)?.status === 'done';
+            const checkedInToday = week.find((w) => w.dateStr === todayStr)?.status === 'done' || queuedIds.has(h.id);
             const circumference = 2 * Math.PI * 16;
             return (
               <div key={h.id} className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-md shadow-sm">

@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { apiFetch, ApiError } from '@/lib/api';
+import { apiFetch, apiFetchQueued, wasQueued, ApiError } from '@/lib/api';
+import { useQueueFlushed } from '@/lib/useQueueFlushed';
 import { Activity, Category, DailyReflection, Goal, Habit } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { HabitCard } from '@/components/HabitCard';
@@ -99,6 +100,8 @@ export default function TodayPage() {
     onSaved: loadAll,
     onError: setError,
   });
+
+  useQueueFlushed(() => loadAll());
 
   async function loadAll() {
     setLoading(true);
@@ -241,11 +244,14 @@ export default function TodayPage() {
   async function onCheckin(habitId: string) {
     setCheckingId(habitId);
     try {
-      const result = await apiFetch<{ data: Habit }>(`/api/habits/${habitId}/checkin`, {
-        method: 'POST',
-        body: JSON.stringify({}),
-      });
-      setHabits((prev) => prev.map((h) => (h.id === habitId ? result.data : h)));
+      const result = await apiFetchQueued<{ data: Habit }>(
+        `/api/habits/${habitId}/checkin`,
+        { method: 'POST', body: JSON.stringify({}) },
+        'checkin',
+      );
+      if (!wasQueued(result)) {
+        setHabits((prev) => prev.map((h) => (h.id === habitId ? result.data : h)));
+      }
       setCheckedInIds((prev) => new Set(prev).add(habitId));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal check-in habit.');

@@ -1,3 +1,5 @@
+import { enqueue, isNetworkError, QueuedKind } from './offlineQueue';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 function getTokens() {
@@ -39,6 +41,34 @@ async function refreshAccessToken(): Promise<string | null> {
   const data = await res.json();
   setTokens(data.accessToken, data.refreshToken);
   return data.accessToken as string;
+}
+
+export interface OfflineQueued {
+  queued: true;
+}
+
+export function wasQueued(result: unknown): result is OfflineQueued {
+  return typeof result === 'object' && result !== null && (result as OfflineQueued).queued === true;
+}
+
+/**
+ * Like apiFetch for a write, but if the network is unreachable the request is
+ * saved to the offline queue (replayed automatically when back online) and
+ * `{ queued: true }` is returned instead of throwing. Server errors still throw.
+ */
+export async function apiFetchQueued<T = unknown>(
+  path: string,
+  options: RequestInit,
+  kind: QueuedKind,
+): Promise<T | OfflineQueued> {
+  const idempotencyKey = crypto.randomUUID();
+  try {
+    return await apiFetch<T>(path, { ...options, idempotencyKey });
+  } catch (err) {
+    if (!isNetworkError(err)) throw err;
+    enqueue({ kind, path, method: options.method ?? 'POST', body: String(options.body ?? '{}') });
+    return { queued: true };
+  }
 }
 
 /** Downloads a binary/file response (export endpoints) and saves it via the browser, reusing the same auth + refresh flow as apiFetch. */

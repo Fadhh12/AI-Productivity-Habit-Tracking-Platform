@@ -1,4 +1,4 @@
-import { apiFetch } from './api';
+import { apiFetchQueued } from './api';
 import { RepeatRule, generateOccurrenceDates } from './recurrence';
 
 interface RecurringActivityPayload {
@@ -19,14 +19,18 @@ export async function createRecurringActivities(
   let failCount = 0;
   for (const dateStr of occurrenceDates) {
     try {
-      await apiFetch('/api/activities', {
-        method: 'POST',
-        body: JSON.stringify({
-          ...payload,
-          startTime: new Date(`${dateStr}T${startTimeOfDay}:00`).toISOString(),
-          endTime: new Date(`${dateStr}T${endTimeOfDay}:00`).toISOString(),
-        }),
-      });
+      await apiFetchQueued(
+        '/api/activities',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            ...payload,
+            startTime: new Date(`${dateStr}T${startTimeOfDay}:00`).toISOString(),
+            endTime: new Date(`${dateStr}T${endTimeOfDay}:00`).toISOString(),
+          }),
+        },
+        'activity',
+      );
     } catch {
       failCount += 1;
     }

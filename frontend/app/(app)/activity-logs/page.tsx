@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { apiFetch, ApiError } from '@/lib/api';
+import { useQueueFlushed } from '@/lib/useQueueFlushed';
 import { Activity, Category } from '@/lib/types';
 import { ActivityItem } from '@/components/ActivityItem';
 import { RepeatRule } from '@/lib/recurrence';
@@ -62,6 +63,8 @@ export default function ActivityLogsPage() {
     onSaved: load,
     onError: setError,
   });
+
+  useQueueFlushed(() => load());
 
   async function load() {
     setLoading(true);

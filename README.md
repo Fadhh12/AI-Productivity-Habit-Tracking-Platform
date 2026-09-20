@@ -151,6 +151,7 @@ stack notes):
 | 11 — AI Coach chat | [docs/phase-11-ai-coach-chat.md](./docs/phase-11-ai-coach-chat.md) |
 | 12 — Free / pluggable AI provider | [docs/phase-12-free-ai-provider.md](./docs/phase-12-free-ai-provider.md) |
 | 13 — Proactive AI insights | [docs/phase-13-proactive-insights.md](./docs/phase-13-proactive-insights.md) |
+| 14 — Offline PWA | [docs/phase-14-offline-pwa.md](./docs/phase-14-offline-pwa.md) |
 
 ## Status
 

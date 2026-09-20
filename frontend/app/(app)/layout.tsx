@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/BottomNav';
 import { Sidebar } from '@/components/Sidebar';
 import { TopHeader } from '@/components/TopHeader';
 import { BadgeUnlockToast } from '@/components/BadgeUnlockToast';
+import { OfflineBanner } from '@/components/OfflineBanner';
 
 export default function AppShellLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -29,6 +30,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
       <main className="w-full px-space-md pb-24 pt-24 lg:px-space-xl lg:pb-space-xl">{children}</main>
       <BottomNav />
       <BadgeUnlockToast />
+      <OfflineBanner />
     </div>
   );
 }
