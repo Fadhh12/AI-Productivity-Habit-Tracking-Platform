@@ -18,6 +18,7 @@ import { CurrentUser, CurrentUserPayload } from '../auth/decorators/current-user
 import { RollupService } from './rollup.service';
 import { QueryMonthlyReportDto } from './dto/query-monthly-report.dto';
 import { RefreshReportDto } from './dto/refresh-report.dto';
+import { PlanService } from '../plan/plan.service';
 import { ExportReportDto } from './dto/export-report.dto';
 import { RollupJobData } from './rollup.processor';
 import { buildReportCsv, buildReportPdf } from './report-export.util';
@@ -39,6 +40,7 @@ function currentMonth(): string {
 export class RollupController {
   constructor(
     private readonly rollupService: RollupService,
+    private readonly planService: PlanService,
     @InjectQueue('rollup') private readonly rollupQueue: Queue<RollupJobData>,
   ) {}
 
@@ -61,6 +63,7 @@ export class RollupController {
     @Query() query: ExportReportDto,
     @Res() res: Response,
   ) {
+    if (query.format !== 'csv') await this.planService.requirePlus(user.id, 'pdf_export');
     const summary = await this.rollupService.getMonthlyFromCache(user.id, query.month);
     if (!summary) {
       throw new NotFoundException(

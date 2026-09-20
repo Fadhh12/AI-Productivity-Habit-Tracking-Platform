@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LlmClient } from '../ai/llm.client';
 import { CircuitBreakerService } from '../ai/circuit-breaker.service';
 import { NotificationService } from '../notification/notification.service';
+import { PlanService } from '../plan/plan.service';
 import { RollupService } from '../rollup/rollup.service';
 import { DateUtil } from '../../shared/utils/date.util';
 import { StructuredLogger } from '../../shared/utils/structured-logger';
@@ -37,6 +38,7 @@ export class InsightService {
     private readonly rollupService: RollupService,
     private readonly llmClient: LlmClient,
     private readonly circuitBreaker: CircuitBreakerService,
+    private readonly planService: PlanService,
   ) {}
 
   async runForAllUsers(now: Date = new Date()) {
@@ -58,6 +60,8 @@ export class InsightService {
   async runForUser(userId: string, timezone: string, now: Date = new Date()) {
     const m = localMoment(now, timezone);
     if (isWeeklyWinWindow(m)) await this.weeklyWin(userId, timezone, m);
+    // The weekly summary is free; comeback nudges and pattern analysis are Plus.
+    if (!(await this.planService.isPlus(userId))) return;
     if (m.hour >= 10 && m.hour <= 20) await this.comeback(userId, timezone, m);
     if (isPatternWindow(m)) await this.pattern(userId, m);
   }

@@ -154,6 +154,7 @@ stack notes):
 | 14 — Offline PWA | [docs/phase-14-offline-pwa.md](./docs/phase-14-offline-pwa.md) |
 | 15 — Web Push notifications | [docs/phase-15-push-notifications.md](./docs/phase-15-push-notifications.md) |
 | 16 — AI weekly challenge + notification center | [docs/phase-16-weekly-challenge.md](./docs/phase-16-weekly-challenge.md) |
+| 17 — Free vs Plus plan foundation | [docs/phase-17-plans-and-premium.md](./docs/phase-17-plans-and-premium.md) |
 
 ## Status
 

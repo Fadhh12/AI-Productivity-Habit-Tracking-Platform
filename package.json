@@ -20,7 +20,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts",
+    "plan:set": "ts-node scripts/set-plan.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",

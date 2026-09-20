@@ -41,7 +41,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
       stack,
     });
 
+    // Machine-readable extras (e.g. PREMIUM_REQUIRED / LIMIT_REACHED) let the client show an upgrade prompt instead of a raw error.
+    const extras: Record<string, unknown> = {};
+    if (isHttp && typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+      const { code, feature, plan } = exceptionResponse as Record<string, unknown>;
+      if (code !== undefined) extras.code = code;
+      if (feature !== undefined) extras.feature = feature;
+      if (plan !== undefined) extras.plan = plan;
+    }
+
     response.status(status).json({
+      ...extras,
       statusCode: status,
       requestId: request?.requestId,
       error: errorType,

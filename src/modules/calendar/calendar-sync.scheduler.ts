@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CalendarRepository } from './calendar.repository';
+import { PlanService } from '../plan/plan.service';
 import { CalendarService } from './calendar.service';
 import { StructuredLogger } from '../../shared/utils/structured-logger';
 
@@ -10,6 +11,7 @@ export class CalendarSyncScheduler {
   constructor(
     private readonly repository: CalendarRepository,
     private readonly calendarService: CalendarService,
+    private readonly planService: PlanService,
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -19,6 +21,8 @@ export class CalendarSyncScheduler {
     const integrations = await this.repository.findAllConnected();
     for (const integration of integrations) {
       try {
+        // Manual "Sync sekarang" stays free; only the hourly auto-sync is a Plus perk.
+        if (!(await this.planService.isPlus(integration.userId))) continue;
         await this.calendarService.syncForUser(integration.userId);
       } catch (error) {
         StructuredLogger.error({

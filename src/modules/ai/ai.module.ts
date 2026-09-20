@@ -5,7 +5,6 @@ import { AiService } from './ai.service';
 import { CoachService } from './coach.service';
 import { LlmClient } from './llm.client';
 import { CircuitBreakerService } from './circuit-breaker.service';
-import { AiRateLimiterService } from './ai-rate-limiter.service';
 import { RollupModule } from '../rollup/rollup.module';
 import { HabitModule } from '../habit/habit.module';
 import { ActivityModule } from '../activity/activity.module';
@@ -17,7 +16,6 @@ import { ActivityModule } from '../activity/activity.module';
     AiService,
     CoachService,
     LlmClient,
-    AiRateLimiterService,
     {
       provide: CircuitBreakerService,
       useFactory: (config: ConfigService) => CircuitBreakerService.fromConfig(config),

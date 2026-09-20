@@ -42,6 +42,8 @@ model User {
   passwordHash String   @map("password_hash")
   timezone     String   @default("UTC")
   proactiveInsights Boolean @default(true) @map("proactive_insights")
+  /// Continuum Plus is active while this is in the future; null/past means the free plan.
+  premiumUntil DateTime? @map("premium_until")
   createdAt    DateTime @default(now()) @map("created_at")
 
   categories     Category[]

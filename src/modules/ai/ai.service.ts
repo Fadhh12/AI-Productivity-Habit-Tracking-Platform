@@ -2,7 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infra/db/prisma.service';
 import { LlmClient } from './llm.client';
 import { CircuitBreakerService } from './circuit-breaker.service';
-import { AiRateLimiterService } from './ai-rate-limiter.service';
+import { AiRateLimiterService } from '../plan/ai-rate-limiter.service';
+import { PlanService } from '../plan/plan.service';
 import { RollupService } from '../rollup/rollup.service';
 import { HabitService } from '../habit/habit.service';
 import { ActivityService } from '../activity/activity.service';
@@ -48,19 +49,11 @@ export class AiService {
     private readonly habitService: HabitService,
     private readonly activityService: ActivityService,
     private readonly prisma: PrismaService,
+    private readonly planService: PlanService,
   ) {}
 
   private async guardRateLimitAndCircuit(userId: string): Promise<{ circuitOpen: boolean }> {
-    const rate = await this.rateLimiter.checkAndIncrement(userId);
-    if (!rate.allowed) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.TOO_MANY_REQUESTS,
-          message: `Daily AI request limit reached (${rate.limit}/day). Try again tomorrow.`,
-        },
-        HttpStatus.TOO_MANY_REQUESTS,
-      );
-    }
+    await this.rateLimiter.consume(userId, 'ai');
     return { circuitOpen: this.circuitBreaker.getState() === 'open' };
   }
 
@@ -109,6 +102,7 @@ Activity text: ${text}`,
   }
 
   async digest(userId: string, period: 'weekly' | 'monthly') {
+    if (period === 'monthly') await this.planService.requirePlus(userId, 'monthly_digest');
     const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
 
     const rollupData =
@@ -427,6 +421,7 @@ Activity text: ${text}`,
 
   /** Detects behavioral correlations from the last 30 days of habit check-ins and weekly category time (e.g. a weekday with a low completion rate, or a habit that's missed unusually often). */
   async patternDetection(userId: string) {
+    await this.planService.requirePlus(userId, 'pattern_detection');
     const { circuitOpen } = await this.guardRateLimitAndCircuit(userId);
     const stats = await this.buildPatternStats(userId);
 

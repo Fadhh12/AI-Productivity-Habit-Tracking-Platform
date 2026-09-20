@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { WeeklyChallenge } from '@prisma/client';
 import { LlmClient } from '../ai/llm.client';
 import { CircuitBreakerService } from '../ai/circuit-breaker.service';
+import { PlanService } from '../plan/plan.service';
 import { NotificationService } from '../notification/notification.service';
 import { DateUtil } from '../../shared/utils/date.util';
 import { StructuredLogger } from '../../shared/utils/structured-logger';
@@ -48,6 +49,7 @@ export class ChallengeService {
     private readonly notificationService: NotificationService,
     private readonly llmClient: LlmClient,
     private readonly circuitBreaker: CircuitBreakerService,
+    private readonly planService: PlanService,
   ) {}
 
   /** This week's challenge (created on first request of the week), with live progress; completes and notifies once the target is reached. */
@@ -134,7 +136,9 @@ export class ChallengeService {
     const stats: LastWeekStats = { ...counts, activeHabits };
 
     let draft: ChallengeDraft | null = null;
-    if (this.llmClient.isConfigured() && this.circuitBreaker.getState() !== 'open') {
+    // Personalised AI challenges are Plus; free users get the deterministic template.
+    const aiAllowed = await this.planService.isPlus(userId);
+    if (aiAllowed && this.llmClient.isConfigured() && this.circuitBreaker.getState() !== 'open') {
       try {
         const { system, user } = buildChallengePrompt(stats);
         draft = sanitizeDraft(await this.llmClient.generateJson<unknown>(system, user));
