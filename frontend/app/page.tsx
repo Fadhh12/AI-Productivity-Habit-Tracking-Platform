@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
+import { FinalCta } from '@/components/landing/FinalCta';
 import { Features } from '@/components/landing/Features';
+import { Footer } from '@/components/landing/Footer';
 import { Hero } from '@/components/landing/Hero';
+import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Philosophy } from '@/components/landing/Philosophy';
+import { Plans } from '@/components/landing/Plans';
 import { LandingNav } from '@/components/landing/LandingNav';
 
 export const metadata: Metadata = {
@@ -21,7 +25,11 @@ export default function LandingPage() {
         <Hero />
         <Philosophy />
         <Features />
+        <HowItWorks />
+        <Plans />
+        <FinalCta />
       </main>
+      <Footer />
     </div>
   );
 }
