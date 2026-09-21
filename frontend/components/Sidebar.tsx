@@ -46,25 +46,31 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 z-50 hidden h-full w-72 flex-col justify-between bg-sidebar-dark p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] lg:flex">
       <div className="flex flex-col gap-space-lg">
         <div className="flex items-center gap-space-sm px-space-sm pt-space-xs">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
+          <div className="flex h-8 w-8 animate-scale-in items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
             C
           </div>
           <span className="font-headline-md text-headline-md tracking-tight text-white">Continuum</span>
         </div>
-        <nav className="flex flex-col gap-space-xs px-space-xs">
+        <nav aria-label="Navigasi utama" className="stagger flex flex-col gap-space-xs px-space-xs">
           {NAV_ITEMS.map((item) => {
             const active = pathname?.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-space-md rounded-full px-space-md py-space-sm transition-all ${
+                aria-current={active ? 'page' : undefined}
+                className={`press group flex items-center gap-space-md rounded-full px-space-md py-space-sm ${
                   active
-                    ? 'bg-accent-lime font-bold text-text-primary shadow-sm'
+                    ? 'bg-accent-lime font-bold text-text-primary shadow-[0_8px_20px_-8px_rgba(204,255,0,0.5)]'
                     : 'text-text-muted hover:bg-sidebar-card hover:text-white'
                 }`}
               >
-                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                <span
+                  className="material-symbols-outlined text-[20px] transition-transform duration-500 ease-spring group-hover:translate-x-0.5 group-hover:scale-110"
+                  style={active ? { fontVariationSettings: "'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24" } : undefined}
+                >
+                  {item.icon}
+                </span>
                 <span className="font-label-lg text-label-lg">{item.label}</span>
               </Link>
             );
@@ -74,7 +80,7 @@ export function Sidebar() {
       <div className="flex flex-col gap-space-sm">
       <Link
         href="/plus"
-        className="flex items-center gap-space-sm rounded-lg bg-sidebar-card p-space-md text-white transition-colors hover:bg-border-dark-subtle"
+        className="press flex items-center gap-space-sm rounded-lg bg-sidebar-card p-space-md text-white hover:bg-border-dark-subtle"
       >
         <span className="material-symbols-outlined flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-lime text-[20px] text-text-primary" aria-hidden="true">
           workspace_premium
@@ -102,7 +108,7 @@ export function Sidebar() {
         <button
           onClick={onInstallClick}
           disabled={!installPrompt || installed}
-          className="mt-space-xs w-full rounded-full bg-sidebar-dark py-space-xs text-center font-label-sm text-label-sm text-white transition-all hover:bg-accent-lime hover:text-text-primary disabled:cursor-default disabled:opacity-50 disabled:hover:bg-sidebar-dark disabled:hover:text-white"
+          className="press mt-space-xs w-full rounded-full bg-sidebar-dark py-space-xs text-center font-label-sm text-label-sm text-white hover:bg-accent-lime hover:text-text-primary disabled:cursor-default disabled:opacity-50 disabled:hover:bg-sidebar-dark disabled:hover:text-white"
           type="button"
         >
           {installed ? 'Terpasang ✓' : installPrompt ? 'Install App' : 'Buka di browser mobile untuk install'}

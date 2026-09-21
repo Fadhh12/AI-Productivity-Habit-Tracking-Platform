@@ -101,12 +101,12 @@ export function TopHeader() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setSearchOpen(true)}
-            className="w-full rounded-full bg-surface-container-low py-space-sm pl-11 pr-space-md font-body-sm text-body-sm text-on-surface placeholder:text-text-muted focus:bg-surface-card focus:outline-none"
+            className="w-full rounded-full bg-surface-container-low py-space-sm pl-11 pr-space-md font-body-sm text-body-sm text-on-surface transition-[background-color,box-shadow] duration-300 ease-spring placeholder:text-text-muted focus:bg-surface-card focus:shadow-soft focus:outline-none focus:ring-2 focus:ring-accent-lime"
             placeholder="Cari aktivitas, habit, atau goal..."
             type="text"
           />
           {searchOpen && query.trim().length >= 2 && (
-            <div className="absolute left-0 right-0 top-12 z-50 max-h-96 overflow-y-auto rounded-lg bg-surface-card p-space-sm shadow-[0_12px_32px_-4px_rgba(22,23,29,0.08)]">
+            <div className="absolute left-0 right-0 top-12 z-50 max-h-96 animate-scale-in overflow-y-auto rounded-lg bg-surface-card p-space-sm shadow-[0_18px_40px_-12px_rgba(80,102,0,0.22)]" style={{ transformOrigin: 'top' }}>
               {searching ? (
                 <p className="px-space-sm py-3 font-body-sm text-body-sm text-text-muted">Mencari…</p>
               ) : results.length === 0 ? (
@@ -117,7 +117,7 @@ export function TopHeader() {
                     key={r.key}
                     onClick={() => onSelectResult(r.href)}
                     type="button"
-                    className="flex w-full items-center gap-space-sm rounded-xl px-space-sm py-space-sm text-left transition-colors hover:bg-surface-container-low"
+                    className="press flex w-full items-center gap-space-sm rounded-xl px-space-sm py-space-sm text-left hover:bg-surface-container-low"
                   >
                     <span className="material-symbols-outlined text-[18px] text-text-muted">{r.icon}</span>
                     <div className="flex min-w-0 flex-col">
