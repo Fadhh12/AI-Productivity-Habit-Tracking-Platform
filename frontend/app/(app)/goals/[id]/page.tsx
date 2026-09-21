@@ -6,6 +6,7 @@ import { apiFetch, ApiError } from '@/lib/api';
 import { GoalBreakdown } from '@/lib/types';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
+import { useMascotError, useMascotWhile } from '@/lib/mascot';
 
 function GoalDetailSkeleton() {
   return (
@@ -57,6 +58,8 @@ export default function GoalDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [suggestion, setSuggestion] = useState<AiGoalSuggestion | null>(null);
   const [suggesting, setSuggesting] = useState(false);
+  useMascotWhile(suggesting, 'talk');
+  useMascotError(error);
 
   async function load() {
     setLoading(true);

@@ -5,6 +5,7 @@ import { apiFetch, ApiError } from '@/lib/api';
 import { upgradeReason, UpgradeReason } from '@/lib/premium';
 import { UpgradeNotice } from '@/components/UpgradeNotice';
 import { usePlan } from '@/lib/plan';
+import { useMascotError, useMascotWhile } from '@/lib/mascot';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -31,6 +32,8 @@ export default function CoachPage() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  useMascotWhile(sending, 'talk');
+  useMascotError(error);
   const [limitHit, setLimitHit] = useState<UpgradeReason | null>(null);
   const { refresh: refreshPlan } = usePlan();
   const bottomRef = useRef<HTMLDivElement>(null);

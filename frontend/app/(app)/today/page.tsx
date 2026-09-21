@@ -16,6 +16,7 @@ import { DAY_LABELS_SUNDAY_FIRST, last7Days, todayDateString } from '@/lib/date'
 import { useQuickAdd } from '@/lib/quickAdd';
 import { createRecurringActivities } from '@/lib/activities';
 import { Confetti } from '@/components/Confetti';
+import { emitMascot, useMascotError, useMascotWhile } from '@/lib/mascot';
 import { EmptyState } from '@/components/EmptyState';
 import { WelcomeTips } from '@/components/WelcomeTips';
 import { WelcomePoster } from '@/components/WelcomePoster';
@@ -106,11 +107,16 @@ export default function TodayPage() {
 
   const { quickText, setQuickText, quickLoading, draft, setDraft, onQuickAdd, confirmDraft } = useQuickAdd({
     categories,
-    onSaved: loadAll,
+    onSaved: async () => {
+      await loadAll();
+      emitMascot('saved');
+    },
     onError: setError,
   });
 
   useQueueFlushed(() => loadAll());
+  useMascotWhile(quickLoading);
+  useMascotError(error);
 
   async function loadAll() {
     setLoading(true);
@@ -169,6 +175,7 @@ export default function TodayPage() {
       });
       setReflection(updated);
       setReflectionSaved(true);
+      emitMascot('saved');
       setTimeout(() => setReflectionSaved(false), 2000);
     } catch (err) {
       setReflectionError(err instanceof ApiError ? err.message : 'Gagal menyimpan refleksi.');
@@ -245,6 +252,7 @@ export default function TodayPage() {
       setShowHabitForm(false);
       (e.target as HTMLFormElement).reset();
       await loadAll();
+      emitMascot('created');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal membuat habit.');
     }
@@ -265,7 +273,12 @@ export default function TodayPage() {
       const next = new Set(checkedInIds).add(habitId);
       setCheckedInIds(next);
       // Confetti only when this check-in completes every active habit for the day.
-      if (habits.length > 0 && habits.every((h) => next.has(h.id))) setBurst((n) => n + 1);
+      if (habits.length > 0 && habits.every((h) => next.has(h.id))) {
+        setBurst((n) => n + 1);
+        emitMascot('allDone');
+      } else {
+        emitMascot('checkin');
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal check-in habit.');
     } finally {

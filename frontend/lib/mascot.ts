@@ -84,3 +84,26 @@ export function useMascotReaction(): MascotReaction | null {
 
   return reaction;
 }
+
+/**
+ * Makes the mascot "think" while `busy` is true. When work ends it fires `doneEvent` (default: back to rest).
+ * The very first render never fires anything, so mounting a page with `busy = false` stays quiet.
+ */
+export function useMascotWhile(busy: boolean, doneEvent: MascotEvent = 'idle') {
+  const wasBusy = useRef(false);
+  useEffect(() => {
+    if (busy) {
+      emitMascot('thinking');
+    } else if (wasBusy.current) {
+      emitMascot(doneEvent);
+    }
+    wasBusy.current = busy;
+  }, [busy, doneEvent]);
+}
+
+/** Worried face whenever a new error message appears. */
+export function useMascotError(error: string | null) {
+  useEffect(() => {
+    if (error) emitMascot('error');
+  }, [error]);
+}

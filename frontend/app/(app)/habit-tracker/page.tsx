@@ -6,6 +6,7 @@ import { useQueueFlushed } from '@/lib/useQueueFlushed';
 import { Habit } from '@/lib/types';
 import { STREAK_MILESTONES, nextMilestone, unlockedMilestone } from '@/lib/achievements';
 import { EmptyState } from '@/components/EmptyState';
+import { emitMascot, useMascotError } from '@/lib/mascot';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
 import { DAY_LABELS_MONDAY_FIRST, last7DatesMonToSun, todayDateString } from '@/lib/date';
@@ -62,6 +63,7 @@ export default function HabitTrackerPage() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  useMascotError(error);
   const [checkingId, setCheckingId] = useState<string | null>(null);
   const [queuedIds, setQueuedIds] = useState<Set<string>>(new Set());
   const [showForm, setShowForm] = useState(false);
@@ -95,6 +97,7 @@ export default function HabitTrackerPage() {
       } else {
         await load();
       }
+      emitMascot('checkin');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal check-in habit.');
     } finally {
@@ -149,6 +152,7 @@ export default function HabitTrackerPage() {
       setShowForm(false);
       (e.target as HTMLFormElement).reset();
       await load();
+      emitMascot('created');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal membuat habit.');
     }

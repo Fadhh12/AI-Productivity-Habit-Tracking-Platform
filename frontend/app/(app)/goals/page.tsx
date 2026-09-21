@@ -6,6 +6,7 @@ import { apiFetch, ApiError } from '@/lib/api';
 import { Goal, GoalBreakdown } from '@/lib/types';
 import { EmptyState } from '@/components/EmptyState';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { emitMascot, useMascotError } from '@/lib/mascot';
 
 const ICON_STYLES = [
   { bg: 'bg-accent-lavender', text: 'text-accent-lavender-text', icon: 'flag' },
@@ -55,6 +56,7 @@ export default function GoalsPage() {
   const [breakdowns, setBreakdowns] = useState<Record<string, GoalBreakdown>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  useMascotError(error);
   const [showForm, setShowForm] = useState(false);
   const [horizon, setHorizon] = useState<'yearly' | 'monthly'>('yearly');
 
@@ -98,6 +100,7 @@ export default function GoalsPage() {
       setShowForm(false);
       (e.target as HTMLFormElement).reset();
       await load();
+      emitMascot('created');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal membuat goal.');
     }

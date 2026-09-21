@@ -6,6 +6,7 @@ import { upgradeReason, UpgradeReason } from '@/lib/premium';
 import { UpgradeNotice } from '@/components/UpgradeNotice';
 import { MonthlyReport, PatternDetection } from '@/lib/types';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { useMascotError, useMascotWhile } from '@/lib/mascot';
 
 function ReportsSkeleton() {
   return (
@@ -82,6 +83,8 @@ export default function ReportsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [exporting, setExporting] = useState<'csv' | 'pdf' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  useMascotWhile(refreshing, 'saved');
+  useMascotError(error);
   const [digestLocked, setDigestLocked] = useState<UpgradeReason | null>(null);
   const [patternsLocked, setPatternsLocked] = useState<UpgradeReason | null>(null);
   const [exportLocked, setExportLocked] = useState<UpgradeReason | null>(null);

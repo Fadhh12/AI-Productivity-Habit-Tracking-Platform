@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { GamificationSummary } from '@/lib/types';
 import { Confetti } from '@/components/Confetti';
+import { emitMascot } from '@/lib/mascot';
 
 const SEEN_KEY = 'continuum_seen_badges';
 
@@ -40,6 +41,7 @@ export function BadgeUnlockToast() {
           setFresh(added);
           setBurst((n) => n + 1);
           navigator.vibrate?.([30, 40, 30]);
+          emitMascot('badge');
         }
       })
       .catch(() => {});

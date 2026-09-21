@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Mascot, MascotMood } from '@/components/Mascot';
+import { useMascotReaction } from '@/lib/mascot';
 
 interface WelcomePosterProps {
   name: string;
@@ -36,8 +37,10 @@ export function WelcomePoster({ name, done, total, capacity, activities }: Welco
     setHour(new Date().getHours());
   }, []);
 
+  const reaction = useMascotReaction();
   const allDone = total > 0 && done === total;
-  const mood: MascotMood = allDone ? 'cheer' : hour !== null && (hour >= 22 || hour < 5) ? 'sleepy' : 'happy';
+  const restMood: MascotMood = allDone ? 'cheer' : hour !== null && (hour >= 22 || hour < 5) ? 'sleepy' : 'happy';
+  const mood: MascotMood = reaction?.mood ?? restMood;
   const shown = name.charAt(0).toUpperCase() + name.slice(1);
 
   return (
@@ -89,7 +92,19 @@ export function WelcomePoster({ name, done, total, capacity, activities }: Welco
           </div>
         </div>
 
-        <Mascot mood={mood} interactive className="w-[104px] shrink-0 sm:w-[168px]" />
+        <div className="relative shrink-0">
+          {reaction?.message && (
+            <div
+              key={`${reaction.message}-${reaction.pulse}`}
+              role="status"
+              className="absolute -top-2 right-full z-10 mr-1 w-max max-w-[150px] animate-scale-in rounded-2xl rounded-br-md bg-white px-3 py-2 text-[12px] font-semibold leading-snug text-[#16171D] shadow-[0_12px_28px_-10px_rgba(22,23,29,0.5)] sm:max-w-[190px]"
+              style={{ transformOrigin: 'bottom right' }}
+            >
+              {reaction.message}
+            </div>
+          )}
+          <Mascot mood={mood} interactive pulse={reaction?.pulse ?? 0} className="w-[104px] sm:w-[168px]" />
+        </div>
       </div>
     </section>
   );
