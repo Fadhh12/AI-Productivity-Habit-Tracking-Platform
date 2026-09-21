@@ -25,7 +25,7 @@ function GoalsSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
-        <section className="flex flex-col gap-space-md">
+        <section className="stagger flex flex-col gap-space-md">
           <div className="flex items-center justify-between px-space-xs">
             <SkeletonBlock className="h-6 w-40" />
             <SkeletonBlock className="h-5 w-16 rounded-full" />
@@ -35,7 +35,7 @@ function GoalsSkeleton() {
           ))}
         </section>
 
-        <section className="flex flex-col gap-space-md">
+        <section className="stagger flex flex-col gap-space-md">
           <div className="flex items-center justify-between px-space-xs">
             <SkeletonBlock className="h-6 w-40" />
             <SkeletonBlock className="h-5 w-16 rounded-full" />
@@ -108,7 +108,7 @@ export default function GoalsPage() {
     <div className="flex flex-col gap-space-lg">
       <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
         <div className="flex flex-col gap-space-xs">
-          <span className="flex w-fit items-center gap-1.5 rounded-full bg-accent-lavender px-3 py-1 font-label-sm text-label-sm text-accent-lavender-text shadow-sm">
+          <span className="flex w-fit items-center gap-1.5 rounded-full bg-accent-lavender px-3 py-1 font-label-sm text-label-sm text-accent-lavender-text shadow-soft">
             <span className="material-symbols-outlined text-[14px]">auto_awesome</span>
             AI-Native Decomposition Engine
           </span>
@@ -121,7 +121,7 @@ export default function GoalsPage() {
         </div>
         <button
           onClick={() => setShowForm((s) => !s)}
-          className="flex w-fit items-center gap-2 rounded-full bg-accent-lime px-space-lg py-space-sm font-label-lg text-label-lg font-semibold text-text-primary shadow-sm transition-all hover:scale-[1.02] hover:bg-accent-lime-dim"
+          className="flex w-fit items-center gap-2 rounded-full bg-accent-lime px-space-lg py-space-sm font-label-lg text-label-lg font-semibold text-text-primary press shadow-soft hover:bg-accent-lime-dim"
         >
           <span className="material-symbols-outlined text-[20px]">add_circle</span>
           {showForm ? 'Tutup form' : 'Goal Baru'}
@@ -131,7 +131,7 @@ export default function GoalsPage() {
       {error && <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>}
 
       {showForm && (
-        <form onSubmit={onSubmit} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm">
+        <form onSubmit={onSubmit} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-soft">
           <input name="title" required placeholder="Judul goal" className="w-full rounded-xl border-0 bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm" />
           <div className="flex gap-space-md font-body-sm text-body-sm">
             <label className="flex items-center gap-1">
@@ -158,7 +158,7 @@ export default function GoalsPage() {
       )}
 
       <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
-        <section className="flex flex-col gap-space-md">
+        <section className="stagger flex flex-col gap-space-md">
           <div className="flex items-center justify-between px-space-xs">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-lavender text-accent-lavender-text">
@@ -183,7 +183,7 @@ export default function GoalsPage() {
                 <Link
                   key={g.id}
                   href={`/goals/${g.id}`}
-                  className="group flex flex-col gap-space-sm rounded-2xl border border-transparent bg-surface-card p-space-md shadow-sm transition-all hover:border-border-subtle hover:shadow-md"
+                  className="group flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md lift"
                 >
                   <div className="flex items-start justify-between gap-space-sm">
                     <div className="flex items-center gap-2.5">
@@ -216,7 +216,7 @@ export default function GoalsPage() {
           )}
         </section>
 
-        <section className="flex flex-col gap-space-md">
+        <section className="stagger flex flex-col gap-space-md">
           <div className="flex items-center justify-between px-space-xs">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-mint text-accent-mint-text">
@@ -240,7 +240,7 @@ export default function GoalsPage() {
                 <Link
                   key={g.id}
                   href={`/goals/${parent?.id ?? g.id}`}
-                  className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm transition-all hover:shadow-md"
+                  className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md lift"
                 >
                   {parent && (
                     <span className="w-fit rounded-full bg-accent-lavender px-2 py-0.5 font-label-sm text-label-sm font-semibold text-accent-lavender-text">

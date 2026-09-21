@@ -17,7 +17,7 @@ function GoalDetailSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
-        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
           <SkeletonBlock className="h-6 w-40" />
           <div className="flex flex-col gap-space-xs">
             {[0, 1, 2].map((i) => (
@@ -26,7 +26,7 @@ function GoalDetailSkeleton() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
           <SkeletonBlock className="h-6 w-48" />
           <div className="flex flex-col gap-space-sm">
             {[0, 1].map((i) => (
@@ -124,7 +124,7 @@ export default function GoalDetailPage() {
       {error && <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>}
 
       <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
-        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
           <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Habit Langsung</h2>
           {goal.habits.length === 0 ? (
             <p className="font-body-sm text-body-sm text-text-muted">Belum ada habit langsung di goal ini.</p>
@@ -143,7 +143,7 @@ export default function GoalDetailPage() {
           )}
         </section>
 
-        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
           <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Goal Bulanan Turunan</h2>
           {goal.childGoals.length === 0 ? (
             <p className="font-body-sm text-body-sm text-text-muted">Belum ada breakdown bulanan.</p>

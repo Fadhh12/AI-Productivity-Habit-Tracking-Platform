@@ -24,7 +24,7 @@ function HabitTrackerSkeleton() {
 
       <SkeletonBlock className="h-32 rounded-2xl" />
 
-      <div className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+      <div className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-soft">
         <div className="flex items-center justify-between">
           <SkeletonBlock className="h-6 w-48" />
           <SkeletonBlock className="h-4 w-24" />
@@ -173,7 +173,7 @@ export default function HabitTrackerPage() {
         </div>
         <button
           onClick={() => setShowForm((s) => !s)}
-          className="flex w-fit items-center gap-2 rounded-full bg-accent-lime px-space-lg py-space-sm font-label-lg text-label-lg font-semibold text-text-primary shadow-sm transition-all hover:scale-[1.02] hover:bg-accent-lime-dim"
+          className="flex w-fit items-center gap-2 rounded-full bg-accent-lime px-space-lg py-space-sm font-label-lg text-label-lg font-semibold text-text-primary press shadow-soft hover:bg-accent-lime-dim"
         >
           <span className="material-symbols-outlined text-[20px]">add_circle</span>
           {showForm ? 'Tutup form' : 'Tambah Habit'}
@@ -190,7 +190,7 @@ export default function HabitTrackerPage() {
       )}
 
       {showForm && (
-        <form onSubmit={onCreate} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm md:flex-row md:items-end">
+        <form onSubmit={onCreate} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-soft md:flex-row md:items-end">
           <input
             name="name"
             required
@@ -226,7 +226,7 @@ export default function HabitTrackerPage() {
       </div>
 
       {activeHabits.length > 0 && (
-        <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-soft">
           <div className="flex flex-wrap items-center justify-between gap-space-sm">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-lime text-text-primary">
@@ -266,7 +266,7 @@ export default function HabitTrackerPage() {
           Belum ada habit aktif. Mulai dari satu habit kecil yang realistis.
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-space-md lg:grid-cols-3">
+        <div className="stagger grid grid-cols-1 gap-space-md lg:grid-cols-3">
           {activeHabits.map((h) => {
             const week = weekProgress(h, weekDates);
             const doneCount = week.filter((w) => w.status === 'done').length;
@@ -274,7 +274,7 @@ export default function HabitTrackerPage() {
             const checkedInToday = week.find((w) => w.dateStr === todayStr)?.status === 'done' || queuedIds.has(h.id);
             const circumference = 2 * Math.PI * 16;
             return (
-              <div key={h.id} className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-md shadow-sm">
+              <div key={h.id} className="lift flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-md">
                 <div className="flex items-start justify-between gap-space-sm">
                   <div className="flex min-w-0 flex-col">
                     <h3 className="truncate font-headline-sm text-headline-sm font-bold text-text-primary">{h.name}</h3>
@@ -369,7 +369,7 @@ export default function HabitTrackerPage() {
                   <button
                     onClick={() => onCheckin(h.id)}
                     disabled={checkedInToday || checkingId === h.id}
-                    className={`flex-1 rounded-full py-space-xs font-label-md text-label-md font-semibold transition-all ${
+                    className={`flex-1 rounded-full py-space-xs press font-label-md text-label-md font-semibold ${
                       checkedInToday
                         ? 'bg-accent-mint text-accent-mint-text'
                         : 'bg-accent-lime text-text-primary hover:bg-accent-lime-dim disabled:opacity-50'
@@ -381,7 +381,7 @@ export default function HabitTrackerPage() {
                     onClick={() => onToggleActive(h)}
                     title="Arsipkan habit"
                     aria-label="Arsipkan habit"
-                    className="rounded-full bg-surface-container-low p-2 text-text-secondary hover:bg-surface-container"
+                    className="press rounded-full bg-surface-container-low p-2 text-text-secondary hover:bg-surface-container"
                   >
                     <span className="material-symbols-outlined text-[18px]" aria-hidden="true">archive</span>
                   </button>
@@ -389,7 +389,7 @@ export default function HabitTrackerPage() {
                     onClick={() => onDelete(h.id)}
                     title="Hapus habit"
                     aria-label="Hapus habit"
-                    className="rounded-full bg-surface-container-low p-2 text-error hover:bg-error-container"
+                    className="press rounded-full bg-surface-container-low p-2 text-error hover:bg-error-container"
                   >
                     <span className="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>
                   </button>
@@ -403,7 +403,7 @@ export default function HabitTrackerPage() {
       {archivedHabits.length > 0 && (
         <section className="flex flex-col gap-space-sm">
           <h2 className="font-headline-sm text-headline-sm text-text-primary">Habit Arsip</h2>
-          <div className="flex flex-col gap-space-xs rounded-2xl bg-surface-card p-space-sm shadow-sm">
+          <div className="flex flex-col gap-space-xs rounded-2xl bg-surface-card p-space-sm shadow-soft">
             {archivedHabits.map((h) => (
               <div key={h.id} className="flex items-center justify-between rounded-xl p-space-sm hover:bg-surface-container-low">
                 <div className="flex flex-col">
@@ -412,7 +412,7 @@ export default function HabitTrackerPage() {
                 </div>
                 <button
                   onClick={() => onToggleActive(h)}
-                  className="rounded-full bg-surface-container-low px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime"
+                  className="press rounded-full bg-surface-container-low px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime"
                 >
                   Aktifkan lagi
                 </button>
