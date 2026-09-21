@@ -9,6 +9,7 @@ import { TopHeader } from '@/components/TopHeader';
 import { BadgeUnlockToast } from '@/components/BadgeUnlockToast';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { PlanProvider } from '@/lib/plan';
+import { Splash } from '@/components/Splash';
 
 export default function AppShellLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -44,6 +45,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
       <BottomNav />
       <BadgeUnlockToast />
       <OfflineBanner />
+      <Splash />
     </div>
     </PlanProvider>
   );
