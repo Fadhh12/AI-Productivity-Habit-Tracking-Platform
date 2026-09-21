@@ -74,11 +74,11 @@ export default function CoachPage() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-10rem)] flex-col gap-space-md lg:h-[calc(100dvh-8rem)]">
+    <div className="mx-auto flex h-[calc(100dvh-10rem)] w-full max-w-4xl flex-col gap-space-md lg:h-[calc(100dvh-8rem)]">
       <div className="flex items-center justify-between gap-space-sm">
         <div className="flex min-w-0 flex-col gap-space-xs">
           <h1 className="font-headline-lg text-headline-lg tracking-tight text-text-primary">Coach AI</h1>
-          <p className="text-[15px] leading-6 text-text-secondary sm:text-body-md">
+          <p className="text-[15px] leading-6 text-text-secondary sm:text-[16px] sm:leading-6">
             Tanya apa saja soal progres, habit, dan waktumu. Coach membaca datamu, tanpa menghakimi.
           </p>
         </div>
@@ -88,14 +88,14 @@ export default function CoachPage() {
       <div className="flex min-h-0 flex-1 flex-col gap-space-sm overflow-y-auto rounded-2xl bg-surface-card p-space-md shadow-soft" aria-live="polite">
         {messages.length === 0 && (
           <div className="flex flex-col items-start gap-space-sm">
-            <p className="text-[14px] leading-5 text-text-muted sm:text-body-sm">Mulai dari salah satu ini, atau tulis sendiri:</p>
+            <p className="text-[14px] leading-5 text-text-muted sm:text-[15px] sm:leading-6">Mulai dari salah satu ini, atau tulis sendiri:</p>
             <div className="stagger flex flex-wrap gap-space-xs">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => send(s)}
-                  className="press min-h-[44px] rounded-full bg-surface-container-low px-space-md py-space-xs text-left text-[14px] font-semibold leading-5 text-text-primary hover:bg-accent-lime sm:min-h-0 sm:text-label-md"
+                  className="press min-h-[44px] rounded-full bg-surface-container-low px-space-md py-space-xs text-left text-[14px] font-semibold leading-5 text-text-primary hover:bg-accent-lime sm:min-h-[40px] sm:text-[14px]"
                 >
                   {s}
                 </button>
@@ -107,7 +107,7 @@ export default function CoachPage() {
         {messages.map((m, i) => (
           <div key={i} className={`flex animate-slide-up ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-space-md py-space-sm text-[15px] leading-6 sm:max-w-[85%] sm:text-body-sm ${
+              className={`max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-space-md py-space-sm text-[15px] leading-6 sm:max-w-[85%] sm:text-[15px] sm:leading-6 ${
                 m.role === 'user' ? 'bg-accent-lime text-text-primary' : 'bg-surface-container-low text-text-primary'
               }`}
             >
@@ -123,7 +123,7 @@ export default function CoachPage() {
 
         {sending && (
           <div className="flex justify-start" role="status" aria-label="Coach sedang mengetik">
-            <div className="flex animate-fade-in items-center gap-2 rounded-2xl bg-surface-container-low px-space-md py-space-sm text-[14px] text-text-muted sm:text-body-sm">
+            <div className="flex animate-fade-in items-center gap-2 rounded-2xl bg-surface-container-low px-space-md py-space-sm text-[14px] text-text-muted sm:text-[15px] sm:leading-6">
               <span className="flex gap-1" aria-hidden="true">
                 {[0, 1, 2].map((d) => (
                   <span key={d} className="h-1.5 w-1.5 animate-float rounded-full bg-text-muted" style={{ animationDelay: `${d * 150}ms` }} />
@@ -145,17 +145,17 @@ export default function CoachPage() {
           onChange={(e) => setInput(e.target.value)}
           maxLength={1000}
           placeholder="Tulis pertanyaanmu…"
-          className="min-w-0 flex-1 rounded-full border-0 bg-surface-card px-space-md py-3 text-[16px] shadow-soft transition-shadow sm:py-space-sm sm:text-body-sm duration-500 ease-spring focus:shadow-lift focus:outline-none"
+          className="min-w-0 flex-1 rounded-full border-0 bg-surface-card px-space-md py-3 text-[16px] shadow-soft transition-shadow sm:py-3 sm:text-[15px] sm:leading-6 duration-500 ease-spring focus:shadow-lift focus:outline-none"
         />
         <button
           type="submit"
           disabled={sending || input.trim().length === 0}
-          className="rounded-full bg-accent-lime px-space-lg py-3 text-[14px] font-bold sm:py-space-sm sm:text-label-md text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
+          className="rounded-full bg-accent-lime px-space-lg py-3 text-[14px] font-bold sm:py-3 sm:text-[15px] text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
         >
           Kirim
         </button>
       </form>
-      <p className="text-center text-[12px] leading-4 text-text-muted">Jawaban dihasilkan AI dan bisa keliru. Cek lagi untuk keputusan penting.</p>
+      <p className="text-center text-[12px] leading-4 text-text-muted sm:text-[13px]">Jawaban dihasilkan AI dan bisa keliru. Cek lagi untuk keputusan penting.</p>
     </div>
   );
 }
