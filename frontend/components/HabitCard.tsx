@@ -72,7 +72,7 @@ export function HabitCard({
           </div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-caption text-caption text-text-secondary">
             {frequency && (
-              <span className="whitespace-nowrap">{FREQUENCY_LABEL[frequency] ?? frequency}</span>
+              <span>{FREQUENCY_LABEL[frequency] ?? frequency}</span>
             )}
             {currentStreak > 0 && (
               <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap font-semibold text-accent-terracotta-text">

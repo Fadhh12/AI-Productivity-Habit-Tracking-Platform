@@ -388,7 +388,7 @@ export default function TodayPage() {
               </button>
             </div>
           ) : (
-            <div className="stagger grid grid-cols-1 gap-space-md md:grid-cols-3">
+            <div className="stagger grid grid-cols-[repeat(auto-fit,minmax(min(100%,230px),1fr))] gap-space-md">
               {habits.slice(0, 3).map((h) => (
                 <HabitCard
                   key={h.id}
