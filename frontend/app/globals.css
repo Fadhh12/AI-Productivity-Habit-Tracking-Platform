@@ -103,10 +103,6 @@ p {
     transform: scale(0.99);
   }
 
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
-  }
-
   /* Children fade up one after another. Delay comes from the child index. */
   .stagger > * {
     animation: fade-up 0.6s var(--ease-spring) backwards;

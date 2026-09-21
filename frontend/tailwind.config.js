@@ -87,6 +87,10 @@ module.exports = {
         'gutter-mobile': '1rem',
         'space-lg': '1.5rem',
       },
+      boxShadow: {
+        soft: '0 1px 2px rgba(80, 102, 0, 0.04), 0 8px 24px -8px rgba(80, 102, 0, 0.1)',
+        lift: '0 2px 4px rgba(80, 102, 0, 0.05), 0 18px 36px -12px rgba(80, 102, 0, 0.18)',
+      },
       transitionTimingFunction: {
         spring: 'cubic-bezier(0.32, 0.72, 0, 1)',
         'out-soft': 'cubic-bezier(0.22, 1, 0.36, 1)',

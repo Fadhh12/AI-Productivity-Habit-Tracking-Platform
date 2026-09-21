@@ -27,10 +27,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-canvas-bg px-space-md py-12">
-      <div className="w-full max-w-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-canvas-bg px-space-md py-12">
+      <div aria-hidden="true" className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 animate-float rounded-full bg-accent-lime/30 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-24 h-96 w-96 animate-float rounded-full bg-accent-lavender blur-3xl" style={{ animationDelay: '1.5s' }} />
+      <div className="relative w-full max-w-sm animate-scale-in rounded-2xl bg-surface-card p-space-lg shadow-lift">
         <div className="mb-space-lg flex items-center gap-space-sm">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
+          <div className="flex h-9 w-9 animate-pop items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
             C
           </div>
           <span className="font-headline-md text-headline-md tracking-tight text-text-primary">Continuum</span>
@@ -71,7 +73,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary transition-all hover:bg-accent-lime-dim disabled:opacity-50"
+            className="w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary press hover:bg-accent-lime-dim disabled:opacity-50"
           >
             {submitting ? 'Memproses…' : 'Daftar'}
           </button>

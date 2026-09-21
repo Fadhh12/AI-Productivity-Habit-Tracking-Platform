@@ -181,7 +181,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-space-lg">
+    <div className="stagger flex flex-col gap-space-lg">
       <div className="flex flex-col gap-space-xs">
         <h1 className="font-headline-xl-mobile text-headline-xl-mobile text-text-primary lg:font-headline-xl lg:text-headline-xl">
           Pengaturan &amp; Preferensi Sistem
@@ -191,7 +191,7 @@ export default function SettingsPage() {
 
       <Link
         href="/plus"
-        className="flex items-center gap-space-md rounded-2xl bg-sidebar-dark p-space-md text-white shadow-sm"
+        className="flex items-center gap-space-md rounded-2xl bg-sidebar-dark p-space-md text-white shadow-soft"
       >
         <span className="material-symbols-outlined flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-lime text-[24px] text-text-primary" aria-hidden="true">
           workspace_premium
@@ -206,7 +206,7 @@ export default function SettingsPage() {
       </Link>
 
       <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
-        <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-soft">
           <span className="font-headline-sm text-headline-sm text-text-primary">Profil &amp; Akun</span>
           <div className="flex items-center gap-space-md">
             <Avatar user={user} size="md" />
@@ -225,7 +225,7 @@ export default function SettingsPage() {
           </button>
         </section>
 
-        <form onSubmit={onSave} className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+        <form onSubmit={onSave} className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-soft">
           <span className="font-headline-sm text-headline-sm text-text-primary">Preferensi Waktu</span>
           <label className="block font-label-md text-label-md font-medium text-text-secondary">Zona waktu</label>
           <select
@@ -250,7 +250,7 @@ export default function SettingsPage() {
         </form>
       </div>
 
-      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
         <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-text-primary">
           <span className="material-symbols-outlined text-[18px]">event</span>
           Integrasi Google Calendar
@@ -303,7 +303,7 @@ export default function SettingsPage() {
         {calendarMessage && <p className="font-body-sm text-body-sm text-text-secondary">{calendarMessage}</p>}
       </section>
 
-      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
         <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-text-primary">
           <span className="material-symbols-outlined text-[18px]">phonelink_ring</span>
           Notifikasi Push
@@ -357,7 +357,7 @@ export default function SettingsPage() {
         {pushMessage && <p className="font-body-sm text-body-sm text-text-secondary">{pushMessage}</p>}
       </section>
 
-      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
         <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-text-primary">
           <span className="material-symbols-outlined text-[18px]">notifications_active</span>
           Insight AI Proaktif
@@ -392,7 +392,7 @@ export default function SettingsPage() {
         </p>
       </section>
 
-      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-sm">
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-lg shadow-soft">
         <div className="flex items-center gap-2 font-label-md text-label-md font-semibold text-text-primary">
           <span className="material-symbols-outlined text-[18px]">shield</span>
           Data &amp; Privasi

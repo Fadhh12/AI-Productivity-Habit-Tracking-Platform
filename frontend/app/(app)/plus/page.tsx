@@ -55,8 +55,8 @@ export default function PlusPage() {
     : null;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-space-lg">
-      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-xl">
+    <div className="stagger mx-auto flex max-w-3xl flex-col gap-space-lg">
+      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
         <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full bg-accent-lime/10 blur-3xl" />
         <div className="relative flex flex-col gap-space-sm">
           <span className="flex w-fit items-center gap-1 rounded-full bg-accent-lime px-3 py-1 font-label-sm text-label-sm font-bold uppercase text-text-primary">
@@ -86,13 +86,13 @@ export default function PlusPage() {
         </div>
       </div>
 
-      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
+      <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-soft sm:p-space-lg">
         <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Pemakaian AI hari ini</h2>
         <Meter label="Pesan Coach" used={plan.usage.coach.used} limit={plan.usage.coach.limit} />
         <Meter label="Permintaan AI lain" used={plan.usage.ai.used} limit={plan.usage.ai.limit} />
       </section>
 
-      <section className="rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
+      <section className="rounded-2xl bg-surface-card p-space-md shadow-soft sm:p-space-lg">
         <h2 className="mb-space-sm font-headline-sm text-headline-sm font-bold text-text-primary">Gratis vs Plus</h2>
         <div className="grid grid-cols-[1fr_5.5rem_5.5rem] items-center gap-x-2 pb-2 font-label-sm text-label-sm uppercase text-text-muted sm:grid-cols-[1fr_9rem_9rem]">
           <span />

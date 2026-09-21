@@ -135,15 +135,15 @@ export default function OnboardingPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-canvas-bg text-text-muted">Memuat…</div>
+      <div className="flex min-h-[100dvh] items-center justify-center bg-canvas-bg text-text-muted">Memuat…</div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-canvas-bg px-space-md py-10 sm:py-14">
+    <div className="flex min-h-[100dvh] flex-col items-center bg-canvas-bg px-space-md py-10 sm:py-14">
       <div className="w-full max-w-lg">
         <div className="mb-space-lg flex items-center justify-center gap-space-sm">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
+          <div className="flex h-9 w-9 animate-pop items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
             C
           </div>
           <span className="font-headline-md text-headline-md tracking-tight text-text-primary">Continuum</span>
@@ -153,7 +153,7 @@ export default function OnboardingPage() {
           {[1, 2, 3].map((s) => (
             <span
               key={s}
-              className={`h-1.5 rounded-full transition-all ${
+              className={`h-1.5 rounded-full transition-[width,background-color] duration-500 ease-spring ${
                 s === step ? 'w-8 bg-accent-lime' : s < step ? 'w-4 bg-accent-lime/60' : 'w-4 bg-surface-container'
               }`}
             />
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
         )}
 
         {step === 1 && (
-          <div className="rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <div className="animate-slide-up rounded-2xl bg-surface-card p-space-lg shadow-soft">
             <h1 className="font-headline-sm text-headline-sm font-bold text-text-primary">
               Ada target besar tahun ini?
             </h1>
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
                 <button
                   type="submit"
                   disabled={loadingAi}
-                  className="order-2 w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary transition-all hover:bg-accent-lime-dim disabled:opacity-50 sm:order-1 sm:flex-1"
+                  className="order-2 w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary press hover:bg-accent-lime-dim disabled:opacity-50 sm:order-1 sm:flex-1"
                 >
                   {loadingAi ? 'Meminta saran AI…' : goalTitle.trim() ? 'Lanjut, minta saran AI' : 'Lanjut'}
                 </button>
@@ -218,7 +218,7 @@ export default function OnboardingPage() {
         )}
 
         {step === 2 && (
-          <div className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-col gap-space-md animate-slide-up rounded-2xl bg-surface-card p-space-lg shadow-soft">
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[18px] text-tertiary">psychology</span>
               <h1 className="font-headline-sm text-headline-sm font-bold text-text-primary">Draft rencana dari AI</h1>
@@ -247,7 +247,7 @@ export default function OnboardingPage() {
             </div>
             <button
               onClick={() => setStep(3)}
-              className="w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary transition-all hover:bg-accent-lime-dim"
+              className="w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary press hover:bg-accent-lime-dim"
             >
               Lanjut, pilih habit
             </button>
@@ -255,7 +255,7 @@ export default function OnboardingPage() {
         )}
 
         {step === 3 && (
-          <div className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-col gap-space-md animate-slide-up rounded-2xl bg-surface-card p-space-lg shadow-soft">
             <h1 className="font-headline-sm text-headline-sm font-bold text-text-primary">Pilih habit aktif pertama</h1>
             <p className="font-body-sm text-body-sm text-text-secondary">
               Maksimal {MAX_ACTIVE_HABITS} habit sekaligus (anti-burnout). Dipilih: {checkedCount}/{MAX_ACTIVE_HABITS}.
@@ -270,7 +270,7 @@ export default function OnboardingPage() {
                 {habits.map((h, i) => (
                   <li key={`${h.name}-${i}`}>
                     <label
-                      className={`flex cursor-pointer items-center justify-between gap-space-sm rounded-xl px-space-md py-space-sm transition-colors ${
+                      className={`flex cursor-pointer items-center justify-between gap-space-sm press rounded-xl px-space-md py-space-sm ${
                         h.checked ? 'bg-accent-lime/10 ring-1 ring-accent-lime' : 'bg-surface-container-low'
                       } ${!h.checked && checkedCount >= MAX_ACTIVE_HABITS ? 'opacity-50' : ''}`}
                     >
@@ -323,7 +323,7 @@ export default function OnboardingPage() {
               <button
                 onClick={onFinish}
                 disabled={submitting || checkedCount === 0}
-                className="w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary transition-all hover:bg-accent-lime-dim disabled:opacity-50"
+                className="w-full rounded-full bg-accent-lime py-space-sm font-label-lg text-label-lg font-bold text-text-primary press hover:bg-accent-lime-dim disabled:opacity-50"
               >
                 {submitting ? 'Menyiapkan…' : `Mulai dengan ${checkedCount} habit`}
               </button>

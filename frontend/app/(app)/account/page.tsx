@@ -69,8 +69,8 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-space-lg">
-      <section className="flex flex-col items-center gap-space-md rounded-2xl bg-surface-card p-space-lg text-center shadow-sm">
+    <div className="stagger mx-auto flex max-w-3xl flex-col gap-space-lg">
+      <section className="flex flex-col items-center gap-space-md rounded-2xl bg-surface-card p-space-lg text-center shadow-soft">
         <div className="relative">
           <Avatar user={user} size="xl" className="ring-4 ring-accent-lavender" />
           <button
@@ -127,7 +127,7 @@ export default function AccountPage() {
 
       <section className="grid grid-cols-3 gap-space-sm">
         {stats.map((s) => (
-          <div key={s.label} className="flex flex-col items-center gap-1 rounded-2xl bg-surface-card p-space-md text-center shadow-sm">
+          <div key={s.label} className="flex flex-col items-center gap-1 rounded-2xl bg-surface-card p-space-md text-center lift">
             <span className="material-symbols-outlined text-[22px] text-tertiary" aria-hidden="true">
               {s.icon}
             </span>
@@ -139,7 +139,7 @@ export default function AccountPage() {
 
       <ShareCard />
 
-      <form onSubmit={onSaveName} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
+      <form onSubmit={onSaveName} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-soft sm:p-space-lg">
         <label htmlFor="displayName" className="font-headline-sm text-headline-sm font-bold text-text-primary">
           Nama tampilan
         </label>
@@ -163,7 +163,7 @@ export default function AccountPage() {
         </div>
       </form>
 
-      <section className="flex flex-col overflow-hidden rounded-2xl bg-surface-card shadow-sm">
+      <section className="flex flex-col overflow-hidden rounded-2xl bg-surface-card shadow-soft">
         {[
           { href: '/plus', icon: 'workspace_premium', label: 'Continuum Plus', hint: isPlus ? 'Aktif' : 'Lihat keuntungan' },
           { href: '/achievements', icon: 'emoji_events', label: 'Pencapaian & lencana', hint: '' },
