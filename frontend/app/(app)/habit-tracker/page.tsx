@@ -10,6 +10,7 @@ import { emitMascot, useMascotError } from '@/lib/mascot';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
 import { DAY_LABELS_MONDAY_FIRST, last7DatesMonToSun, todayDateString } from '@/lib/date';
+import { ReactiveMascot } from '@/components/ReactiveMascot';
 
 const MAX_ACTIVE_HABITS = 5;
 
@@ -216,7 +217,10 @@ export default function HabitTrackerPage() {
 
       <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent-lime/10 blur-3xl" />
-        <div className="relative z-10 flex flex-col gap-space-sm">
+        <div className="absolute bottom-3 right-3 z-10 sm:right-6 sm:top-1/2 sm:-translate-y-1/2">
+          <ReactiveMascot base="sleepy" className="w-20 sm:w-32" />
+        </div>
+        <div className="relative z-10 flex flex-col gap-space-sm pr-24 sm:pr-40">
           <span className="w-fit rounded-full bg-accent-lime px-3 py-1 font-label-sm text-label-sm font-bold uppercase tracking-wide text-text-primary">
             Forgiveness Engine Aktif
           </span>

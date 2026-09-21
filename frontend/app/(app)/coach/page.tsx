@@ -6,6 +6,7 @@ import { upgradeReason, UpgradeReason } from '@/lib/premium';
 import { UpgradeNotice } from '@/components/UpgradeNotice';
 import { usePlan } from '@/lib/plan';
 import { useMascotError, useMascotWhile } from '@/lib/mascot';
+import { ReactiveMascot } from '@/components/ReactiveMascot';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -74,11 +75,14 @@ export default function CoachPage() {
 
   return (
     <div className="flex h-[calc(100dvh-10rem)] flex-col gap-space-md lg:h-[calc(100dvh-8rem)]">
-      <div className="flex flex-col gap-space-xs">
-        <h1 className="font-headline-lg text-headline-lg tracking-tight text-text-primary">Coach AI</h1>
-        <p className="font-body-md text-body-md text-text-secondary">
-          Tanya apa saja soal progres, habit, dan waktumu. Coach membaca datamu, tanpa menghakimi.
-        </p>
+      <div className="flex items-center justify-between gap-space-sm">
+        <div className="flex min-w-0 flex-col gap-space-xs">
+          <h1 className="font-headline-lg text-headline-lg tracking-tight text-text-primary">Coach AI</h1>
+          <p className="font-body-md text-body-md text-text-secondary">
+            Tanya apa saja soal progres, habit, dan waktumu. Coach membaca datamu, tanpa menghakimi.
+          </p>
+        </div>
+        <ReactiveMascot className="w-16 sm:w-24" />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-space-sm overflow-y-auto rounded-2xl bg-surface-card p-space-md shadow-soft" aria-live="polite">

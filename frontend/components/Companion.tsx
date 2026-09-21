@@ -6,6 +6,9 @@ import { Mascot } from '@/components/Mascot';
 import { useMascotReaction } from '@/lib/mascot';
 import { useCompanionEnabled } from '@/lib/companion';
 
+/** Pages that already show their own Conti, so the floating one stays away. */
+const OWN_MASCOT = ['/today', '/coach', '/achievements', '/habit-tracker'];
+
 const SLEEP_AFTER_MS = 3 * 60 * 1000;
 
 /** One short hello the first time each page is opened in a session. */
@@ -30,7 +33,7 @@ const TIPS = [
 ];
 
 /**
- * A small floating Conti that lives on every page except the dashboard (which has the poster mascot).
+ * A small floating Conti that lives on every page that does not already have its own in-page Conti.
  * It reacts to what the user does, greets each page once per session and dozes off when nothing happens for a while.
  */
 export function Companion() {
@@ -89,7 +92,7 @@ export function Companion() {
     return () => clearTimeout(t);
   }, [pathname]);
 
-  if (!enabled || pathname === '/today') return null;
+  if (!enabled || (pathname && OWN_MASCOT.includes(pathname))) return null;
 
   const message = reaction?.message ?? note;
   const mood = reaction?.mood ?? (sleepy ? 'sleepy' : 'happy');

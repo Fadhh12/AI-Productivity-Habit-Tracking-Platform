@@ -6,6 +6,7 @@ import { GamificationSummary, WeeklyChallenge } from '@/lib/types';
 import { ChallengeCard } from '@/components/ChallengeCard';
 import { ShareCard } from '@/components/ShareCard';
 import { SkeletonBlock } from '@/components/Skeleton';
+import { ReactiveMascot } from '@/components/ReactiveMascot';
 
 export default function AchievementsPage() {
   const [summary, setSummary] = useState<GamificationSummary | null>(null);
@@ -45,7 +46,10 @@ export default function AchievementsPage() {
 
       <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent-lime/10 blur-3xl" />
-        <div className="relative z-10 flex flex-col gap-space-sm">
+        <div className="absolute bottom-3 right-3 z-10 sm:right-6">
+          <ReactiveMascot base="cheer" className="w-20 sm:w-32" />
+        </div>
+        <div className="relative z-10 flex flex-col gap-space-sm pr-24 sm:pr-40">
           <div className="flex items-end justify-between">
             <div className="flex flex-col">
               <span className="font-caption text-caption text-secondary-fixed-dim">Level kamu</span>
