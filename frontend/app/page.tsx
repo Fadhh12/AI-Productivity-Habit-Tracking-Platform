@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-[100dvh] bg-[#0F1015] text-white">
+    <div className="force-light min-h-[100dvh] bg-[#0F1015] text-white">
       <noscript>
         <style>{'.reveal{opacity:1!important;transform:none!important}'}</style>
       </noscript>

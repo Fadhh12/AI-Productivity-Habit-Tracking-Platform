@@ -61,7 +61,7 @@ export function Sidebar() {
                 aria-current={active ? 'page' : undefined}
                 className={`press group flex items-center gap-space-md rounded-full px-space-md py-space-sm ${
                   active
-                    ? 'bg-accent-lime font-bold text-text-primary shadow-[0_8px_20px_-8px_rgba(204,255,0,0.5)]'
+                    ? 'bg-accent-lime font-bold text-text-primary shadow-[0_8px_20px_-8px_rgba(204,255,0,0.5)] dark:shadow-none'
                     : 'text-text-muted hover:bg-sidebar-card hover:text-white'
                 }`}
               >

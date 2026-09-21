@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-[#0F1015] px-6 text-center text-white">
+    <div className="force-light relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-[#0F1015] px-6 text-center text-white">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_40%_at_50%_30%,rgba(204,255,0,0.12),transparent_70%)]"

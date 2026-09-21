@@ -5,6 +5,8 @@
 :root,
 .force-light {
   color-scheme: light;
+  --c-accent-lime: 204 255 0;
+  --c-accent-lime-dim: 212 246 56;
   --c-accent-lavender: 237 233 254;
   --c-accent-lavender-text: 109 40 217;
   --c-accent-mint: 209 250 229;
@@ -42,6 +44,9 @@
 /* Dark theme. `.force-light` on a descendant restores the light palette (used by the landing phone mock). */
 .dark {
   color-scheme: dark;
+  /* Brand lime is toned down in dark mode: full-strength #CCFF00 glows too hard on near-black surfaces. */
+  --c-accent-lime: 158 190 48;
+  --c-accent-lime-dim: 140 170 40;
   --c-accent-lavender: 44 37 82;
   --c-accent-lavender-text: 196 181 253;
   --c-accent-mint: 18 58 45;
@@ -142,6 +147,14 @@ p {
 /* Non-punitive visual language: missed/skipped habit days use neutral gray, never red/strikethrough. */
 .badge-ai {
   @apply inline-flex items-center gap-1 rounded-full bg-accent-lavender px-2 py-0.5 text-xs font-medium text-accent-lavender-text;
+}
+
+/* Text sitting on a lime surface must stay dark in both themes (text-text-primary turns light in dark mode). */
+.dark .bg-accent-lime,
+.dark .bg-accent-lime-dim,
+.dark .hover\:bg-accent-lime:hover,
+.dark .hover\:bg-accent-lime-dim:hover {
+  color: #16171d;
 }
 
 @layer utilities {

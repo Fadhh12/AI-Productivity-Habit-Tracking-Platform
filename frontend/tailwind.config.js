@@ -3,6 +3,7 @@
 const v = (name) => `rgb(var(--c-${name}) / <alpha-value>)`;
 
 module.exports = {
+  darkMode: 'class',
   content: ['./app/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
@@ -45,7 +46,7 @@ module.exports = {
         'tertiary-fixed-dim': '#d0bcff',
         'primary-fixed-dim': '#abd600',
         'on-secondary-fixed': '#191b24',
-        'accent-lime-dim': '#D4F638',
+        'accent-lime-dim': v('accent-lime-dim'),
         'accent-lavender': v('accent-lavender'),
         'border-dark-subtle': '#2A2D3A',
         'surface-dim': '#dcd9dd',
@@ -55,7 +56,7 @@ module.exports = {
         'on-tertiary': '#ffffff',
         'text-secondary': v('text-secondary'),
         'on-tertiary-fixed-variant': '#5516be',
-        'accent-lime': '#CCFF00',
+        'accent-lime': v('accent-lime'),
         'accent-lavender-text': v('accent-lavender-text'),
         'on-primary': '#ffffff',
         'sidebar-dark': '#16171D',
