@@ -14,8 +14,8 @@ export function ActivityItem({ title, startTime, endTime, categoryName, category
   return (
     <div className="flex items-center gap-space-md rounded-2xl p-space-sm transition-colors hover:bg-surface-container-low">
       <div
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-        style={{ backgroundColor: categoryColor ? `${categoryColor}22` : '#F0EDF1' }}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${categoryColor ? '' : 'bg-surface-container'}`}
+        style={categoryColor ? { backgroundColor: `${categoryColor}22` } : undefined}
       >
         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: categoryColor ?? '#A1A1AA' }} />
       </div>

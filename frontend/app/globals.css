@@ -2,8 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root,
+.force-light {
   color-scheme: light;
+  --c-accent-lavender: 237 233 254;
+  --c-accent-lavender-text: 109 40 217;
+  --c-accent-mint: 209 250 229;
+  --c-accent-mint-text: 4 120 87;
+  --c-accent-terracotta: 255 237 213;
+  --c-accent-terracotta-text: 194 65 12;
+  --c-background: 251 248 252;
+  --c-border-subtle: 240 240 242;
+  --c-canvas-bg: 245 245 247;
+  --c-error: 186 26 26;
+  --c-error-container: 255 218 214;
+  --c-on-background: 27 27 30;
+  --c-on-error-container: 147 0 10;
+  --c-on-surface: 27 27 30;
+  --c-on-surface-variant: 68 73 51;
+  --c-outline: 116 122 96;
+  --c-outline-variant: 196 201 172;
+  --c-primary: 80 102 0;
+  --c-secondary: 92 94 104;
+  --c-surface: 251 248 252;
+  --c-surface-bright: 251 248 252;
+  --c-surface-card: 255 255 255;
+  --c-surface-container: 240 237 241;
+  --c-surface-container-high: 234 231 235;
+  --c-surface-container-highest: 228 225 230;
+  --c-surface-container-low: 246 242 247;
+  --c-surface-container-lowest: 255 255 255;
+  --c-surface-variant: 228 225 230;
+  --c-tertiary: 109 59 215;
+  --c-text-muted: 161 161 170;
+  --c-text-primary: 24 24 27;
+  --c-text-secondary: 113 113 122;
+}
+
+/* Dark theme. `.force-light` on a descendant restores the light palette (used by the landing phone mock). */
+.dark {
+  color-scheme: dark;
+  --c-accent-lavender: 44 37 82;
+  --c-accent-lavender-text: 196 181 253;
+  --c-accent-mint: 18 58 45;
+  --c-accent-mint-text: 110 231 183;
+  --c-accent-terracotta: 70 39 15;
+  --c-accent-terracotta-text: 253 186 116;
+  --c-background: 16 17 22;
+  --c-border-subtle: 42 45 58;
+  --c-canvas-bg: 12 13 17;
+  --c-error: 255 138 128;
+  --c-error-container: 74 27 24;
+  --c-on-background: 236 236 239;
+  --c-on-error-container: 255 180 171;
+  --c-on-surface: 236 236 239;
+  --c-on-surface-variant: 185 188 200;
+  --c-outline: 154 159 176;
+  --c-outline-variant: 58 61 75;
+  --c-primary: 195 244 0;
+  --c-secondary: 165 168 180;
+  --c-surface: 16 17 22;
+  --c-surface-bright: 16 17 22;
+  --c-surface-card: 24 26 34;
+  --c-surface-container: 37 39 50;
+  --c-surface-container-high: 43 46 58;
+  --c-surface-container-highest: 50 53 66;
+  --c-surface-container-low: 31 33 43;
+  --c-surface-container-lowest: 19 20 26;
+  --c-surface-variant: 50 53 66;
+  --c-tertiary: 182 156 255;
+  --c-text-muted: 141 144 157;
+  --c-text-primary: 244 244 245;
+  --c-text-secondary: 165 167 179;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.35), 0 18px 36px -12px rgba(0, 0, 0, 0.6);
+}
+
+:root {
   /* One spring-like curve shared by every transition so motion feels consistent. */
   --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);

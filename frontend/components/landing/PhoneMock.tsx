@@ -37,7 +37,7 @@ export function PhoneMock() {
       </div>
 
       <div className="rounded-[46px] bg-[#23252F] p-2.5 shadow-[0_40px_80px_-24px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/10">
-        <div className="overflow-hidden rounded-[38px] bg-canvas-bg">
+        <div className="force-light overflow-hidden rounded-[38px] bg-canvas-bg">
           <div className="mx-auto mt-2.5 h-5 w-24 rounded-full bg-sidebar-dark" aria-hidden="true" />
           <div className="flex flex-col gap-4 px-4 pb-6 pt-4">
             <div>

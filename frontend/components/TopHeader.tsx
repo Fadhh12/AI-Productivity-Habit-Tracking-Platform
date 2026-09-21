@@ -7,6 +7,7 @@ import { apiFetch } from '@/lib/api';
 import { Activity, Goal, Habit } from '@/lib/types';
 import { NotificationBell } from '@/components/NotificationBell';
 import { AccountMenu } from '@/components/AccountMenu';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface SearchResult {
   key: string;
@@ -132,6 +133,7 @@ export function TopHeader() {
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-space-sm lg:gap-space-lg">
+        <ThemeToggle />
         <NotificationBell />
         <AccountMenu />
       </div>
