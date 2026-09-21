@@ -59,7 +59,7 @@ export function BadgeUnlockToast() {
   return (
     <>
     <Confetti burst={burst} originX={85} originY={82} />
-    <div className="fixed bottom-24 right-space-md z-50 flex flex-col gap-space-xs lg:bottom-space-xl" role="status">
+    <div className="fixed bottom-28 right-space-md z-50 flex flex-col gap-space-xs lg:bottom-space-xl" role="status">
       {fresh.map((b) => (
         <div key={b.id} className="flex max-w-[calc(100vw-2rem)] animate-slide-up items-center gap-space-sm rounded-2xl bg-sidebar-dark px-space-md py-space-sm text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
           <span className="material-symbols-outlined rounded-full bg-accent-lime p-1.5 text-[20px] text-text-primary">{b.icon}</span>
