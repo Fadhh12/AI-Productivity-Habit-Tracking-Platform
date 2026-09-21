@@ -173,7 +173,7 @@ export default function GoalsPage() {
           </div>
 
           {yearlyGoals.length === 0 ? (
-            <EmptyState icon="flag" title="Belum ada goal" action={{ label: 'Buat goal pertama', onClick: () => setShowForm(true) }}>
+            <EmptyState icon="flag" mascot="sleepy" title="Belum ada goal" action={{ label: 'Buat goal pertama', onClick: () => setShowForm(true) }}>
               Mulai dari satu goal tahunan. Nanti AI bisa membantu memecahnya jadi target bulanan.
             </EmptyState>
           ) : (

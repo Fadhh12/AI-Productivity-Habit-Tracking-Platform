@@ -265,6 +265,7 @@ export default function HabitTrackerPage() {
       {activeHabits.length === 0 ? (
         <EmptyState
           icon="spa"
+          mascot="happy"
           title="Belum ada habit aktif"
           action={{ label: 'Tambah habit pertama', onClick: () => setShowForm(true) }}
         >

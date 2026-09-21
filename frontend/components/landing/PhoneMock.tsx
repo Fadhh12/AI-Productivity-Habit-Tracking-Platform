@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { HabitCard } from '@/components/HabitCard';
+import { Mascot } from '@/components/Mascot';
 
 const INITIAL = [
   { name: 'Baca buku', frequency: 'daily', streak: 12 },
@@ -36,6 +37,11 @@ export function PhoneMock() {
         Level 4
       </div>
 
+      <Mascot
+        mood={done.size === total ? 'cheer' : 'happy'}
+        interactive
+        className="absolute -top-[86px] right-5 z-10 w-[98px]"
+      />
       <div className="rounded-[46px] bg-[#23252F] p-2.5 shadow-[0_40px_80px_-24px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/10">
         <div className="force-light overflow-hidden rounded-[38px] bg-canvas-bg">
           <div className="mx-auto mt-2.5 h-5 w-24 rounded-full bg-sidebar-dark" aria-hidden="true" />

@@ -382,6 +382,7 @@ export default function TodayPage() {
           {habits.length === 0 ? (
             <EmptyState
               icon="spa"
+              mascot="happy"
               title="Belum ada habit aktif"
               action={{ label: showHabitForm ? 'Tutup form' : 'Tambah habit pertama', onClick: () => setShowHabitForm((s) => !s) }}
             >
