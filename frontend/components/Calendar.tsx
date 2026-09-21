@@ -147,7 +147,7 @@ export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarPr
                   isSelected
                     ? 'bg-sidebar-dark font-bold text-white'
                     : isToday
-                      ? 'bg-accent-lime font-bold text-text-primary shadow-sm'
+                      ? 'bg-accent-lime font-bold text-text-primary shadow-soft'
                       : 'hover:bg-surface-container-low'
                 }`}
               >

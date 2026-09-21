@@ -209,7 +209,7 @@ export default function HabitTrackerPage() {
         </form>
       )}
 
-      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent-lime/10 blur-3xl" />
         <div className="relative z-10 flex flex-col gap-space-sm">
           <span className="w-fit rounded-full bg-accent-lime px-3 py-1 font-label-sm text-label-sm font-bold uppercase tracking-wide text-text-primary">

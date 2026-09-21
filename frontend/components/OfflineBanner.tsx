@@ -75,7 +75,7 @@ export function OfflineBanner() {
   return (
     <div
       role="status"
-      className={`fixed inset-x-0 top-0 z-[60] px-space-md py-1.5 text-center font-label-sm text-label-sm ${tone}`}
+      className={`fixed inset-x-0 top-0 z-[60] animate-fade-in px-space-md py-1.5 text-center font-label-sm text-label-sm ${tone}`}
     >
       {text}
     </div>

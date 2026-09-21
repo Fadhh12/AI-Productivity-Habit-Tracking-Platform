@@ -45,7 +45,7 @@ export function ChallengeCard({ refreshKey = 0 }: { refreshKey?: number }) {
 
   return (
     <section
-      className={`relative overflow-hidden rounded-2xl p-space-md shadow-sm sm:p-space-lg ${
+      className={`relative overflow-hidden rounded-2xl p-space-md shadow-soft sm:p-space-lg ${
         done ? 'bg-accent-lime text-text-primary' : 'bg-sidebar-dark text-white'
       }`}
       aria-label="Tantangan mingguan"
@@ -80,8 +80,8 @@ export function ChallengeCard({ refreshKey = 0 }: { refreshKey?: number }) {
             aria-label={`${challenge.progress} dari ${challenge.target} ${UNIT[challenge.metric]}`}
           >
             <div
-              className={`h-full rounded-full transition-all ${done ? 'bg-sidebar-dark' : 'bg-accent-lime'}`}
-              style={{ width: `${challenge.percent}%` }}
+              className={`h-full origin-left animate-grow-x rounded-full transition-transform duration-700 ease-spring ${done ? 'bg-sidebar-dark' : 'bg-accent-lime'}`}
+              style={{ transform: `scaleX(${Math.min(1, Math.max(0, challenge.percent / 100))})` }}
             />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-x-3 font-label-sm text-label-sm">

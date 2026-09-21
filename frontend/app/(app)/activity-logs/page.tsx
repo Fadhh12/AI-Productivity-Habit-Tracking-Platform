@@ -216,7 +216,7 @@ export default function ActivityLogsPage() {
   });
 
   return (
-    <div className="flex flex-col gap-space-lg">
+    <div className="stagger flex flex-col gap-space-lg">
       <div className="flex flex-col items-start justify-between gap-space-lg xl:flex-row xl:items-center">
         <div className="flex flex-col gap-space-xs">
           <span className="flex w-fit items-center gap-1 rounded-full bg-accent-lavender px-3 py-1 font-label-sm text-label-sm font-semibold text-accent-lavender-text">
@@ -224,7 +224,7 @@ export default function ActivityLogsPage() {
           </span>
           <div className="flex items-center gap-space-sm">
             <h1 className="font-headline-lg text-headline-lg tracking-tight text-text-primary">Log Aktivitas</h1>
-            <div className="flex items-center gap-1 rounded-full bg-surface-card px-space-sm py-1 shadow-sm">
+            <div className="flex items-center gap-1 rounded-full bg-surface-card px-space-sm py-1 shadow-soft">
               <button
                 onClick={() => shiftDate(-1)}
                 aria-label="Hari sebelumnya"
@@ -256,7 +256,7 @@ export default function ActivityLogsPage() {
           </div>
         </div>
 
-        <form onSubmit={onQuickAdd} className="flex w-full items-center gap-1 rounded-full bg-surface-card p-1.5 shadow-md xl:max-w-xl">
+        <form onSubmit={onQuickAdd} className="flex w-full items-center gap-1 rounded-full bg-surface-card p-1.5 shadow-soft xl:max-w-xl">
           <span className="pl-2 pr-1 text-tertiary">
             <span className="material-symbols-outlined text-[20px]">magic_button</span>
           </span>
@@ -307,8 +307,8 @@ export default function ActivityLogsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-space-md md:grid-cols-3">
-        <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg shadow-sm">
+      <div className="stagger grid grid-cols-1 gap-space-md md:grid-cols-3">
+        <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg shadow-soft">
           <div className="flex items-center justify-between">
             <span className="font-label-md text-label-md font-medium text-text-secondary">Total Waktu Tercatat</span>
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tertiary-container text-on-tertiary-container">
@@ -320,7 +320,7 @@ export default function ActivityLogsPage() {
           </span>
         </div>
 
-        <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg shadow-sm">
+        <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg shadow-soft">
           <div className="flex items-center justify-between">
             <span className="font-label-md text-label-md font-medium text-text-secondary">Kategori Terbanyak</span>
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
@@ -337,7 +337,7 @@ export default function ActivityLogsPage() {
           )}
         </div>
 
-        <div className="flex flex-col justify-between rounded-lg bg-sidebar-dark p-space-lg text-white shadow-sm">
+        <div className="flex flex-col justify-between rounded-lg bg-sidebar-dark p-space-lg text-white shadow-soft">
           <div className="flex items-center justify-between">
             <span className="font-label-md text-label-md font-medium text-text-muted">Jumlah Log</span>
             <span className="material-symbols-outlined text-[22px] text-accent-lime">flash_on</span>
@@ -371,7 +371,7 @@ export default function ActivityLogsPage() {
         <form
           key={editingActivity?.id ?? 'new'}
           onSubmit={onManualSubmit}
-          className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm"
+          className="lift flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md"
         >
           <div className="flex items-center justify-between">
             <span className="font-label-md text-label-md font-semibold text-text-primary">
@@ -452,7 +452,7 @@ export default function ActivityLogsPage() {
       )}
 
       <div className="grid grid-cols-1 items-start gap-space-lg xl:grid-cols-12">
-        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-8">
+        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-8">
           <h2 className="font-headline-md text-headline-md font-bold tracking-tight text-text-primary">Timeline Kronologis</h2>
           {loading ? (
             <TimelineSkeleton />
@@ -496,7 +496,7 @@ export default function ActivityLogsPage() {
         </div>
 
         <div className="flex flex-col gap-space-lg xl:col-span-4">
-          <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft">
             <h3 className="font-headline-sm text-headline-sm font-bold text-text-primary">Distribusi Kategori</h3>
             {stats.distribution.length === 0 ? (
               <p className="font-body-sm text-body-sm text-text-muted">Belum ada aktivitas untuk dianalisis.</p>

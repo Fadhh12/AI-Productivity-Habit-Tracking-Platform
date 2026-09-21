@@ -85,7 +85,7 @@ export function NotificationBell() {
   return (
     <div className="relative" ref={rootRef}>
       <button
-        className="relative flex h-11 w-11 items-center justify-center rounded-full bg-surface-container-low text-on-surface transition-colors hover:bg-surface-container-high"
+        className="relative flex h-11 w-11 items-center justify-center rounded-full bg-surface-container-low text-on-surface press hover:bg-surface-container-high"
         onClick={() => setOpen((v) => !v)}
         aria-label={unreadCount > 0 ? `Notifikasi, ${unreadCount} belum dibaca` : 'Notifikasi'}
         aria-expanded={open}
@@ -103,8 +103,8 @@ export function NotificationBell() {
 
       {open && (
         <>
-          <div className="fixed inset-0 top-20 z-40 bg-black/30 sm:hidden" aria-hidden="true" />
-          <div className="fixed inset-x-2 top-[84px] z-50 flex max-h-[calc(100dvh-100px)] flex-col overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)] sm:absolute sm:inset-x-auto sm:right-0 sm:top-14 sm:max-h-[32rem] sm:w-[26rem]">
+          <div className="fixed inset-0 top-20 z-40 animate-fade-in bg-black/30 sm:hidden" aria-hidden="true" />
+          <div className="fixed inset-x-2 top-[84px] z-50 flex animate-scale-in origin-top max-h-[calc(100dvh-100px)] flex-col overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)] sm:absolute sm:inset-x-auto sm:right-0 sm:top-14 sm:max-h-[32rem] sm:w-[26rem]">
             <div className="flex items-center justify-between gap-space-sm border-b border-border-subtle px-space-md py-space-sm">
               <div className="flex items-baseline gap-2">
                 <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Notifikasi</h2>
@@ -169,7 +169,7 @@ export function NotificationBell() {
                           key={n.id}
                           type="button"
                           onClick={() => onSelect(n)}
-                          className={`flex w-full items-start gap-space-sm rounded-xl px-space-sm py-space-sm text-left transition-colors hover:bg-surface-container-low active:bg-surface-container ${
+                          className={`flex w-full items-start gap-space-sm rounded-xl px-space-sm py-space-sm text-left press hover:bg-surface-container-low active:bg-surface-container ${
                             n.read ? '' : 'bg-accent-lavender/30'
                           }`}
                         >

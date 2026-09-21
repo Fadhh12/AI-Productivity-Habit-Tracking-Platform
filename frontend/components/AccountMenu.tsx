@@ -68,7 +68,8 @@ export function AccountMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-14 z-50 w-72 max-w-[calc(100vw-1rem)] overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)]"
+          style={{ transformOrigin: 'top right' }}
+          className="absolute right-0 top-14 z-50 w-72 max-w-[calc(100vw-1rem)] animate-scale-in overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)]"
         >
           <Link
             href="/account"

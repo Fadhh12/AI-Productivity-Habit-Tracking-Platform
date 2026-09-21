@@ -297,7 +297,7 @@ export default function TodayPage() {
               <span className="font-semibold text-text-primary">{activities.length} aktivitas</span> tercatat.
             </p>
           </div>
-          <div className="inline-flex items-center gap-space-sm self-start rounded-full bg-surface-card px-space-md py-space-sm shadow-sm md:self-auto">
+          <div className="inline-flex items-center gap-space-sm self-start rounded-full bg-surface-card px-space-md py-space-sm shadow-soft md:self-auto">
             <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-accent-mint-text" />
             <span className="font-label-md text-label-md font-semibold text-text-primary">Kapasitas Habit:</span>
             <span className="rounded-full bg-accent-mint px-space-sm py-0.5 font-label-md text-label-md font-bold text-accent-mint-text">
@@ -530,7 +530,7 @@ export default function TodayPage() {
 
       {/* RIGHT RAIL */}
       <div className="stagger flex flex-col gap-space-lg xl:col-span-4">
-        <div className="flex flex-col gap-space-sm rounded-lg bg-sidebar-dark p-space-lg text-white shadow-md">
+        <div className="flex flex-col gap-space-sm rounded-lg bg-sidebar-dark p-space-lg text-white shadow-soft">
           <div className="flex items-center gap-1 text-accent-lime">
             <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
             <span className="font-label-sm text-label-sm font-bold uppercase tracking-wider">AI Digest</span>

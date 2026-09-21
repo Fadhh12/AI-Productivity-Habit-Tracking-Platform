@@ -91,7 +91,7 @@ export function ShareCard() {
   }
 
   return (
-    <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
+    <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-md shadow-soft sm:p-space-lg">
       <div className="flex flex-col gap-1">
         <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Bagikan progresmu</h2>
         <p className="font-body-sm text-body-sm text-text-secondary">

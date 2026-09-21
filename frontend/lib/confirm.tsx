@@ -39,13 +39,13 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     <ConfirmContext.Provider value={confirm}>
       {children}
       {request && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-space-md">
+        <div className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-black/40 p-space-md">
           <div
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="confirm-dialog-title"
             aria-describedby="confirm-dialog-message"
-            className="w-full max-w-sm rounded-lg bg-surface-card p-space-lg shadow-lg"
+            className="w-full max-w-sm animate-scale-in rounded-lg bg-surface-card p-space-lg shadow-lift"
           >
             <h2
               id="confirm-dialog-title"
