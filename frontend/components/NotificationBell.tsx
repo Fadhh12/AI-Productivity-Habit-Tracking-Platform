@@ -103,8 +103,8 @@ export function NotificationBell() {
 
       {open && (
         <>
-          <div className="fixed inset-0 top-20 z-40 animate-fade-in bg-black/30 sm:hidden" aria-hidden="true" />
-          <div className="fixed inset-x-2 top-[84px] z-50 flex animate-scale-in origin-top max-h-[calc(100dvh-100px)] flex-col overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)] sm:absolute sm:inset-x-auto sm:right-0 sm:top-14 sm:max-h-[32rem] sm:w-[26rem]">
+          <div className="fixed inset-0 top-20 z-40 animate-fade-in bg-black/30 sm:hidden" aria-hidden="true" onClick={() => setOpen(false)} />
+          <div className="fixed inset-x-2 top-[84px] z-50 flex animate-scale-in origin-top max-h-[calc(100dvh-84px-112px)] flex-col overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)] sm:absolute sm:inset-x-auto sm:right-0 sm:top-14 sm:max-h-[32rem] sm:w-[26rem]">
             <div className="flex items-center justify-between gap-space-sm border-b border-border-subtle px-space-md py-space-sm">
               <div className="flex items-baseline gap-2">
                 <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Notifikasi</h2>
@@ -118,7 +118,7 @@ export function NotificationBell() {
                 type="button"
                 onClick={markAllRead}
                 disabled={unreadCount === 0}
-                className="min-h-[36px] rounded-full px-3 font-label-sm text-label-sm font-semibold text-tertiary hover:bg-accent-lavender disabled:text-text-muted disabled:hover:bg-transparent"
+                className="min-h-[40px] shrink-0 rounded-full px-3 text-[13px] font-semibold text-tertiary hover:bg-accent-lavender disabled:text-text-muted disabled:hover:bg-transparent sm:min-h-[36px] sm:text-label-sm"
               >
                 Tandai semua dibaca
               </button>
@@ -132,7 +132,7 @@ export function NotificationBell() {
                   role="tab"
                   aria-selected={filter === f}
                   onClick={() => setFilter(f)}
-                  className={`min-h-[36px] rounded-full px-4 font-label-md text-label-md transition-colors ${
+                  className={`min-h-[40px] rounded-full px-4 text-[14px] font-semibold transition-colors sm:min-h-[36px] sm:text-label-md ${
                     filter === f ? 'bg-sidebar-dark text-white' : 'bg-surface-container-low text-text-secondary hover:bg-surface-container'
                   }`}
                 >
@@ -159,7 +159,7 @@ export function NotificationBell() {
               ) : (
                 groups.map((group) => (
                   <section key={group.label} className="flex flex-col">
-                    <h3 className="px-space-sm pb-1 pt-space-sm font-label-sm text-label-sm uppercase text-text-muted">
+                    <h3 className="px-space-sm pb-1 pt-space-sm text-[12px] font-semibold uppercase tracking-wide text-text-muted">
                       {group.label}
                     </h3>
                     {group.items.map((n) => {
@@ -181,15 +181,15 @@ export function NotificationBell() {
                           </span>
                           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                             <span className="flex items-center gap-1.5">
-                              <span className="truncate font-label-md text-label-md font-semibold text-text-primary">
+                              <span className="truncate text-[14px] font-semibold text-text-primary sm:text-label-md">
                                 {meta.label}
                               </span>
                               {isAiNotification(n) && <span className="badge-ai shrink-0">✨ AI</span>}
-                              <span className="ml-auto shrink-0 font-caption text-caption text-text-muted">
+                              <span className="ml-auto shrink-0 text-[12px] text-text-muted">
                                 {relativeTime(n.createdAt)}
                               </span>
                             </span>
-                            <span className="break-words font-body-sm text-body-sm text-text-secondary">{n.message}</span>
+                            <span className="break-words text-[14px] leading-5 text-text-secondary sm:text-body-sm">{n.message}</span>
                           </span>
                           {!n.read && (
                             <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-accent-terracotta-text" aria-label="Belum dibaca" />
