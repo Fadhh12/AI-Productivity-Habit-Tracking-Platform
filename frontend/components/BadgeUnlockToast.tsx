@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { GamificationSummary } from '@/lib/types';
+import { Confetti } from '@/components/Confetti';
 
 const SEEN_KEY = 'continuum_seen_badges';
 
@@ -20,6 +21,7 @@ function readSeen(): string[] | null {
 export function BadgeUnlockToast() {
   const pathname = usePathname();
   const [fresh, setFresh] = useState<{ id: string; label: string; icon: string }[]>([]);
+  const [burst, setBurst] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,7 +35,12 @@ export function BadgeUnlockToast() {
         } catch {
           // storage unavailable — skip celebration state
         }
-        if (seen) setFresh(unlocked.filter((b) => !seen.includes(b.id)));
+        const added = seen ? unlocked.filter((b) => !seen.includes(b.id)) : [];
+        if (added.length > 0) {
+          setFresh(added);
+          setBurst((n) => n + 1);
+          navigator.vibrate?.([30, 40, 30]);
+        }
       })
       .catch(() => {});
     return () => {
@@ -50,6 +57,8 @@ export function BadgeUnlockToast() {
   if (fresh.length === 0) return null;
 
   return (
+    <>
+    <Confetti burst={burst} originX={85} originY={82} />
     <div className="fixed bottom-24 right-space-md z-50 flex flex-col gap-space-xs lg:bottom-space-xl" role="status">
       {fresh.map((b) => (
         <div key={b.id} className="flex max-w-[calc(100vw-2rem)] animate-slide-up items-center gap-space-sm rounded-2xl bg-sidebar-dark px-space-md py-space-sm text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
@@ -61,5 +70,6 @@ export function BadgeUnlockToast() {
         </div>
       ))}
     </div>
+    </>
   );
 }

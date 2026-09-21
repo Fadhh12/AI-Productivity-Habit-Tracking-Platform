@@ -15,6 +15,7 @@ import { useConfirm } from '@/lib/confirm';
 import { DAY_LABELS_SUNDAY_FIRST, last7Days, todayDateString } from '@/lib/date';
 import { useQuickAdd } from '@/lib/quickAdd';
 import { createRecurringActivities } from '@/lib/activities';
+import { Confetti } from '@/components/Confetti';
 
 const MAX_ACTIVE_HABITS = 5;
 
@@ -77,6 +78,7 @@ export default function TodayPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [checkedInIds, setCheckedInIds] = useState<Set<string>>(new Set());
   const [checkingId, setCheckingId] = useState<string | null>(null);
+  const [burst, setBurst] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -253,7 +255,11 @@ export default function TodayPage() {
       if (!wasQueued(result)) {
         setHabits((prev) => prev.map((h) => (h.id === habitId ? result.data : h)));
       }
-      setCheckedInIds((prev) => new Set(prev).add(habitId));
+      navigator.vibrate?.(20);
+      const next = new Set(checkedInIds).add(habitId);
+      setCheckedInIds(next);
+      // Confetti only when this check-in completes every active habit for the day.
+      if (habits.length > 0 && habits.every((h) => next.has(h.id))) setBurst((n) => n + 1);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Gagal check-in habit.');
     } finally {
@@ -285,6 +291,7 @@ export default function TodayPage() {
 
   return (
     <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12">
+      <Confetti burst={burst} originX={50} originY={35} />
       {/* LEFT & CENTER */}
       <div className="stagger flex flex-col gap-space-lg xl:col-span-8">
         <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
