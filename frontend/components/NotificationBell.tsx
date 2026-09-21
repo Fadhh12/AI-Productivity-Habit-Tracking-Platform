@@ -4,13 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { Notification } from '@/lib/types';
+import { enablePush, getPushState, PushState } from '@/lib/push';
 import { groupNotifications, isAiNotification, notificationMeta, relativeTime } from '@/lib/notifications';
 
 type Filter = 'all' | 'unread';
 
 /**
- * Bell + notification centre. On phones the panel is a full-width sheet under
- * the header (with a dimmed backdrop); from `sm` up it is a dropdown anchored
+ * Bell + notification centre. On phones the panel is a compact popover under
+ * the header (tap outside to close); from `sm` up it is a dropdown anchored
  * to the bell. Items are grouped by day and open the page they relate to.
  */
 export function NotificationBell() {
@@ -19,6 +20,8 @@ export function NotificationBell() {
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>('all');
+  const [pushState, setPushState] = useState<PushState | null>(null);
+  const [pushBusy, setPushBusy] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(() => {
@@ -35,6 +38,7 @@ export function NotificationBell() {
   useEffect(() => {
     if (!open) return;
     load(); // pick up anything that arrived since the page loaded
+    getPushState().then(setPushState).catch(() => setPushState(null));
     function onPointerDown(e: MouseEvent | TouchEvent) {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
     }
@@ -76,6 +80,17 @@ export function NotificationBell() {
     }
   }
 
+  async function turnOnPush() {
+    setPushBusy(true);
+    try {
+      setPushState(await enablePush());
+    } catch {
+      setPushState(await getPushState().catch(() => null));
+    } finally {
+      setPushBusy(false);
+    }
+  }
+
   function onSelect(n: Notification) {
     if (!n.read) void markRead(n.id);
     setOpen(false);
@@ -103,8 +118,8 @@ export function NotificationBell() {
 
       {open && (
         <>
-          <div className="fixed inset-0 top-20 z-40 animate-fade-in bg-black/30 sm:hidden" aria-hidden="true" onClick={() => setOpen(false)} />
-          <div className="fixed inset-x-2 top-[84px] z-50 flex animate-scale-in origin-top max-h-[calc(100dvh-84px-112px)] flex-col overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)] sm:absolute sm:inset-x-auto sm:right-0 sm:top-14 sm:max-h-[32rem] sm:w-[26rem]">
+          <div className="fixed inset-0 top-20 z-40 sm:hidden" aria-hidden="true" onClick={() => setOpen(false)} />
+          <div className="fixed right-3 top-[76px] z-50 flex w-[min(22rem,calc(100vw-1.5rem))] animate-scale-in origin-top-right max-h-[min(26rem,calc(100dvh-84px-120px))] flex-col overflow-hidden rounded-2xl bg-surface-card shadow-[0_16px_40px_-8px_rgba(22,23,29,0.25)] sm:absolute sm:right-0 sm:top-14 sm:max-h-[32rem] sm:w-[26rem]">
             <div className="flex items-center justify-between gap-space-sm border-b border-border-subtle px-space-md py-space-sm">
               <div className="flex items-baseline gap-2">
                 <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Notifikasi</h2>
@@ -140,6 +155,29 @@ export function NotificationBell() {
                 </button>
               ))}
             </div>
+
+            {(pushState === 'off' || pushState === 'needs-install') && (
+              <div className="mx-space-md mb-space-xs flex items-center gap-space-sm rounded-xl bg-accent-lime/40 px-space-sm py-space-xs">
+                <span className="material-symbols-outlined text-[20px] text-text-primary" aria-hidden="true">
+                  notifications_active
+                </span>
+                <p className="min-w-0 flex-1 text-[12px] leading-4 text-text-primary">
+                  {pushState === 'off'
+                    ? 'Aktifkan notifikasi HP supaya pengingat tetap masuk saat app ditutup.'
+                    : 'Pasang app ke layar utama untuk menerima notifikasi HP.'}
+                </p>
+                {pushState === 'off' && (
+                  <button
+                    type="button"
+                    onClick={turnOnPush}
+                    disabled={pushBusy}
+                    className="min-h-[36px] shrink-0 rounded-full bg-sidebar-dark px-3 text-[12px] font-bold text-white disabled:opacity-60"
+                  >
+                    {pushBusy ? '…' : 'Aktifkan'}
+                  </button>
+                )}
+              </div>
+            )}
 
             <div className="flex-1 overflow-y-auto overscroll-contain px-space-sm pb-space-sm">
               {!loaded ? (
