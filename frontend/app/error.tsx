@@ -1,15 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { Mascot } from '@/components/Mascot';
 
 export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-5 bg-canvas-bg px-6 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-terracotta text-accent-terracotta-text">
-        <span className="material-symbols-outlined text-[28px]" aria-hidden="true">
-          sync_problem
-        </span>
-      </span>
+      <Mascot mood="oops" interactive className="force-light w-32" />
       <h1 className="text-[28px] font-bold tracking-tight text-text-primary">Ada yang tidak berjalan.</h1>
       <p className="max-w-[38ch] text-[15px] leading-relaxed text-text-secondary">
         Kami tidak bisa memuat halaman ini. Datamu tidak hilang. Coba lagi sebentar.

@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { ApiError } from '@/lib/api';
+import { AuthMascot } from '@/components/AuthMascot';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -29,7 +31,8 @@ export default function LoginPage() {
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-canvas-bg px-space-md py-12">
       <div aria-hidden="true" className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 animate-float rounded-full bg-accent-lime/30 blur-3xl" />
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-24 h-96 w-96 animate-float rounded-full bg-accent-lavender blur-3xl" style={{ animationDelay: '1.5s' }} />
-      <div className="relative w-full max-w-sm animate-scale-in rounded-2xl bg-surface-card p-space-lg shadow-lift">
+      <div className="relative mt-24 w-full max-w-sm animate-scale-in rounded-2xl bg-surface-card p-space-lg shadow-lift">
+        <AuthMascot passwordFocused={passwordFocused} submitting={submitting} error={error} />
         <div className="mb-space-lg flex items-center gap-space-sm">
           <div className="flex h-9 w-9 animate-pop items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
             C
@@ -55,6 +58,8 @@ export default function LoginPage() {
             <label className="mb-1 block font-label-md text-label-md font-medium text-text-secondary">Password</label>
             <input
               type="password"
+              onFocus={() => setPasswordFocused(true)}
+              onBlur={() => setPasswordFocused(false)}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}

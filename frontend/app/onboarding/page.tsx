@@ -1,5 +1,6 @@
 'use client';
 
+import { Mascot, MascotMood } from '@/components/Mascot';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
@@ -40,6 +41,12 @@ function dedupeHabits(suggestion: AiGoalSuggestion): HabitDraft[] {
   }
   return drafts;
 }
+
+const STEP_LINES: Record<number, string> = {
+  1: 'Aku Conti. Yuk kenalan dulu.',
+  2: 'Pilih yang terasa ringan saja.',
+  3: 'Tinggal satu langkah lagi.',
+};
 
 export default function OnboardingPage() {
   const { user, loading: authLoading } = useAuth();
@@ -133,6 +140,8 @@ export default function OnboardingPage() {
     }
   }
 
+  const mascotMood: MascotMood = error ? 'oops' : loadingAi || submitting ? 'thinking' : step === 3 ? 'cheer' : 'happy';
+
   if (authLoading || !user) {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center bg-canvas-bg text-text-muted">Memuat…</div>
@@ -142,11 +151,11 @@ export default function OnboardingPage() {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center bg-canvas-bg px-space-md py-10 sm:py-14">
       <div className="w-full max-w-lg">
-        <div className="mb-space-lg flex items-center justify-center gap-space-sm">
-          <div className="flex h-9 w-9 animate-pop items-center justify-center rounded-full bg-accent-lime font-headline-md text-headline-md font-bold text-text-primary">
-            C
-          </div>
-          <span className="font-headline-md text-headline-md tracking-tight text-text-primary">Continuum</span>
+        <div className="mb-space-lg flex flex-col items-center gap-1">
+          <Mascot mood={mascotMood} interactive className="force-light w-28" />
+          <p key={step} className="animate-fade-up text-center font-label-md text-label-md text-text-secondary">
+            {STEP_LINES[step] ?? ''}
+          </p>
         </div>
 
         <div className="mb-space-lg flex items-center justify-center gap-2">

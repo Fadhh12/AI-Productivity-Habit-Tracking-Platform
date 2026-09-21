@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Mascot } from '@/components/Mascot';
 
 export default function NotFound() {
   return (
@@ -8,9 +9,7 @@ export default function NotFound() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_40%_at_50%_30%,rgba(204,255,0,0.12),transparent_70%)]"
       />
       <div className="relative flex flex-col items-center gap-6">
-        <span className="animate-float flex h-16 w-16 items-center justify-center rounded-full bg-accent-lime text-[28px] font-bold text-sidebar-dark">
-          C
-        </span>
+        <Mascot mood="oops" interactive className="w-36" />
         <h1 className="text-[40px] font-bold leading-tight tracking-tighter sm:text-6xl">Halaman ini tidak ada.</h1>
         <p className="max-w-[40ch] text-[16px] leading-relaxed text-white/65">
           Alamatnya mungkin salah atau halamannya sudah dipindah. Streak-mu aman, kok.
