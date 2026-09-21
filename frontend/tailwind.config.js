@@ -99,6 +99,13 @@ module.exports = {
         pop: { '0%': { transform: 'scale(0.6)' }, '55%': { transform: 'scale(1.18)' }, '100%': { transform: 'scale(1)' } },
         'ring-pulse': { '0%': { transform: 'scale(1)', opacity: '0.55' }, '100%': { transform: 'scale(1.9)', opacity: '0' } },
         float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } },
+        'grow-y': { from: { transform: 'scaleY(0)' }, to: { transform: 'scaleY(1)' } },
+        wave: {
+          '0%, 60%, 100%': { transform: 'rotate(0)' },
+          '10%, 30%': { transform: 'rotate(14deg)' },
+          '20%, 40%': { transform: 'rotate(-8deg)' },
+          '50%': { transform: 'rotate(10deg)' },
+        },
         flame: {
           '0%, 100%': { transform: 'scale(1) rotate(-2deg)' },
           '50%': { transform: 'scale(1.1) rotate(2deg)' },
@@ -112,6 +119,8 @@ module.exports = {
         pop: 'pop 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
         'ring-pulse': 'ring-pulse 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards',
         float: 'float 4s ease-in-out infinite',
+        'grow-y': 'grow-y 0.8s cubic-bezier(0.32, 0.72, 0, 1) backwards',
+        wave: 'wave 2.2s ease-in-out 0.6s 1',
         flame: 'flame 1.8s ease-in-out infinite',
       },
       fontFamily: {

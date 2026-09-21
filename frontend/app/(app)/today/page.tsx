@@ -286,11 +286,11 @@ export default function TodayPage() {
   return (
     <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12">
       {/* LEFT & CENTER */}
-      <div className="flex flex-col gap-space-lg xl:col-span-8">
+      <div className="stagger flex flex-col gap-space-lg xl:col-span-8">
         <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
           <div className="flex flex-col gap-space-xs">
             <h1 className="font-headline-xl-mobile text-headline-xl-mobile text-text-primary tracking-tight lg:font-headline-xl lg:text-headline-xl">
-              Halo 👋
+              Halo <span className="inline-block origin-[70%_70%] animate-wave">👋</span>
             </h1>
             <p className="font-body-md text-body-md text-text-secondary">
               Hari ini ada <span className="font-semibold text-text-primary">{habits.length} habit aktif</span> dan{' '}
@@ -307,7 +307,7 @@ export default function TodayPage() {
         </div>
 
         {error && (
-          <div className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">
+          <div className="animate-fade-in rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">
             {error}{' '}
             <button className="underline" onClick={() => setError(null)}>
               tutup
@@ -317,7 +317,7 @@ export default function TodayPage() {
 
         <ChallengeCard refreshKey={checkedInIds.size + allActivities.length} />
 
-        <form onSubmit={onQuickAdd} className="flex items-center gap-space-sm rounded-full bg-surface-card p-1.5 pl-space-md shadow-sm">
+        <form onSubmit={onQuickAdd} className="flex items-center gap-space-sm rounded-full bg-surface-card p-1.5 pl-space-md shadow-soft transition-shadow duration-500 ease-spring focus-within:shadow-lift">
           <span className="material-symbols-outlined text-[20px] text-tertiary">auto_awesome</span>
           <input
             value={quickText}
@@ -328,14 +328,14 @@ export default function TodayPage() {
           <button
             type="submit"
             disabled={quickLoading}
-            className="flex items-center gap-1 rounded-full bg-sidebar-dark px-space-md py-space-xs font-label-sm text-label-sm font-semibold text-white transition-all hover:bg-accent-lime hover:text-text-primary disabled:opacity-50"
+            className="flex items-center gap-1 rounded-full bg-sidebar-dark px-space-md py-space-xs font-label-sm text-label-sm font-semibold text-white press hover:bg-accent-lime hover:text-text-primary disabled:opacity-50"
           >
             {quickLoading ? '...' : 'Catat AI'}
           </button>
         </form>
 
         {draft && (
-          <div className="rounded-2xl border border-accent-lavender bg-accent-lavender/30 p-space-md">
+          <div className="animate-scale-in rounded-2xl border border-accent-lavender bg-accent-lavender/30 p-space-md">
             <span className={draft.is_ai_generated ? 'badge-ai' : 'rounded-full bg-surface-container px-2 py-0.5 text-xs text-text-secondary'}>
               {draft.is_ai_generated ? '✨ AI' : 'Draft manual (AI belum tersedia)'}
             </span>
@@ -348,7 +348,7 @@ export default function TodayPage() {
             <div className="mt-space-sm flex gap-space-sm">
               <button
                 onClick={confirmDraft}
-                className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime-dim"
+                className="press rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime-dim"
               >
                 Konfirmasi &amp; simpan
               </button>
@@ -376,7 +376,7 @@ export default function TodayPage() {
           </div>
 
           {habits.length === 0 ? (
-            <div className="rounded-2xl bg-surface-card p-space-md shadow-sm">
+            <div className="rounded-2xl bg-surface-card p-space-md shadow-soft animate-scale-in">
               <p className="font-body-sm text-body-sm text-text-muted">
                 Belum ada habit aktif. Maksimal {MAX_ACTIVE_HABITS} habit aktif sekaligus (anti-burnout).
               </p>
@@ -388,7 +388,7 @@ export default function TodayPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-space-md md:grid-cols-3">
+            <div className="stagger grid grid-cols-1 gap-space-md md:grid-cols-3">
               {habits.slice(0, 3).map((h) => (
                 <HabitCard
                   key={h.id}
@@ -405,7 +405,7 @@ export default function TodayPage() {
           )}
 
           {showHabitForm && (
-            <form onSubmit={onHabitSubmit} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm">
+            <form onSubmit={onHabitSubmit} className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-soft animate-scale-in">
               <input
                 name="name"
                 required
@@ -418,7 +418,7 @@ export default function TodayPage() {
                 <option value="specific_days">Hari tertentu</option>
                 <option value="weekly_count">X kali per minggu</option>
               </select>
-              <button type="submit" className="w-full rounded-full bg-accent-lime py-space-sm font-label-md text-label-md font-bold text-text-primary">
+              <button type="submit" className="press w-full rounded-full bg-accent-lime py-space-sm font-label-md text-label-md font-bold text-text-primary">
                 Simpan habit
               </button>
             </form>
@@ -426,7 +426,7 @@ export default function TodayPage() {
         </section>
 
         <div className="grid grid-cols-1 gap-space-lg md:grid-cols-3">
-          <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-col justify-between rounded-lg bg-surface-card p-space-lg lift">
             <div className="mb-space-sm flex items-center justify-between">
               <div className="flex flex-col">
                 <h3 className="font-headline-sm text-headline-sm text-text-primary">Jam Aktivitas</h3>
@@ -440,8 +440,8 @@ export default function TodayPage() {
                 return (
                   <div key={d.dateStr} className="flex h-full flex-1 flex-col items-center justify-end gap-space-xs">
                     <div
-                      className={`w-2.5 rounded-t-full md:w-3 ${isToday ? 'bg-accent-lime shadow-[0_0_12px_rgba(204,255,0,0.5)]' : 'bg-sidebar-dark'}`}
-                      style={{ height: `${heightPct}%` }}
+                      className={`animate-grow-y w-2.5 origin-bottom rounded-t-full md:w-3 ${isToday ? 'bg-accent-lime shadow-[0_0_12px_rgba(204,255,0,0.5)]' : 'bg-sidebar-dark'}`}
+                      style={{ height: `${heightPct}%`, animationDelay: `${weeklyHours.indexOf(d) * 70}ms` }}
                       title={`${d.hours.toFixed(1)} jam`}
                     />
                     <span className={`font-caption text-caption ${isToday ? 'font-bold text-text-primary' : 'text-text-muted'}`}>
@@ -453,7 +453,7 @@ export default function TodayPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-space-sm self-start rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-col gap-space-sm self-start rounded-lg bg-surface-card p-space-lg lift">
             <div className="flex items-center justify-between">
               <h3 className="font-headline-sm text-headline-sm text-text-primary">Jadwal Hari Ini</h3>
               <span className="font-label-sm text-label-sm font-medium text-text-muted">
@@ -481,7 +481,7 @@ export default function TodayPage() {
             </Link>
           </div>
 
-          <div className="flex flex-col gap-space-sm self-start rounded-lg bg-surface-card p-space-lg shadow-sm">
+          <div className="flex flex-col gap-space-sm self-start rounded-lg bg-surface-card p-space-lg lift">
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[18px] text-tertiary">self_improvement</span>
               <h3 className="font-headline-sm text-headline-sm text-text-primary">Refleksi Hari Ini</h3>
@@ -514,7 +514,7 @@ export default function TodayPage() {
                   <button
                     onClick={onSaveReflection}
                     disabled={reflectionSaving}
-                    className="rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
+                    className="press rounded-full bg-accent-lime px-space-md py-1.5 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime-dim disabled:opacity-50"
                   >
                     {reflectionSaving ? 'Menyimpan…' : reflectionSaved ? '✓ Tersimpan' : 'Simpan'}
                   </button>
@@ -529,7 +529,7 @@ export default function TodayPage() {
       </div>
 
       {/* RIGHT RAIL */}
-      <div className="flex flex-col gap-space-lg xl:col-span-4">
+      <div className="stagger flex flex-col gap-space-lg xl:col-span-4">
         <div className="flex flex-col gap-space-sm rounded-lg bg-sidebar-dark p-space-lg text-white shadow-md">
           <div className="flex items-center gap-1 text-accent-lime">
             <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
@@ -541,13 +541,13 @@ export default function TodayPage() {
           </p>
           <Link
             href="/reports"
-            className="mt-space-xs inline-flex w-fit items-center gap-1 rounded-full bg-accent-lime px-space-lg py-space-xs font-label-md text-label-md font-bold text-text-primary hover:bg-accent-lime-dim"
+            className="press mt-space-xs inline-flex w-fit items-center gap-1 rounded-full bg-accent-lime px-space-lg py-space-xs font-label-md text-label-md font-bold text-text-primary hover:bg-accent-lime-dim"
           >
             Buka Digest
           </Link>
         </div>
 
-        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
+        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg lift">
           <Calendar markedDates={markedDates} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
 
           <div className="flex flex-col gap-space-sm border-t border-border-subtle pt-space-sm">
@@ -557,7 +557,7 @@ export default function TodayPage() {
               </span>
               <button
                 onClick={() => setShowScheduleForm((s) => !s)}
-                className="flex shrink-0 items-center gap-1 rounded-full bg-surface-container-low px-space-sm py-1 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime"
+                className="flex shrink-0 items-center press gap-1 rounded-full bg-surface-container-low px-space-sm py-1 font-label-sm text-label-sm font-semibold text-text-primary hover:bg-accent-lime"
                 type="button"
               >
                 <span className="material-symbols-outlined text-[16px]">add</span>
@@ -609,7 +609,7 @@ export default function TodayPage() {
                   )}
                 </div>
                 {scheduleError && <p className="font-caption text-caption text-error">{scheduleError}</p>}
-                <button type="submit" className="w-full rounded-full bg-accent-lime py-1.5 font-label-sm text-label-sm font-bold text-text-primary">
+                <button type="submit" className="press w-full rounded-full bg-accent-lime py-1.5 font-label-sm text-label-sm font-bold text-text-primary">
                   Simpan jadwal
                 </button>
               </form>
@@ -636,13 +636,13 @@ export default function TodayPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm">
+        <div className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg lift">
           <div className="flex items-center justify-between">
             <h3 className="font-headline-sm text-headline-sm text-text-primary">Horizon Goals</h3>
             <Link
               href="/goals"
               aria-label="Tambah goal baru"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container text-text-primary hover:bg-accent-lime"
+              className="press flex h-7 w-7 items-center justify-center rounded-full bg-surface-container text-text-primary hover:bg-accent-lime"
             >
               <span className="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
             </Link>
@@ -655,7 +655,7 @@ export default function TodayPage() {
                 <Link
                   key={g.id}
                   href={`/goals/${g.id}`}
-                  className="flex items-center justify-between rounded-xl bg-surface-container-low p-space-sm transition-colors hover:bg-surface-container"
+                  className="press flex items-center justify-between rounded-xl bg-surface-container-low p-space-sm hover:bg-surface-container"
                 >
                   <span className="font-label-md text-label-md font-semibold text-text-primary">{g.title}</span>
                   <span className="rounded-full bg-accent-lavender px-space-sm py-0.5 font-caption text-caption font-bold text-accent-lavender-text">
