@@ -1,5 +1,5 @@
 /* Continuum service worker: offline app shell + last-known data. */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL_CACHE = `continuum-shell-${VERSION}`;
 const STATIC_CACHE = `continuum-static-${VERSION}`;
 // RSC payloads share URLs with the HTML pages, so they live in their own cache to avoid overwriting each other.
