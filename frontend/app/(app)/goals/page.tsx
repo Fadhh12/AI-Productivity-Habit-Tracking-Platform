@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Goal, GoalBreakdown } from '@/lib/types';
+import { EmptyState } from '@/components/EmptyState';
 import { SkeletonBlock } from '@/components/Skeleton';
 
 const ICON_STYLES = [
@@ -172,9 +173,9 @@ export default function GoalsPage() {
           </div>
 
           {yearlyGoals.length === 0 ? (
-            <p className="rounded-2xl bg-surface-card p-space-lg text-center font-body-sm text-body-sm text-text-muted shadow-sm">
-              Belum ada goal. Mulai dari goal tahunan.
-            </p>
+            <EmptyState icon="flag" title="Belum ada goal" action={{ label: 'Buat goal pertama', onClick: () => setShowForm(true) }}>
+              Mulai dari satu goal tahunan. Nanti AI bisa membantu memecahnya jadi target bulanan.
+            </EmptyState>
           ) : (
             yearlyGoals.map((g, i) => {
               const style = ICON_STYLES[i % ICON_STYLES.length];
@@ -230,9 +231,9 @@ export default function GoalsPage() {
           </div>
 
           {monthlyGoals.length === 0 ? (
-            <p className="rounded-2xl bg-surface-card p-space-lg text-center font-body-sm text-body-sm text-text-muted shadow-sm">
-              Belum ada breakdown bulanan. Buka goal tahunan untuk minta saran AI.
-            </p>
+            <EmptyState icon="event_note" title="Belum ada target bulanan">
+              Buka salah satu goal tahunan untuk meminta saran pecahan bulanan dari AI.
+            </EmptyState>
           ) : (
             monthlyGoals.map((g) => {
               const parent = yearlyGoals.find((y) => y.id === g.parentGoalId);

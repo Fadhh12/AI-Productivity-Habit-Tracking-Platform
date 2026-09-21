@@ -5,6 +5,7 @@ import { apiFetch, apiFetchQueued, wasQueued, ApiError } from '@/lib/api';
 import { useQueueFlushed } from '@/lib/useQueueFlushed';
 import { Habit } from '@/lib/types';
 import { STREAK_MILESTONES, nextMilestone, unlockedMilestone } from '@/lib/achievements';
+import { EmptyState } from '@/components/EmptyState';
 import { SkeletonBlock } from '@/components/Skeleton';
 import { useConfirm } from '@/lib/confirm';
 import { DAY_LABELS_MONDAY_FIRST, last7DatesMonToSun, todayDateString } from '@/lib/date';
@@ -262,9 +263,13 @@ export default function HabitTrackerPage() {
       )}
 
       {activeHabits.length === 0 ? (
-        <p className="rounded-2xl bg-surface-card p-space-lg text-center font-body-sm text-body-sm text-text-muted shadow-sm">
-          Belum ada habit aktif. Mulai dari satu habit kecil yang realistis.
-        </p>
+        <EmptyState
+          icon="spa"
+          title="Belum ada habit aktif"
+          action={{ label: 'Tambah habit pertama', onClick: () => setShowForm(true) }}
+        >
+          Mulai dari satu habit kecil yang realistis, misalnya baca 20 menit atau jalan pagi.
+        </EmptyState>
       ) : (
         <div className="stagger grid grid-cols-1 gap-space-md lg:grid-cols-3">
           {activeHabits.map((h) => {

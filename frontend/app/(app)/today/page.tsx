@@ -16,6 +16,8 @@ import { DAY_LABELS_SUNDAY_FIRST, last7Days, todayDateString } from '@/lib/date'
 import { useQuickAdd } from '@/lib/quickAdd';
 import { createRecurringActivities } from '@/lib/activities';
 import { Confetti } from '@/components/Confetti';
+import { EmptyState } from '@/components/EmptyState';
+import { WelcomeTips } from '@/components/WelcomeTips';
 
 const MAX_ACTIVE_HABITS = 5;
 
@@ -322,6 +324,8 @@ export default function TodayPage() {
           </div>
         )}
 
+        <WelcomeTips />
+
         <ChallengeCard refreshKey={checkedInIds.size + allActivities.length} />
 
         <form onSubmit={onQuickAdd} className="flex items-center gap-space-sm rounded-full bg-surface-card p-1.5 pl-space-md shadow-soft transition-shadow duration-500 ease-spring focus-within:shadow-lift">
@@ -383,17 +387,13 @@ export default function TodayPage() {
           </div>
 
           {habits.length === 0 ? (
-            <div className="rounded-2xl bg-surface-card p-space-md shadow-soft animate-scale-in">
-              <p className="font-body-sm text-body-sm text-text-muted">
-                Belum ada habit aktif. Maksimal {MAX_ACTIVE_HABITS} habit aktif sekaligus (anti-burnout).
-              </p>
-              <button
-                onClick={() => setShowHabitForm((s) => !s)}
-                className="mt-space-sm font-label-sm text-label-sm font-semibold text-primary"
-              >
-                {showHabitForm ? 'Tutup' : '+ Tambah habit'}
-              </button>
-            </div>
+            <EmptyState
+              icon="spa"
+              title="Belum ada habit aktif"
+              action={{ label: showHabitForm ? 'Tutup form' : 'Tambah habit pertama', onClick: () => setShowHabitForm((s) => !s) }}
+            >
+              Mulai dari satu habit kecil yang realistis. Maksimal {MAX_ACTIVE_HABITS} habit aktif sekaligus, supaya tidak kewalahan.
+            </EmptyState>
           ) : (
             <div className="stagger grid grid-cols-[repeat(auto-fit,minmax(min(100%,230px),1fr))] gap-space-md">
               {habits.slice(0, 3).map((h) => (
