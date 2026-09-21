@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { usePlan } from '@/lib/plan';
 import { Avatar } from '@/components/Avatar';
+import { CompanionSetting } from '@/components/CompanionSetting';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Activity, Category, Goal, Habit } from '@/lib/types';
 import { disablePush, enablePush, getPushState, PushState, sendTestPush } from '@/lib/push';
@@ -204,6 +205,8 @@ export default function SettingsPage() {
         </span>
         <span className="material-symbols-outlined text-[20px] text-text-muted" aria-hidden="true">chevron_right</span>
       </Link>
+
+      <CompanionSetting />
 
       <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-2">
         <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-soft">
