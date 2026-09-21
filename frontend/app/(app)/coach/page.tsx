@@ -78,17 +78,17 @@ export default function CoachPage() {
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-space-sm overflow-y-auto rounded-2xl bg-surface-card p-space-md shadow-sm" aria-live="polite">
+      <div className="flex min-h-0 flex-1 flex-col gap-space-sm overflow-y-auto rounded-2xl bg-surface-card p-space-md shadow-soft" aria-live="polite">
         {messages.length === 0 && (
           <div className="flex flex-col items-start gap-space-sm">
             <p className="font-body-sm text-body-sm text-text-muted">Mulai dari salah satu ini, atau tulis sendiri:</p>
-            <div className="flex flex-wrap gap-space-xs">
+            <div className="stagger flex flex-wrap gap-space-xs">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => send(s)}
-                  className="rounded-full bg-surface-container-low px-space-md py-space-xs font-label-sm text-label-sm text-text-primary hover:bg-surface-container"
+                  className="press rounded-full bg-surface-container-low px-space-md py-space-xs font-label-sm text-label-sm text-text-primary hover:bg-accent-lime"
                 >
                   {s}
                 </button>
@@ -98,7 +98,7 @@ export default function CoachPage() {
         )}
 
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={i} className={`flex animate-slide-up ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-space-md py-space-sm font-body-sm text-body-sm ${
                 m.role === 'user' ? 'bg-accent-lime text-text-primary' : 'bg-surface-container-low text-text-primary'
@@ -116,7 +116,14 @@ export default function CoachPage() {
 
         {sending && (
           <div className="flex justify-start" role="status" aria-label="Coach sedang mengetik">
-            <div className="rounded-2xl bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm text-text-muted">Coach sedang berpikir…</div>
+            <div className="flex animate-fade-in items-center gap-2 rounded-2xl bg-surface-container-low px-space-md py-space-sm font-body-sm text-body-sm text-text-muted">
+              <span className="flex gap-1" aria-hidden="true">
+                {[0, 1, 2].map((d) => (
+                  <span key={d} className="h-1.5 w-1.5 animate-float rounded-full bg-text-muted" style={{ animationDelay: `${d * 150}ms` }} />
+                ))}
+              </span>
+              Coach sedang berpikir…
+            </div>
           </div>
         )}
         <div ref={bottomRef} />
@@ -131,7 +138,7 @@ export default function CoachPage() {
           onChange={(e) => setInput(e.target.value)}
           maxLength={1000}
           placeholder="Tulis pertanyaanmu…"
-          className="min-w-0 flex-1 rounded-full border-0 bg-surface-card px-space-md py-space-sm font-body-sm text-body-sm shadow-sm"
+          className="min-w-0 flex-1 rounded-full border-0 bg-surface-card px-space-md py-space-sm font-body-sm text-body-sm shadow-soft transition-shadow duration-500 ease-spring focus:shadow-lift focus:outline-none"
         />
         <button
           type="submit"

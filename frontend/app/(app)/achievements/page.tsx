@@ -43,7 +43,7 @@ export default function AchievementsPage() {
         </p>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent-lime/10 blur-3xl" />
         <div className="relative z-10 flex flex-col gap-space-sm">
           <div className="flex items-end justify-between">
@@ -54,7 +54,7 @@ export default function AchievementsPage() {
             <span className="font-label-md text-label-md text-secondary-fixed-dim">{summary.xp} XP total</span>
           </div>
           <div className="h-3 w-full overflow-hidden rounded-full bg-sidebar-card">
-            <div className="h-full rounded-full bg-accent-lime transition-all" style={{ width: `${pct}%` }} />
+            <div className="h-full origin-left animate-grow-x rounded-full bg-accent-lime" style={{ transform: `scaleX(${Math.min(1, Math.max(0, pct / 100))})` }} />
           </div>
           <span className="font-caption text-caption text-secondary-fixed-dim">
             {summary.xpIntoLevel} / {summary.xpForNextLevel} XP menuju level {summary.level + 1}
@@ -70,7 +70,7 @@ export default function AchievementsPage() {
       <ShareCard />
 
       {history.length > 0 && (
-        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-sm sm:p-space-lg">
+        <section className="flex flex-col gap-space-sm rounded-2xl bg-surface-card p-space-md shadow-soft sm:p-space-lg">
           <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">Riwayat Tantangan</h2>
           <ul className="flex flex-col divide-y divide-border-subtle">
             {history.map((c) => (
@@ -99,19 +99,19 @@ export default function AchievementsPage() {
         </section>
       )}
 
-      <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-sm">
+      <section className="flex flex-col gap-space-md rounded-2xl bg-surface-card p-space-lg shadow-soft">
         <h2 className="font-headline-sm text-headline-sm font-bold text-text-primary">
           Koleksi Lencana ({unlockedCount}/{summary.badges.length})
         </h2>
-        <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2 xl:grid-cols-3">
+        <div className="stagger grid grid-cols-1 gap-space-sm sm:grid-cols-2 xl:grid-cols-3">
           {summary.badges.map((b) => (
             <div
               key={b.id}
-              className={`flex items-start gap-space-sm rounded-xl p-space-sm ${b.unlocked ? 'bg-surface-container-low' : 'bg-surface-container-low opacity-60'}`}
+              className={`flex items-start gap-space-sm rounded-xl p-space-sm transition-transform duration-500 ease-spring hover:-translate-y-0.5 ${b.unlocked ? 'bg-surface-container-low' : 'bg-surface-container-low opacity-60'}`}
             >
               <span
                 className={`material-symbols-outlined shrink-0 rounded-full p-2 text-[22px] ${
-                  b.unlocked ? 'bg-accent-lime text-text-primary' : 'bg-surface-container text-text-muted'
+                  b.unlocked ? 'animate-pop bg-accent-lime text-text-primary' : 'bg-surface-container text-text-muted'
                 }`}
               >
                 {b.unlocked ? b.icon : 'lock'}
@@ -122,7 +122,7 @@ export default function AchievementsPage() {
                 {!b.unlocked && (
                   <div className="flex items-center gap-2">
                     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-container">
-                      <div className="h-full rounded-full bg-accent-lime" style={{ width: `${(b.progress / b.target) * 100}%` }} />
+                      <div className="h-full origin-left animate-grow-x rounded-full bg-accent-lime" style={{ transform: `scaleX(${Math.min(1, b.progress / b.target)})` }} />
                     </div>
                     <span className="font-caption text-caption text-text-muted">
                       {b.progress}/{b.target}

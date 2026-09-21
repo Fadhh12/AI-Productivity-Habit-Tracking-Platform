@@ -21,7 +21,7 @@ function ReportsSkeleton() {
       <SkeletonBlock className="h-40 rounded-2xl" />
 
       <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12">
-        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-6">
+        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-6">
           <SkeletonBlock className="h-6 w-40" />
           <SkeletonBlock className="h-3 w-full rounded-full" />
           <div className="flex flex-col gap-space-xs">
@@ -31,7 +31,7 @@ function ReportsSkeleton() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-6">
+        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-6">
           <SkeletonBlock className="h-6 w-56" />
           <div className="grid grid-cols-3 gap-space-sm">
             {[0, 1, 2].map((i) => (
@@ -45,7 +45,7 @@ function ReportsSkeleton() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-12">
+        <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-12">
           <SkeletonBlock className="h-6 w-40" />
           <div className="grid grid-cols-1 gap-space-sm md:grid-cols-2">
             {[0, 1, 2, 3].map((i) => (
@@ -169,7 +169,7 @@ export default function ReportsPage() {
           <button
             onClick={() => onExport('csv')}
             disabled={exporting !== null || !report?.available}
-            className="flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-sm hover:bg-surface-container-low disabled:opacity-50"
+            className="press flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-soft hover:bg-surface-container-low disabled:opacity-50"
             type="button"
             title="Export laporan sebagai CSV"
           >
@@ -181,7 +181,7 @@ export default function ReportsPage() {
           <button
             onClick={() => onExport('pdf')}
             disabled={exporting !== null || !report?.available}
-            className="flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-sm hover:bg-surface-container-low disabled:opacity-50"
+            className="press flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-soft hover:bg-surface-container-low disabled:opacity-50"
             type="button"
             title="Export laporan sebagai PDF"
           >
@@ -193,7 +193,7 @@ export default function ReportsPage() {
           <button
             onClick={onRefresh}
             disabled={refreshing}
-            className="flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-sm hover:bg-surface-container-low disabled:opacity-50"
+            className="press flex items-center gap-1 rounded-full bg-surface-card px-space-md py-space-sm font-label-md text-label-md font-semibold text-text-primary shadow-soft hover:bg-surface-container-low disabled:opacity-50"
             type="button"
           >
             <span className="material-symbols-outlined text-[18px]">refresh</span>
@@ -205,7 +205,7 @@ export default function ReportsPage() {
       {error && <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">{error}</p>}
       {exportLocked && <UpgradeNotice message={exportLocked.message} />}
 
-      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl bg-sidebar-dark p-space-lg text-white shadow-[0_24px_48px_-16px_rgba(22,23,29,0.45)]">
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent-lime/10 blur-3xl" />
         <div className="relative z-10 flex flex-col gap-space-sm">
           {digestLocked && <UpgradeNotice dark message={digestLocked.message} />}
@@ -233,18 +233,18 @@ export default function ReportsPage() {
       </div>
 
       {!report?.available ? (
-        <p className="rounded-2xl bg-surface-card p-space-lg text-center font-body-sm text-body-sm text-text-muted shadow-sm">
+        <p className="rounded-2xl bg-surface-card p-space-lg text-center font-body-sm text-body-sm text-text-muted shadow-soft">
           {report?.message ?? 'Laporan belum tersedia.'}
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-space-lg xl:grid-cols-12">
-          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-6">
+        <div className="stagger grid grid-cols-1 gap-space-lg xl:grid-cols-12">
+          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-6">
             <h3 className="font-headline-sm text-headline-sm font-bold text-text-primary">Distribusi Waktu</h3>
             {distributionEntries.length === 0 ? (
               <p className="font-body-sm text-body-sm text-text-muted">Belum ada data aktivitas bulan ini.</p>
             ) : (
               <>
-                <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-container">
+                <div className="flex h-3 w-full origin-left animate-grow-x overflow-hidden rounded-full bg-surface-container">
                   {distributionEntries.map(([name, minutes], i) => (
                     <div key={name} style={{ width: `${(minutes / totalMinutes) * 100}%`, backgroundColor: PALETTE[i % PALETTE.length] }} />
                   ))}
@@ -264,7 +264,7 @@ export default function ReportsPage() {
             )}
           </section>
 
-          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-6">
+          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-6">
             <h3 className="font-headline-sm text-headline-sm font-bold text-text-primary">Consistency &amp; Forgiveness</h3>
             <div className="grid grid-cols-3 gap-space-sm">
               {Object.entries(report.data!.checkinStatusCounts).map(([status, count]) => (
@@ -292,7 +292,7 @@ export default function ReportsPage() {
             </div>
           </section>
 
-          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-12">
+          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-12">
             <h3 className="font-headline-sm text-headline-sm font-bold text-text-primary">Progress Goal</h3>
             {report.data!.goalProgress.length === 0 ? (
               <p className="font-body-sm text-body-sm text-text-muted">Belum ada goal dengan habit terpaut.</p>
@@ -307,7 +307,7 @@ export default function ReportsPage() {
                         <span className="font-label-md text-label-md font-bold text-text-primary">{pct}%</span>
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-surface-container">
-                        <div className="h-full rounded-full bg-accent-lime" style={{ width: `${pct}%` }} />
+                        <div className="h-full origin-left animate-grow-x rounded-full bg-accent-lime" style={{ transform: `scaleX(${Math.min(1, Math.max(0, pct / 100))})` }} />
                       </div>
                       <span className="font-caption text-caption text-text-secondary">
                         {g.doneCount} / {g.habitCount} habit selesai
@@ -319,7 +319,7 @@ export default function ReportsPage() {
             )}
           </section>
 
-          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-sm xl:col-span-12">
+          <section className="flex flex-col gap-space-md rounded-lg bg-surface-card p-space-lg shadow-soft xl:col-span-12">
             <div className="flex items-center justify-between">
               <h3 className="font-headline-sm text-headline-sm font-bold text-text-primary">Pola &amp; Insight AI</h3>
               {patterns && (
