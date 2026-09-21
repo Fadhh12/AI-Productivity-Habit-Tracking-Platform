@@ -1,0 +1,4 @@
+# Phase 39 — Mascot "Conti" and the welcome poster
+
+- `components/Mascot.tsx`: an original SVG mascot (a lime sprout-blob). It blinks, sways its sprout and floats by itself; tapping it makes it hop (with a light vibration). Moods: `happy`, `cheer` (arms up, all habits done), `sleepy` (late night, floating "z"). Animations are the `.mascot-*` classes in `globals.css` and stop under reduced motion.
+- `components/WelcomePoster.tsx`: poster-style hero at the top of the dashboard. A purple gradient with the outlined "continuum" lettering, a greeting for the time of day, a one-line nudge based on today's progress, progress/activity/capacity chips, and the mascot reacting to the day. It replaces the old "Halo" heading and capacity chip. Fixed brand colours (`force-light`), so it looks the same in dark mode.

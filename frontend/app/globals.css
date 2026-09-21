@@ -334,6 +334,59 @@ p {
   }
 }
 
+/* Conti the mascot. transform-box makes each SVG part rotate/scale around its own box. */
+.mascot-float {
+  animation: mascot-float 3.6s ease-in-out infinite;
+}
+.mascot-hop {
+  animation: mascot-hop 0.8s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.mascot-shadow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mascot-shadow 3.6s ease-in-out infinite;
+}
+.mascot-blink {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mascot-blink 4.6s infinite;
+}
+.mascot-sprout {
+  transform-origin: 80px 48px;
+  animation: mascot-sway 3.2s ease-in-out infinite;
+}
+.mascot-z {
+  animation: mascot-z 2.4s ease-in-out infinite;
+}
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes mascot-hop {
+  0% { transform: translateY(0) scale(1, 1); }
+  20% { transform: translateY(4px) scale(1.06, 0.92); }
+  50% { transform: translateY(-30px) scale(0.96, 1.06); }
+  80% { transform: translateY(0) scale(1.05, 0.94); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes mascot-shadow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.85); opacity: 0.7; }
+}
+@keyframes mascot-blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  94% { transform: scaleY(0.08); }
+}
+@keyframes mascot-sway {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+@keyframes mascot-z {
+  0% { transform: translate(0, 6px); opacity: 0; }
+  40% { opacity: 0.8; }
+  100% { transform: translate(6px, -10px); opacity: 0; }
+}
+
 /* Respect users who ask the OS for less motion: keep state changes, drop movement. */
 @media (prefers-reduced-motion: reduce) {
   .reveal {

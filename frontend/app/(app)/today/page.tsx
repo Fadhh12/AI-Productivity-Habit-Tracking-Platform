@@ -18,6 +18,9 @@ import { createRecurringActivities } from '@/lib/activities';
 import { Confetti } from '@/components/Confetti';
 import { EmptyState } from '@/components/EmptyState';
 import { WelcomeTips } from '@/components/WelcomeTips';
+import { WelcomePoster } from '@/components/WelcomePoster';
+import { displayNameOf } from '@/components/Avatar';
+import { useAuth } from '@/lib/auth';
 
 const MAX_ACTIVE_HABITS = 5;
 
@@ -73,6 +76,7 @@ function TodaySkeleton() {
 
 export default function TodayPage() {
   const confirm = useConfirm();
+  const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [allActivities, setAllActivities] = useState<Activity[]>([]);
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -296,24 +300,13 @@ export default function TodayPage() {
       <Confetti burst={burst} originX={50} originY={35} />
       {/* LEFT & CENTER */}
       <div className="stagger flex flex-col gap-space-lg xl:col-span-8">
-        <div className="flex flex-col justify-between gap-space-md md:flex-row md:items-center">
-          <div className="flex flex-col gap-space-xs">
-            <h1 className="font-headline-xl-mobile text-headline-xl-mobile text-text-primary tracking-tight lg:font-headline-xl lg:text-headline-xl">
-              Halo <span className="inline-block origin-[70%_70%] animate-wave">👋</span>
-            </h1>
-            <p className="font-body-md text-body-md text-text-secondary">
-              Hari ini ada <span className="font-semibold text-text-primary">{habits.length} habit aktif</span> dan{' '}
-              <span className="font-semibold text-text-primary">{activities.length} aktivitas</span> tercatat.
-            </p>
-          </div>
-          <div className="inline-flex items-center gap-space-sm self-start rounded-full bg-surface-card px-space-md py-space-sm shadow-soft md:self-auto">
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-accent-mint-text" />
-            <span className="font-label-md text-label-md font-semibold text-text-primary">Kapasitas Habit:</span>
-            <span className="rounded-full bg-accent-mint px-space-sm py-0.5 font-label-md text-label-md font-bold text-accent-mint-text">
-              {habits.length} / {MAX_ACTIVE_HABITS}
-            </span>
-          </div>
-        </div>
+        <WelcomePoster
+          name={displayNameOf(user)}
+          done={habits.filter((h) => checkedInIds.has(h.id)).length}
+          total={habits.length}
+          capacity={MAX_ACTIVE_HABITS}
+          activities={activities.length}
+        />
 
         {error && (
           <div className="animate-fade-in rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container">
