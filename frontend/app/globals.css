@@ -131,6 +131,20 @@ p {
     animation: shimmer 1.6s var(--ease-out-soft) infinite;
   }
 
+  /* Scroll reveal: Reveal component adds .in-view when the element enters the viewport. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.9s var(--ease-spring),
+      transform 0.9s var(--ease-spring);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: none;
+  }
+
   /* Hide scrollbars on horizontal scrollers without disabling scroll. */
   .no-scrollbar {
     scrollbar-width: none;
@@ -234,6 +248,10 @@ p {
 
 /* Respect users who ask the OS for less motion: keep state changes, drop movement. */
 @media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
   html {
     scroll-behavior: auto;
   }

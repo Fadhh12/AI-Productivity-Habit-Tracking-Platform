@@ -1,21 +1,23 @@
-'use client';
+import type { Metadata } from 'next';
+import { Hero } from '@/components/landing/Hero';
+import { LandingNav } from '@/components/landing/LandingNav';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/auth';
+export const metadata: Metadata = {
+  title: 'Continuum: kebiasaan baik tanpa rasa bersalah',
+  description:
+    'Catat habit dan aktivitas harianmu, dibantu AI coach. Tanpa tekanan, tanpa rasa bersalah kalau sehari terlewat.',
+};
 
-export default function RootPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (loading) return;
-    router.replace(user ? '/today' : '/login');
-  }, [loading, user, router]);
-
+export default function LandingPage() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center text-gray-400">
-      Memuat Continuum…
+    <div className="min-h-[100dvh] bg-[#0F1015] text-white">
+      <noscript>
+        <style>{'.reveal{opacity:1!important;transform:none!important}'}</style>
+      </noscript>
+      <LandingNav />
+      <main>
+        <Hero />
+      </main>
     </div>
   );
 }
