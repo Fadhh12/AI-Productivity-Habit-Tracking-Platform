@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { Features } from '@/components/landing/Features';
 import { Hero } from '@/components/landing/Hero';
+import { Philosophy } from '@/components/landing/Philosophy';
 import { LandingNav } from '@/components/landing/LandingNav';
 
 export const metadata: Metadata = {
@@ -17,6 +19,8 @@ export default function LandingPage() {
       <LandingNav />
       <main>
         <Hero />
+        <Philosophy />
+        <Features />
       </main>
     </div>
   );
