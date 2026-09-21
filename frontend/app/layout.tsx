@@ -4,9 +4,25 @@ import { ConfirmProvider } from '@/lib/confirm';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Continuum',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001'),
+  title: { default: 'Continuum', template: '%s | Continuum' },
   description: 'Bangun kebiasaan produktif tanpa takut gagal.',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icons/icon.svg', type: 'image/svg+xml' },
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: '/icons/icon-192.png',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Continuum',
+    locale: 'id_ID',
+    title: 'Continuum: kebiasaan baik tanpa rasa bersalah',
+    description: 'Habit tracker dengan AI coach. Bolos sehari bukan kegagalan.',
+  },
+  twitter: { card: 'summary_large_image' },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

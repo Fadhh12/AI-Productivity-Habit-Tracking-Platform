@@ -9,7 +9,7 @@ import { Plans } from '@/components/landing/Plans';
 import { LandingNav } from '@/components/landing/LandingNav';
 
 export const metadata: Metadata = {
-  title: 'Continuum: kebiasaan baik tanpa rasa bersalah',
+  title: { absolute: 'Continuum: kebiasaan baik tanpa rasa bersalah' },
   description:
     'Catat habit dan aktivitas harianmu, dibantu AI coach. Tanpa tekanan, tanpa rasa bersalah kalau sehari terlewat.',
 };
