@@ -4,11 +4,46 @@
 
 :root {
   color-scheme: light;
+  /* One spring-like curve shared by every transition so motion feels consistent. */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Shadows are tinted with the brand olive instead of pure black. */
+  --shadow-soft: 0 1px 2px rgba(80, 102, 0, 0.04), 0 8px 24px -8px rgba(80, 102, 0, 0.1);
+  --shadow-lift: 0 2px 4px rgba(80, 102, 0, 0.05), 0 18px 36px -12px rgba(80, 102, 0, 0.18);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  text-size-adjust: 100%;
 }
 
 body {
   @apply bg-surface text-on-surface antialiased;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Keyboard focus is always visible; mouse/touch focus stays clean. */
+:focus-visible {
+  outline: 2px solid #506600;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+::selection {
+  background: #ccff00;
+  color: #18181b;
 }
 
 /* Fixed to a 1em box so a slow/blocked font load (e.g. Google Fonts unreachable)
@@ -26,9 +61,193 @@ body {
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
+  transition: font-variation-settings 0.3s var(--ease-spring);
 }
 
 /* Non-punitive visual language: missed/skipped habit days use neutral gray, never red/strikethrough. */
 .badge-ai {
   @apply inline-flex items-center gap-1 rounded-full bg-accent-lavender px-2 py-0.5 text-xs font-medium text-accent-lavender-text;
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Physical press feedback for anything clickable. */
+  .press {
+    transition:
+      transform 0.35s var(--ease-spring),
+      box-shadow 0.35s var(--ease-spring),
+      background-color 0.25s var(--ease-out-soft),
+      color 0.25s var(--ease-out-soft);
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  /* Cards that rise slightly under the cursor. Hover only on real pointers so touch never sticks. */
+  .lift {
+    box-shadow: var(--shadow-soft);
+    transition:
+      transform 0.5s var(--ease-spring),
+      box-shadow 0.5s var(--ease-spring);
+  }
+  @media (hover: hover) {
+    .lift:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lift);
+    }
+  }
+  .lift:active {
+    transform: scale(0.99);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Children fade up one after another. Delay comes from the child index. */
+  .stagger > * {
+    animation: fade-up 0.6s var(--ease-spring) backwards;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 60ms; }
+  .stagger > *:nth-child(3) { animation-delay: 120ms; }
+  .stagger > *:nth-child(4) { animation-delay: 180ms; }
+  .stagger > *:nth-child(5) { animation-delay: 240ms; }
+  .stagger > *:nth-child(6) { animation-delay: 300ms; }
+  .stagger > *:nth-child(7) { animation-delay: 360ms; }
+  .stagger > *:nth-child(8) { animation-delay: 420ms; }
+  .stagger > *:nth-child(n + 9) { animation-delay: 480ms; }
+
+  /* Skeletons and shimmer use a moving highlight, animated with transform only. */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    animation: shimmer 1.6s var(--ease-out-soft) infinite;
+  }
+
+  /* Hide scrollbars on horizontal scrollers without disabling scroll. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Checkmark / success pop with a small overshoot. */
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+  }
+  55% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ring-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes flame {
+  0%,
+  100% {
+    transform: scale(1) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(2deg);
+  }
+}
+
+/* Respect users who ask the OS for less motion: keep state changes, drop movement. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -87,6 +87,33 @@ module.exports = {
         'gutter-mobile': '1rem',
         'space-lg': '1.5rem',
       },
+      transitionTimingFunction: {
+        spring: 'cubic-bezier(0.32, 0.72, 0, 1)',
+        'out-soft': 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+      keyframes: {
+        'fade-up': { from: { opacity: '0', transform: 'translateY(14px)' }, to: { opacity: '1', transform: 'none' } },
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        'scale-in': { from: { opacity: '0', transform: 'scale(0.94)' }, to: { opacity: '1', transform: 'none' } },
+        'slide-up': { from: { opacity: '0', transform: 'translateY(24px)' }, to: { opacity: '1', transform: 'none' } },
+        pop: { '0%': { transform: 'scale(0.6)' }, '55%': { transform: 'scale(1.18)' }, '100%': { transform: 'scale(1)' } },
+        'ring-pulse': { '0%': { transform: 'scale(1)', opacity: '0.55' }, '100%': { transform: 'scale(1.9)', opacity: '0' } },
+        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } },
+        flame: {
+          '0%, 100%': { transform: 'scale(1) rotate(-2deg)' },
+          '50%': { transform: 'scale(1.1) rotate(2deg)' },
+        },
+      },
+      animation: {
+        'fade-up': 'fade-up 0.6s cubic-bezier(0.32, 0.72, 0, 1) backwards',
+        'fade-in': 'fade-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards',
+        'scale-in': 'scale-in 0.35s cubic-bezier(0.32, 0.72, 0, 1) backwards',
+        'slide-up': 'slide-up 0.5s cubic-bezier(0.32, 0.72, 0, 1) backwards',
+        pop: 'pop 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
+        'ring-pulse': 'ring-pulse 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        float: 'float 4s ease-in-out infinite',
+        flame: 'flame 1.8s ease-in-out infinite',
+      },
       fontFamily: {
         'headline-md': ['Plus Jakarta Sans', 'sans-serif'],
         'body-md': ['Plus Jakarta Sans', 'sans-serif'],

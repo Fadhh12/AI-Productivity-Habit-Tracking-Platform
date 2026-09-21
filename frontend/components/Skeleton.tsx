@@ -14,7 +14,7 @@ export function SkeletonBlock({ className = '', ...props }: SkeletonBlockProps) 
   return (
     <div
       aria-hidden="true"
-      className={`animate-pulse rounded-lg bg-surface-container ${className}`.trim()}
+      className={`shimmer rounded-lg bg-surface-container ${className}`.trim()}
       {...props}
     />
   );
