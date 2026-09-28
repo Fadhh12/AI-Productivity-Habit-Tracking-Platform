@@ -11,3 +11,8 @@ coverage/
 
 # Google OAuth client downloads
 client_secret*.json
+
+# ruflo
+.claude-flow/
+claude-flow.config.json
+data/memory/
