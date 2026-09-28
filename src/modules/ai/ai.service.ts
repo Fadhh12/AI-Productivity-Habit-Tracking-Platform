@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infra/db/prisma.service';
 import { LlmClient } from './llm.client';
 import { CircuitBreakerService } from './circuit-breaker.service';
