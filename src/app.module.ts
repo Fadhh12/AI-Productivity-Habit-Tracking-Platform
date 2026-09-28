@@ -73,6 +73,6 @@ import { ChallengeModule } from './modules/challenge/challenge.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware).forRoutes('*');
+    consumer.apply(RequestIdMiddleware).forRoutes('{*splat}');
   }
 }

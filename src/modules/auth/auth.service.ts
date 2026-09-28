@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../../infra/db/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -100,7 +100,7 @@ export class AuthService {
       { sub: userId, email },
       {
         secret: this.configService.get<string>('jwt.accessSecret'),
-        expiresIn: accessExpiresIn,
+        expiresIn: accessExpiresIn as JwtSignOptions['expiresIn'],
       },
     );
 
@@ -108,7 +108,7 @@ export class AuthService {
       { sub: userId, email },
       {
         secret: this.configService.get<string>('jwt.refreshSecret'),
-        expiresIn: refreshExpiresIn,
+        expiresIn: refreshExpiresIn as JwtSignOptions['expiresIn'],
       },
     );
 
