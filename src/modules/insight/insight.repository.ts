@@ -41,7 +41,10 @@ export class InsightRepository {
     const rows = await this.prisma.habitCheckin.findMany({
       where: {
         habit: { userId },
-        checkinDate: { gte: new Date(`${fromDate}T00:00:00.000Z`), lte: new Date(`${toDate}T00:00:00.000Z`) },
+        checkinDate: {
+          gte: new Date(`${fromDate}T00:00:00.000Z`),
+          lte: new Date(`${toDate}T00:00:00.000Z`),
+        },
       },
       select: { checkinDate: true, status: true },
     });

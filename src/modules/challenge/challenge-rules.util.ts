@@ -61,7 +61,10 @@ function stretch(base: number): number {
 
 export function fallbackChallenge(stats: LastWeekStats): ChallengeDraft {
   if (stats.activeHabits > 0) {
-    const target = clampTarget('checkins', Math.max(stretch(stats.checkins), stats.activeHabits * 3));
+    const target = clampTarget(
+      'checkins',
+      Math.max(stretch(stats.checkins), stats.activeHabits * 3),
+    );
     return {
       title: `Selesaikan ${target} check-in habit`,
       description: `Kumpulkan ${target} check-in habit minggu ini. Pelan tapi konsisten, satu langkah kecil tiap hari sudah cukup.`,
@@ -80,7 +83,8 @@ export function fallbackChallenge(stats: LastWeekStats): ChallengeDraft {
   }
   return {
     title: 'Aktif 3 hari minggu ini',
-    description: 'Cukup catat satu aktivitas atau selesaikan satu habit di 3 hari berbeda. Mulai dari yang kecil.',
+    description:
+      'Cukup catat satu aktivitas atau selesaikan satu habit di 3 hari berbeda. Mulai dari yang kecil.',
     metric: 'active_days',
     target: 3,
   };
@@ -90,7 +94,8 @@ export function fallbackChallenge(stats: LastWeekStats): ChallengeDraft {
 export function sanitizeDraft(raw: unknown): ChallengeDraft | null {
   if (!raw || typeof raw !== 'object') return null;
   const { title, description, metric, target } = raw as Record<string, unknown>;
-  if (typeof title !== 'string' || typeof description !== 'string' || !isMetric(metric)) return null;
+  if (typeof title !== 'string' || typeof description !== 'string' || !isMetric(metric))
+    return null;
   const num = typeof target === 'number' ? target : Number(target);
   if (!Number.isFinite(num)) return null;
   const cleanTitle = title.replace(/\s+/g, ' ').trim().slice(0, 80);

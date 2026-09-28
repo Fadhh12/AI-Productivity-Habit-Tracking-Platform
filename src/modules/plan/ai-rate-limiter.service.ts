@@ -25,7 +25,10 @@ export class AiRateLimiterService {
   }
 
   private async planOf(userId: string): Promise<Plan> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { premiumUntil: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { premiumUntil: true },
+    });
     return resolvePlan(user?.premiumUntil);
   }
 
@@ -63,7 +66,11 @@ export class AiRateLimiterService {
   }
 
   /** Read-only view for the plan screen. */
-  async usage(userId: string, bucket: AiBucket, plan: Plan): Promise<{ used: number; limit: number }> {
+  async usage(
+    userId: string,
+    bucket: AiBucket,
+    plan: Plan,
+  ): Promise<{ used: number; limit: number }> {
     const raw = await this.redis.client.get(this.key(userId, bucket));
     const limit = dailyLimit(plan, bucket, this.plusLimit());
     // Rejected attempts still increment the counter; never show more used than the limit.

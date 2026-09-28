@@ -7,16 +7,23 @@ export class GamificationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async loadStats(userId: string): Promise<GamificationStats> {
-    const [doneCheckins, forgivenRestDays, activitiesLogged, reflectionsAnswered, goalsCompleted, goalLinkedHabits, streak] =
-      await Promise.all([
-        this.prisma.habitCheckin.count({ where: { habit: { userId }, status: 'done' } }),
-        this.prisma.habitCheckin.count({ where: { habit: { userId }, status: 'skipped_forgiven' } }),
-        this.prisma.activityLog.count({ where: { userId } }),
-        this.prisma.dailyReflection.count({ where: { userId, responseText: { not: null } } }),
-        this.prisma.goal.count({ where: { userId, status: 'completed' } }),
-        this.prisma.habit.count({ where: { userId, goalId: { not: null } } }),
-        this.prisma.habit.aggregate({ where: { userId }, _max: { currentStreak: true } }),
-      ]);
+    const [
+      doneCheckins,
+      forgivenRestDays,
+      activitiesLogged,
+      reflectionsAnswered,
+      goalsCompleted,
+      goalLinkedHabits,
+      streak,
+    ] = await Promise.all([
+      this.prisma.habitCheckin.count({ where: { habit: { userId }, status: 'done' } }),
+      this.prisma.habitCheckin.count({ where: { habit: { userId }, status: 'skipped_forgiven' } }),
+      this.prisma.activityLog.count({ where: { userId } }),
+      this.prisma.dailyReflection.count({ where: { userId, responseText: { not: null } } }),
+      this.prisma.goal.count({ where: { userId, status: 'completed' } }),
+      this.prisma.habit.count({ where: { userId, goalId: { not: null } } }),
+      this.prisma.habit.aggregate({ where: { userId }, _max: { currentStreak: true } }),
+    ]);
 
     return {
       doneCheckins,

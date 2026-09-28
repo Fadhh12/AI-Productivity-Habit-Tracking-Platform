@@ -28,9 +28,13 @@ describe('dailyLimit', () => {
 describe('extendPremium', () => {
   it('starts from now when there is no active period', () => {
     expect(extendPremium(null, 30, NOW).toISOString()).toBe('2026-10-20T10:00:00.000Z');
-    expect(extendPremium(new Date('2026-01-01T00:00:00Z'), 7, NOW).toISOString()).toBe('2026-09-27T10:00:00.000Z');
+    expect(extendPremium(new Date('2026-01-01T00:00:00Z'), 7, NOW).toISOString()).toBe(
+      '2026-09-27T10:00:00.000Z',
+    );
   });
   it('adds to the remaining time when renewing early', () => {
-    expect(extendPremium(new Date('2026-09-25T10:00:00Z'), 30, NOW).toISOString()).toBe('2026-10-25T10:00:00.000Z');
+    expect(extendPremium(new Date('2026-09-25T10:00:00Z'), 30, NOW).toISOString()).toBe(
+      '2026-10-25T10:00:00.000Z',
+    );
   });
 });

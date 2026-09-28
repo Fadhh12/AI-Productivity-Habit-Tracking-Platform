@@ -105,7 +105,13 @@ export class InsightService {
     if (await this.alreadySent(userId, 'comeback', refId)) return;
 
     const days = daysBetween(last!, m.date);
-    await this.send(userId, 'comeback', refId, { daysSinceLastActivity: days }, comebackFallback(days));
+    await this.send(
+      userId,
+      'comeback',
+      refId,
+      { daysSinceLastActivity: days },
+      comebackFallback(days),
+    );
   }
 
   private async pattern(userId: string, m: LocalMoment) {
@@ -125,11 +131,21 @@ export class InsightService {
   }
 
   private async alreadySent(userId: string, kind: InsightKind, refId: string): Promise<boolean> {
-    return this.notificationService.alreadySentAny(userId, [`insight_${kind}`, `ai_insight_${kind}`], refId);
+    return this.notificationService.alreadySentAny(
+      userId,
+      [`insight_${kind}`, `ai_insight_${kind}`],
+      refId,
+    );
   }
 
   /** AI-phrased when the provider is healthy; otherwise the deterministic template. The type prefix records which one it was so the UI can label it. */
-  private async send(userId: string, kind: InsightKind, refId: string, facts: object, fallback: string) {
+  private async send(
+    userId: string,
+    kind: InsightKind,
+    refId: string,
+    facts: object,
+    fallback: string,
+  ) {
     let message = fallback;
     let aiGenerated = false;
 
@@ -145,6 +161,11 @@ export class InsightService {
       }
     }
 
-    await this.notificationService.notify(userId, `${aiGenerated ? 'ai_' : ''}insight_${kind}`, message, refId);
+    await this.notificationService.notify(
+      userId,
+      `${aiGenerated ? 'ai_' : ''}insight_${kind}`,
+      message,
+      refId,
+    );
   }
 }

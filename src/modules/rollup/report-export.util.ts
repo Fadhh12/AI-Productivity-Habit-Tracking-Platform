@@ -83,7 +83,9 @@ export function buildReportPdf(summary: MonthlyRollupSummary): Promise<Buffer> {
     section('Tren Streak Habit');
     if (summary.habitStreakTrend.length === 0) doc.text('Belum ada habit dengan streak.');
     for (const h of summary.habitStreakTrend) {
-      doc.text(`${h.name} — streak ${h.currentStreak}${h.goalTitle ? ` (goal: ${h.goalTitle})` : ''}`);
+      doc.text(
+        `${h.name} — streak ${h.currentStreak}${h.goalTitle ? ` (goal: ${h.goalTitle})` : ''}`,
+      );
     }
 
     section('Progress Goal');

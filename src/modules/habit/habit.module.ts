@@ -10,7 +10,13 @@ import { NotificationModule } from '../notification/notification.module';
 @Module({
   imports: [NotificationModule],
   controllers: [HabitController],
-  providers: [HabitService, HabitRepository, StreakEngineService, HabitMidnightScheduler, HabitReminderScheduler],
+  providers: [
+    HabitService,
+    HabitRepository,
+    StreakEngineService,
+    HabitMidnightScheduler,
+    HabitReminderScheduler,
+  ],
   exports: [HabitService],
 })
 export class HabitModule {}

@@ -13,7 +13,9 @@ describe('isValidAvatarDataUrl', () => {
     expect(isValidAvatarDataUrl('data:image/png;base64,abc" onerror="x')).toBe(false);
   });
   it('rejects oversized images', () => {
-    expect(isValidAvatarDataUrl(`data:image/png;base64,${'A'.repeat(MAX_AVATAR_CHARS)}`)).toBe(false);
+    expect(isValidAvatarDataUrl(`data:image/png;base64,${'A'.repeat(MAX_AVATAR_CHARS)}`)).toBe(
+      false,
+    );
   });
 });
 

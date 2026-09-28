@@ -1,7 +1,14 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infra/db/prisma.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
-import { extendPremium, FEATURE_LABELS, FREE_DAILY_LIMITS, Plan, PremiumFeature, resolvePlan } from './plan.util';
+import {
+  extendPremium,
+  FEATURE_LABELS,
+  FREE_DAILY_LIMITS,
+  Plan,
+  PremiumFeature,
+  resolvePlan,
+} from './plan.util';
 
 @Injectable()
 export class PlanService {
@@ -11,7 +18,10 @@ export class PlanService {
   ) {}
 
   async getPlan(userId: string): Promise<Plan> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { premiumUntil: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { premiumUntil: true },
+    });
     return resolvePlan(user?.premiumUntil);
   }
 
@@ -31,7 +41,10 @@ export class PlanService {
   }
 
   async summary(userId: string) {
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { premiumUntil: true } });
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { premiumUntil: true },
+    });
     const plan = resolvePlan(user.premiumUntil);
     const [coach, ai] = await Promise.all([
       this.limiter.usage(userId, 'coach', plan),
@@ -48,8 +61,12 @@ export class PlanService {
 
   /** Admin/testing entry point until store billing is wired in; zero or negative `days` ends the plan now. */
   async grant(userId: string, days: number): Promise<Date | null> {
-    const current = (await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { premiumUntil: true } }))
-      .premiumUntil;
+    const current = (
+      await this.prisma.user.findUniqueOrThrow({
+        where: { id: userId },
+        select: { premiumUntil: true },
+      })
+    ).premiumUntil;
     const premiumUntil = days > 0 ? extendPremium(current, days) : null;
     await this.prisma.user.update({ where: { id: userId }, data: { premiumUntil } });
     return premiumUntil;

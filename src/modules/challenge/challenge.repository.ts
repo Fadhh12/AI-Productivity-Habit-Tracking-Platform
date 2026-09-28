@@ -8,12 +8,17 @@ export class ChallengeRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getTimezone(userId: string): Promise<string> {
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { timezone: true } });
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { timezone: true },
+    });
     return user.timezone;
   }
 
   findByWeek(userId: string, weekStart: string) {
-    return this.prisma.weeklyChallenge.findUnique({ where: { userId_weekStart: { userId, weekStart } } });
+    return this.prisma.weeklyChallenge.findUnique({
+      where: { userId_weekStart: { userId, weekStart } },
+    });
   }
 
   findBefore(userId: string, weekStart: string, take: number) {
@@ -26,11 +31,15 @@ export class ChallengeRepository {
 
   /** Challenges created recently that are still open — candidates for the completion sweep. */
   findOpenRecent(since: Date) {
-    return this.prisma.weeklyChallenge.findMany({ where: { completedAt: null, createdAt: { gte: since } } });
+    return this.prisma.weeklyChallenge.findMany({
+      where: { completedAt: null, createdAt: { gte: since } },
+    });
   }
 
   create(userId: string, weekStart: string, draft: ChallengeDraft, isAiGenerated: boolean) {
-    return this.prisma.weeklyChallenge.create({ data: { userId, weekStart, ...draft, isAiGenerated } });
+    return this.prisma.weeklyChallenge.create({
+      data: { userId, weekStart, ...draft, isAiGenerated },
+    });
   }
 
   /** True only for the caller that actually flipped it, so the completion notification is sent once. */
@@ -54,14 +63,20 @@ export class ChallengeRepository {
         where: {
           habit: { userId },
           status: 'done',
-          checkinDate: { gte: new Date(`${weekStart}T00:00:00.000Z`), lt: new Date(`${nextWeek}T00:00:00.000Z`) },
+          checkinDate: {
+            gte: new Date(`${weekStart}T00:00:00.000Z`),
+            lt: new Date(`${nextWeek}T00:00:00.000Z`),
+          },
         },
         select: { checkinDate: true },
       }),
       this.prisma.activityLog.findMany({
         where: {
           userId,
-          startTime: { gte: localMidnightUtc(weekStart, timezone), lt: localMidnightUtc(nextWeek, timezone) },
+          startTime: {
+            gte: localMidnightUtc(weekStart, timezone),
+            lt: localMidnightUtc(nextWeek, timezone),
+          },
         },
         select: { startTime: true },
       }),

@@ -277,7 +277,9 @@ Activity text: ${text}`,
 
     const activeHabits = habits.filter((h) => h.active);
     const doneToday = activeHabits.filter((h) =>
-      h.checkins.some((c) => c.status === 'done' && c.checkinDate.toISOString().slice(0, 10) === localDate),
+      h.checkins.some(
+        (c) => c.status === 'done' && c.checkinDate.toISOString().slice(0, 10) === localDate,
+      ),
     ).length;
     const habitPart = activeHabits.length
       ? `Habit selesai hari ini: ${doneToday}/${activeHabits.length} (${activeHabits
@@ -306,7 +308,7 @@ Activity text: ${text}`,
         const context = await this.buildReflectionContext(userId, localDate);
         const generated = await this.llmClient.generateJson<{ question: string }>(
           'You write exactly ONE short, warm, specific reflection question in Indonesian (max 25 words) based on ' +
-            "what the user did today. Avoid generic templates like \"Bagaimana harimu?\" - reference something " +
+            'what the user did today. Avoid generic templates like "Bagaimana harimu?" - reference something ' +
             'concrete from the context when possible. Reply with exactly: {"question": string}',
           context,
         );
@@ -361,7 +363,11 @@ Activity text: ${text}`,
     }
 
     const weekdayCompletion = Array.from(byWeekday.entries())
-      .map(([day, { done, total }]) => ({ day: WEEKDAY_LABELS[day], rate: Math.round((done / total) * 100), total }))
+      .map(([day, { done, total }]) => ({
+        day: WEEKDAY_LABELS[day],
+        rate: Math.round((done / total) * 100),
+        total,
+      }))
       .filter((w) => w.total >= 2)
       .sort((a, b) => a.rate - b.rate);
 
@@ -400,7 +406,9 @@ Activity text: ${text}`,
 
     if (stats.weekdayCompletion.length > 0 && stats.weekdayCompletion[0].rate < 70) {
       const lowest = stats.weekdayCompletion[0];
-      patterns.push(`Konsistensi habit paling rendah di hari ${lowest.day} (${lowest.rate}% selesai).`);
+      patterns.push(
+        `Konsistensi habit paling rendah di hari ${lowest.day} (${lowest.rate}% selesai).`,
+      );
     }
     if (stats.mostMissedHabit && stats.mostMissedHabit.count >= 3) {
       patterns.push(
@@ -414,7 +422,9 @@ Activity text: ${text}`,
       );
     }
     if (patterns.length === 0) {
-      patterns.push('Belum cukup data untuk mendeteksi pola yang jelas. Terus catat aktivitas & habit untuk insight yang lebih akurat.');
+      patterns.push(
+        'Belum cukup data untuk mendeteksi pola yang jelas. Terus catat aktivitas & habit untuk insight yang lebih akurat.',
+      );
     }
     return patterns;
   }
@@ -428,8 +438,8 @@ Activity text: ${text}`,
     if (!circuitOpen && stats.hasEnoughData) {
       try {
         const generated = await this.llmClient.generateJson<{ patterns: string[] }>(
-          'You are a productivity coach. Given these stats about a user\'s habit completion by weekday and their ' +
-            "week-over-week category time usage, identify 1-3 concrete, specific behavioral patterns or correlations " +
+          "You are a productivity coach. Given these stats about a user's habit completion by weekday and their " +
+            'week-over-week category time usage, identify 1-3 concrete, specific behavioral patterns or correlations ' +
             '(in Indonesian, one short sentence each, citing the numbers/days/percentages given). Only state ' +
             'observations grounded in the data - no generic advice. Reply with exactly: {"patterns": string[]}',
           JSON.stringify(stats),
@@ -445,7 +455,12 @@ Activity text: ${text}`,
           },
         });
 
-        return { patterns: generated.patterns, ai_available: true, fallback: false, is_ai_generated: true };
+        return {
+          patterns: generated.patterns,
+          ai_available: true,
+          fallback: false,
+          is_ai_generated: true,
+        };
       } catch {
         this.circuitBreaker.recordFailure();
       }

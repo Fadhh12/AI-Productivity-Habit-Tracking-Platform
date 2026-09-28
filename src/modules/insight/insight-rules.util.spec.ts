@@ -89,7 +89,13 @@ describe('messages', () => {
   });
 
   it('pattern fallback names the weekday and rate', () => {
-    const text = patternFallback({ weekday: 3, name: 'Rabu', rate: 0.25, overall: 0.8, samples: 4 });
+    const text = patternFallback({
+      weekday: 3,
+      name: 'Rabu',
+      rate: 0.25,
+      overall: 0.8,
+      samples: 4,
+    });
     expect(text).toContain('Rabu');
     expect(text).toContain('25%');
   });

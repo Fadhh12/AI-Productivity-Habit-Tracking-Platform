@@ -18,14 +18,22 @@ export function buildPushPayload(type: string, message: string): PushPayload {
   const kind = type.replace(/^ai_/, '');
   const body = truncate(message);
 
-  if (kind === 'insight_weekly_win') return { title: 'Rangkuman minggumu', body, url: '/reports', tag: kind };
-  if (kind === 'insight_pattern') return { title: 'Pola yang Coach temukan', body, url: '/reports', tag: kind };
-  if (kind === 'insight_comeback') return { title: 'Coach Continuum', body, url: '/today', tag: kind };
-  if (kind === 'habit_reminder') return { title: 'Pengingat habit', body, url: '/habit-tracker', tag: 'habit_reminder' };
-  if (kind === 'activity_reminder') return { title: 'Pengingat aktivitas', body, url: '/activity-logs', tag: 'activity_reminder' };
-  if (kind === 'calendar_sync') return { title: 'Google Calendar', body, url: '/activity-logs', tag: kind };
-  if (kind === 'challenge_complete') return { title: 'Tantangan selesai!', body, url: '/today', tag: kind };
-  if (kind === 'test_push') return { title: 'Notifikasi Continuum aktif', body, url: '/settings', tag: kind };
+  if (kind === 'insight_weekly_win')
+    return { title: 'Rangkuman minggumu', body, url: '/reports', tag: kind };
+  if (kind === 'insight_pattern')
+    return { title: 'Pola yang Coach temukan', body, url: '/reports', tag: kind };
+  if (kind === 'insight_comeback')
+    return { title: 'Coach Continuum', body, url: '/today', tag: kind };
+  if (kind === 'habit_reminder')
+    return { title: 'Pengingat habit', body, url: '/habit-tracker', tag: 'habit_reminder' };
+  if (kind === 'activity_reminder')
+    return { title: 'Pengingat aktivitas', body, url: '/activity-logs', tag: 'activity_reminder' };
+  if (kind === 'calendar_sync')
+    return { title: 'Google Calendar', body, url: '/activity-logs', tag: kind };
+  if (kind === 'challenge_complete')
+    return { title: 'Tantangan selesai!', body, url: '/today', tag: kind };
+  if (kind === 'test_push')
+    return { title: 'Notifikasi Continuum aktif', body, url: '/settings', tag: kind };
   return { title: 'Continuum', body, url: '/today', tag: kind };
 }
 

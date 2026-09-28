@@ -4,7 +4,11 @@
  * fall back to the outermost {...} or [...] block.
  */
 export function extractJson<T>(raw: string): T {
-  const text = raw.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+  const text = raw
+    .trim()
+    .replace(/^```(?:json)?/i, '')
+    .replace(/```$/, '')
+    .trim();
   try {
     return JSON.parse(text) as T;
   } catch {

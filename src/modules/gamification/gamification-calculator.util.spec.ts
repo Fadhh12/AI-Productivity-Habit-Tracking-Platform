@@ -13,12 +13,23 @@ const empty: GamificationStats = {
 describe('GamificationCalculator', () => {
   it('computes xp from weighted activity', () => {
     expect(
-      GamificationCalculator.xp({ ...empty, doneCheckins: 2, activitiesLogged: 2, reflectionsAnswered: 1, goalsCompleted: 1 }),
+      GamificationCalculator.xp({
+        ...empty,
+        doneCheckins: 2,
+        activitiesLogged: 2,
+        reflectionsAnswered: 1,
+        goalsCompleted: 1,
+      }),
     ).toBe(20 + 10 + 15 + 100);
   });
 
   it('starts at level 1 with 0 xp', () => {
-    expect(GamificationCalculator.level(0)).toEqual({ level: 1, xp: 0, xpIntoLevel: 0, xpForNextLevel: 100 });
+    expect(GamificationCalculator.level(0)).toEqual({
+      level: 1,
+      xp: 0,
+      xpIntoLevel: 0,
+      xpForNextLevel: 100,
+    });
   });
 
   it('levels up at 100 xp and tracks progress inside the level', () => {

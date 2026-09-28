@@ -33,7 +33,11 @@ export const FEATURE_LABELS: Record<PremiumFeature, string> = {
 };
 
 /** Extends the current premium period; renewing early adds to the remaining time instead of overwriting it. */
-export function extendPremium(current: Date | null | undefined, days: number, now: Date = new Date()): Date {
+export function extendPremium(
+  current: Date | null | undefined,
+  days: number,
+  now: Date = new Date(),
+): Date {
   const base = current && current.getTime() > now.getTime() ? current : now;
   return new Date(base.getTime() + days * 86400000);
 }

@@ -41,7 +41,9 @@ export function localMoment(now: Date, timezone: string): LocalMoment {
 }
 
 export function daysBetween(fromDate: string, toDate: string): number {
-  return Math.round((Date.parse(`${toDate}T00:00:00Z`) - Date.parse(`${fromDate}T00:00:00Z`)) / 86400000);
+  return Math.round(
+    (Date.parse(`${toDate}T00:00:00Z`) - Date.parse(`${fromDate}T00:00:00Z`)) / 86400000,
+  );
 }
 
 /** Monday morning-to-evening, once per week (dedupe key is the local date). */
@@ -103,9 +105,7 @@ export interface WeeklyFacts {
 
 export function weeklyWinFallback(f: WeeklyFacts): string {
   const trend =
-    f.prevDone > 0 && f.done > f.prevDone
-      ? ` Naik dari ${f.prevDone} minggu sebelumnya.`
-      : '';
+    f.prevDone > 0 && f.done > f.prevDone ? ` Naik dari ${f.prevDone} minggu sebelumnya.` : '';
   const cat = f.topCategory ? ` Waktumu paling banyak di ${f.topCategory}.` : '';
   return `Minggu lalu kamu menyelesaikan ${f.done} habit dan mencatat ${f.activities} aktivitas.${trend}${cat} Mantap, lanjut pelan-pelan minggu ini.`;
 }
@@ -118,7 +118,10 @@ export function patternFallback(w: WeakestWeekday): string {
   return `Hari ${w.name} biasanya paling berat buatmu (${Math.round(w.rate * 100)}% habit selesai). Coba longgarkan target atau pindah jam checkin di hari itu.`;
 }
 
-export function buildInsightPrompt(kind: InsightKind, facts: object): { system: string; user: string } {
+export function buildInsightPrompt(
+  kind: InsightKind,
+  facts: object,
+): { system: string; user: string } {
   const goal: Record<InsightKind, string> = {
     weekly_win: 'rangkuman singkat minggu lalu yang merayakan progres',
     comeback: 'ajakan hangat untuk kembali mencatat setelah beberapa hari jeda',

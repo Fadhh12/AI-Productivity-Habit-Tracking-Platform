@@ -36,14 +36,17 @@ export class UserService {
       throw new BadRequestException(`"${dto.timezone}" is not a recognized IANA timezone`);
     }
     if (typeof dto.avatar === 'string' && !isValidAvatarDataUrl(dto.avatar)) {
-      throw new BadRequestException('Foto profil harus berupa gambar JPEG, PNG, atau WebP yang kecil.');
+      throw new BadRequestException(
+        'Foto profil harus berupa gambar JPEG, PNG, atau WebP yang kecil.',
+      );
     }
     return this.prisma.user.update({
       where: { id: userId },
       data: {
         timezone: dto.timezone,
         proactiveInsights: dto.proactiveInsights,
-        displayName: dto.displayName === undefined ? undefined : normalizeDisplayName(dto.displayName),
+        displayName:
+          dto.displayName === undefined ? undefined : normalizeDisplayName(dto.displayName),
         avatar: dto.avatar,
       },
       select: PROFILE_SELECT,

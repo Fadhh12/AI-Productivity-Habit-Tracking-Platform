@@ -77,7 +77,12 @@ describe('buildCoachFallbackReply', () => {
   });
 
   it('handles a brand-new user with no data', () => {
-    const reply = buildCoachFallbackReply({ ...snapshot, habits: [], weekCategoryMinutes: {}, weekCheckinCounts: {} });
+    const reply = buildCoachFallbackReply({
+      ...snapshot,
+      habits: [],
+      weekCategoryMinutes: {},
+      weekCheckinCounts: {},
+    });
     expect(reply).toContain('Belum ada cukup data');
   });
 });

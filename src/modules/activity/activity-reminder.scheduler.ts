@@ -23,13 +23,26 @@ export class ActivityReminderScheduler {
   @Cron('0 */15 * * * *')
   async run() {
     const now = new Date();
-    const upcoming = await this.activityRepository.findStartingBetween(now, new Date(now.getTime() + REMINDER_WINDOW_MS));
+    const upcoming = await this.activityRepository.findStartingBetween(
+      now,
+      new Date(now.getTime() + REMINDER_WINDOW_MS),
+    );
 
     for (const activity of upcoming) {
       try {
-        if (await this.notificationService.alreadySent(activity.userId, 'activity_reminder', activity.id)) continue;
+        if (
+          await this.notificationService.alreadySent(
+            activity.userId,
+            'activity_reminder',
+            activity.id,
+          )
+        )
+          continue;
 
-        const minutesUntil = Math.max(1, Math.round((activity.startTime.getTime() - now.getTime()) / 60000));
+        const minutesUntil = Math.max(
+          1,
+          Math.round((activity.startTime.getTime() - now.getTime()) / 60000),
+        );
         await this.notificationService.notify(
           activity.userId,
           'activity_reminder',

@@ -66,7 +66,10 @@ export class LlmClient {
     if (this.openai) {
       const res = await fetch(`${this.openai.baseUrl}/chat/completions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.openai.apiKey}` },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.openai.apiKey}`,
+        },
         body: JSON.stringify({
           model: this.model,
           max_tokens: maxTokens,

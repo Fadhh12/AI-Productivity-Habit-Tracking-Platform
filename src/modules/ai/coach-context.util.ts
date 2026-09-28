@@ -10,7 +10,12 @@ export interface CoachSnapshot {
   weekCategoryMinutes: Record<string, number>;
   weekCheckinCounts: Record<string, number>;
   goalProgress: Array<{ goalTitle: string; doneCount: number; habitCount: number }>;
-  recentActivities: Array<{ title: string; category: string | null; minutes: number; date: string }>;
+  recentActivities: Array<{
+    title: string;
+    category: string | null;
+    minutes: number;
+    date: string;
+  }>;
 }
 
 const MAX_TURNS = 10;
@@ -28,7 +33,10 @@ export function buildCoachMessages(history: CoachTurn[] | undefined, message: st
     .filter((t) => t.content.length > 0)
     .slice(-MAX_TURNS);
 
-  const all: CoachTurn[] = [...cleaned, { role: 'user', content: message.trim().slice(0, MAX_TURN_CHARS) }];
+  const all: CoachTurn[] = [
+    ...cleaned,
+    { role: 'user', content: message.trim().slice(0, MAX_TURN_CHARS) },
+  ];
 
   while (all.length > 0 && all[0].role !== 'user') all.shift();
 

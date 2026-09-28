@@ -58,7 +58,9 @@ export class ChallengeService {
     const today = DateUtil.localDateString(now, timezone);
     const weekStart = weekStartOf(today);
 
-    const challenge = (await this.repository.findByWeek(userId, weekStart)) ?? (await this.generate(userId, timezone, weekStart));
+    const challenge =
+      (await this.repository.findByWeek(userId, weekStart)) ??
+      (await this.generate(userId, timezone, weekStart));
     return this.evaluate(challenge, timezone, today);
   }
 
@@ -90,9 +92,17 @@ export class ChallengeService {
     }
   }
 
-  private async evaluate(challenge: WeeklyChallenge, timezone: string, today: string): Promise<ChallengeView> {
+  private async evaluate(
+    challenge: WeeklyChallenge,
+    timezone: string,
+    today: string,
+  ): Promise<ChallengeView> {
     const metric = challenge.metric as ChallengeMetric;
-    const counts = await this.repository.countsForWeek(challenge.userId, timezone, challenge.weekStart);
+    const counts = await this.repository.countsForWeek(
+      challenge.userId,
+      timezone,
+      challenge.weekStart,
+    );
     const progress = computeProgress(metric, counts);
     const weekEnd = DateUtil.addDays(challenge.weekStart, 6);
     const isCurrentWeek = today <= weekEnd;
@@ -127,7 +137,11 @@ export class ChallengeService {
     };
   }
 
-  private async generate(userId: string, timezone: string, weekStart: string): Promise<WeeklyChallenge> {
+  private async generate(
+    userId: string,
+    timezone: string,
+    weekStart: string,
+  ): Promise<WeeklyChallenge> {
     const lastWeekStart = DateUtil.addDays(weekStart, -7);
     const [counts, activeHabits] = await Promise.all([
       this.repository.countsForWeek(userId, timezone, lastWeekStart),
@@ -151,7 +165,12 @@ export class ChallengeService {
     }
 
     try {
-      return await this.repository.create(userId, weekStart, draft ?? fallbackChallenge(stats), draft !== null);
+      return await this.repository.create(
+        userId,
+        weekStart,
+        draft ?? fallbackChallenge(stats),
+        draft !== null,
+      );
     } catch (error) {
       // Two requests raced to create this week's challenge; the unique index kept one — use it.
       const existing = await this.repository.findByWeek(userId, weekStart);

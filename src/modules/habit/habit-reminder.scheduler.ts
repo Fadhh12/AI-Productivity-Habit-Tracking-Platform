@@ -8,7 +8,11 @@ import { StructuredLogger } from '../../shared/utils/structured-logger';
 const REMINDER_LOCAL_HOUR = 19; // 7pm in the habit owner's own timezone
 
 function localHour(date: Date, timezone: string): number {
-  const formatted = new Intl.DateTimeFormat('en-US', { timeZone: timezone, hour: '2-digit', hour12: false }).format(date);
+  const formatted = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    hour: '2-digit',
+    hour12: false,
+  }).format(date);
   const hour = Number(formatted);
   return hour === 24 ? 0 : hour;
 }
@@ -44,7 +48,8 @@ export class HabitReminderScheduler {
         if (existingCheckin?.status === 'done') continue;
 
         const refId = `${habit.id}:${todayStr}`;
-        if (await this.notificationService.alreadySent(habit.userId, 'habit_reminder', refId)) continue;
+        if (await this.notificationService.alreadySent(habit.userId, 'habit_reminder', refId))
+          continue;
 
         await this.notificationService.notify(
           habit.userId,
