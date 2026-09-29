@@ -1,4 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#0f9d70"/>
-  <path d="M256 120c-75 0-136 61-136 136s61 136 136 136c40 0 76-17 101-45l-30-27c-18 20-44 32-71 32-53 0-96-43-96-96s43-96 96-96c26 0 50 10 68 27l30-28c-25-25-60-39-98-39z" fill="#ffffff"/>
+  <!-- Brand lime fill, edge-to-edge so Android's adaptive-icon mask never reveals a gap. -->
+  <rect width="512" height="512" rx="112" fill="#CCFF00"/>
+  <!-- Conti, simplified: kept inside the ~70px maskable safe zone on every side. -->
+  <g fill="#16171D">
+    <path d="M256 118c-92 0-146 62-146 146s58 130 146 130 146-56 146-130-54-146-146-146z"/>
+  </g>
+  <g fill="#CCFF00">
+    <circle cx="216" cy="252" r="19"/>
+    <circle cx="296" cy="252" r="19"/>
+    <circle cx="221" cy="245" r="6.5" fill="#16171D"/>
+    <circle cx="301" cy="245" r="6.5" fill="#16171D"/>
+  </g>
+  <path d="M224 296c10 14 26 22 32 22s22-8 32-22" stroke="#CCFF00" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M256 118c0-16 4-28 14-38" stroke="#16171D" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <path d="M270 80c14-12 32-8 36 4-12 8-28 8-36-4z" fill="#16171D"/>
 </svg>
