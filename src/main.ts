@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as Sentry from '@sentry/node';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
@@ -34,6 +35,20 @@ async function bootstrap() {
     origin: frontendUrl,
     credentials: true,
   });
+
+  // Interactive API docs — off in production unless explicitly enabled, since this API is private.
+  const swaggerEnabled =
+    configService.get<string>('nodeEnv') !== 'production' || process.env.SWAGGER_ENABLED === 'true';
+  if (swaggerEnabled) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Continuum API')
+      .setDescription('AI-powered productivity & habit tracking platform — backend API')
+      .setVersion('0.1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   const port = configService.get<number>('port') ?? 3000;
   await app.listen(port);
