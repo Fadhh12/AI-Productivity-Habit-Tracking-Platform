@@ -81,7 +81,7 @@ export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarPr
           onClick={() => shiftMonth(-1)}
           title="Bulan sebelumnya"
           aria-label="Bulan sebelumnya"
-          className="shrink-0 rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-surface-container-low"
           type="button"
         >
           <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_left</span>
@@ -116,7 +116,7 @@ export function Calendar({ markedDates, selectedDate, onSelectDate }: CalendarPr
           onClick={() => shiftMonth(1)}
           title="Bulan berikutnya"
           aria-label="Bulan berikutnya"
-          className="shrink-0 rounded-full p-1 text-text-secondary transition-colors hover:bg-surface-container-low"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-surface-container-low"
           type="button"
         >
           <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chevron_right</span>

@@ -656,7 +656,7 @@ export default function TodayPage() {
             <Link
               href="/goals"
               aria-label="Tambah goal baru"
-              className="press flex h-7 w-7 items-center justify-center rounded-full bg-surface-container text-text-primary hover:bg-accent-lime"
+              className="press flex h-11 w-11 items-center justify-center rounded-full bg-surface-container text-text-primary hover:bg-accent-lime"
             >
               <span className="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>
             </Link>
