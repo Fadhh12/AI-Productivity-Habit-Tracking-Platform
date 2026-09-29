@@ -45,6 +45,10 @@ export default () => ({
 
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001',
 
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+  },
+
   googleCalendar: {
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,

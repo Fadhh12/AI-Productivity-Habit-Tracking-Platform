@@ -1,4 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import * as Sentry from '@sentry/node';
 import { Response } from 'express';
 import { RequestWithId } from '../middleware/request-id.middleware';
 import { StructuredLogger } from '../utils/structured-logger';
@@ -40,6 +41,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
       errorType,
       stack,
     });
+
+    // Only unexpected 5xx failures go to Sentry — 4xx are expected client errors, not incidents.
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      Sentry.captureException(exception, {
+        tags: { requestId: request?.requestId, errorType },
+        user: request?.user?.id ? { id: request.user.id } : undefined,
+        extra: { endpoint: `${request?.method} ${request?.originalUrl}` },
+      });
+    }
 
     // Machine-readable extras (e.g. PREMIUM_REQUIRED / LIMIT_REACHED) let the client show an upgrade prompt instead of a raw error.
     const extras: Record<string, unknown> = {};
